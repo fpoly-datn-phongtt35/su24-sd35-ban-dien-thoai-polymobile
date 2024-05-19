@@ -18,7 +18,7 @@ jobs:
           git config --global user.email 'nbchuc@hotmail.com'
 
       - name: Add Private Repository as Remote
-        run: git remote add private ${{ secrets.PRIVATE_REPO_URL }}
+        run: git remote add private https://$GITHUB_ACTOR:${{ secrets.PAT }}@github.com/fpoly-datn-phongtt35/su24-sd35-ban-dien-thoai-polymobile.git
 
       - name: Push to Private Repository
         env:
