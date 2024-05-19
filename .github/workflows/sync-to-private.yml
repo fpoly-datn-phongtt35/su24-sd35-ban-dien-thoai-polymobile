@@ -14,6 +14,7 @@ jobs:
 
       - name: Configure Git
         run: |
+<<<<<<< HEAD
           git config --global user.name 'ChucNB'
           git config --global user.email 'nbchuc@hotmail.com'
 
@@ -23,3 +24,16 @@ jobs:
 
       - name: Push to Private Repository
         run: git push private HEAD:main --force
+=======
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+
+      - name: Add Private Repository as Remote
+        run: git remote add private ${{ secrets.PRIVATE_REPO_URL }}
+
+      - name: Push to Private Repository
+        env:
+          PAT: ${{ secrets.PAT }}
+        run: |
+          git push private HEAD:main --force
+>>>>>>> 8192b2d (Add config auto sync)
