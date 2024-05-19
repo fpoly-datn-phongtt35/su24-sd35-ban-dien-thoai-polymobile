@@ -14,8 +14,8 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
+          git config --global user.name 'ChucNB'
+          git config --global user.email 'nbchuc@hotmail.com'
 
       - name: Add Private Repository as Remote
         run: git remote add private ${{ secrets.PRIVATE_REPO_URL }}
