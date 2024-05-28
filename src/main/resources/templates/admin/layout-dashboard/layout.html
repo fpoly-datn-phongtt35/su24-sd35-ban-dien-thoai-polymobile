@@ -22,8 +22,8 @@
     <!-- Custom styles for this template -->
     <link href="/css/sb-admin-2.min.css" rel="stylesheet">
 
+
     <!-- Custom styles for this page -->
-    <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
     <th:block layout:fragment="head_link"></th:block>
 </head>
 
@@ -397,12 +397,8 @@
         </div>
     </div>
 </footer>
-<!-- End of Footer -->
 
-</div>
-<!-- End of Page Wrapper -->
 
-<!-- Scroll to Top Button-->
 <a class="scroll-to-top rounded" href="#page-top">
     <i class="fas fa-angle-up"></i>
 </a>
@@ -427,18 +423,23 @@
     </div>
 </div>
 
-<!-- Bootstrap core JavaScript-->
+<!--Util modal-->
+<th:block th:insert="/admin/layout-dashboard/util::container_ultils"></th:block>
 <script src="/vendor/jquery/jquery.min.js"></script>
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+
+
 </body>
+
 <!-- Core plugin JavaScript-->
 <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
 
 <!-- Custom scripts for all pages-->
 <script src="/js/sb-admin-2.min.js"></script>
+<script src="/js/demo/util.js"></script>
 
 <th:block layout:fragment="bottom_link"></th:block>
-
 
 
 

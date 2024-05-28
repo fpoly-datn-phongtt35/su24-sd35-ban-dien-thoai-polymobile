@@ -2,6 +2,7 @@ package com.poly.polystore.controller;
 
 import com.poly.polystore.dto.MauSacDto;
 
+import com.poly.polystore.entity.MauSac;
 import com.poly.polystore.repository.MauSacRepository;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.rmi.server.LogStream.log;
 
@@ -46,9 +48,31 @@ public class MauSacController {
         if (bindingResult.hasErrors()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, bindingResult.getFieldError().getDefaultMessage());
         }
-        System.out.println(mauSacDto);
-        System.out.println("OK");
-        return mauSacDto;
+        if(mauSacDto.getId() == null||!mauSacRepository.existsById(mauSacDto.getId())){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
+        }
+        mauSacRepository.save(modelMapper.map(mauSacDto, MauSac.class));
+        return mauSacRepository.findById(mauSacDto.getId()).map((element) -> modelMapper.map(element, MauSacDto.class)).get();
+    }
+    @ResponseBody
+    @PutMapping("/api/v1/san-pham-chi-tiet/mau-sac")
+    public MauSacDto add(@Valid @RequestBody MauSacDto mauSacDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, bindingResult.getFieldError().getDefaultMessage());
+        }
+
+        mauSacRepository.save(modelMapper.map(mauSacDto, MauSac.class));
+        return mauSacRepository.findByMa(mauSacDto.getMa()).map((element) -> modelMapper.map(element, MauSacDto.class)).get();
+    }
+    @ResponseBody
+    @DeleteMapping("/api/v1/san-pham-chi-tiet/mau-sac")
+    public MauSacDto delete(@RequestParam(name = "id") Integer id) {
+        if (id==null||!mauSacRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
+        }
+        var ms= mauSacRepository.findById(id).map((element) -> modelMapper.map(element, MauSacDto.class)).get();
+        mauSacRepository.deleteById(id);
+        return ms;
     }
 
 }
