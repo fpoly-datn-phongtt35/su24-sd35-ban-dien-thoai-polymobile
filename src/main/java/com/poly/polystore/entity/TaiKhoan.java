@@ -1,13 +1,15 @@
 package com.poly.polystore.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,14 +18,11 @@ import java.time.LocalDate;
 @ToString
 @Entity
 @Table(name = "TAI_KHOAN")
-public class TaiKhoan {
+public class TaiKhoan implements UserDetails {
     @Id
     @Column(name = "ID", nullable = false)
     private Integer id;
 
-    @Nationalized
-    @Column(name = "Ten_dang_nhap")
-    private String tenDangNhap;
 
     @Nationalized
     @Column(name = "So_dien_thoai")
@@ -37,19 +36,47 @@ public class TaiKhoan {
     @Column(name = "Mat_khau")
     private String matKhau;
 
-    @Nationalized
-    @Column(name = "Loai_tai_khoan")
-    private String loaiTaiKhoan;
 
     @Nationalized
     @Column(name = "Trang_thai")
     private String trangThai;
 
-    @Nationalized
-    @Column(name = "Anh", length = 10)
-    private String anh;
+    @Enumerated(EnumType.STRING)
+    Role role;
 
-    @Column(name = "Ngay_Sinh")
-    private LocalDate ngaySinh;
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public String getPassword() {
+        return getMatKhau();
+    }
+
+    @Override
+    public String getUsername() {
+        return getSoDienThoai();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
