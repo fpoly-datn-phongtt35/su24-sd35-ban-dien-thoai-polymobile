@@ -1,6 +1,7 @@
 package com.poly.polystore.Response;
 
 import java.util.Date;
+import lombok.Getter;
 
 public interface KhachHangRepose {
 
@@ -8,22 +9,20 @@ public interface KhachHangRepose {
 
   String getMaKhachHang();
 
-  String getHoTen();
+  String getTenKhachHang();
 
-  Date getNgaySinhKhachHang();
+  Date getNgaySinh();
 
-  String getSoDienThoaiNguoiNhan();
+  String getSDT();
 
   String getDiaChi();
 
   String getGioiTinh();
 
-  String getEmail();
+  String getEmailKhachHang();
 
-  String getSoDienThoai();
 
   String getTrangThai();
 
-//  String getMaKhachHang();
 
 }

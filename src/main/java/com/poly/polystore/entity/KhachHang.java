@@ -22,6 +22,10 @@ public class KhachHang {
   @JoinColumn(name = "ID_Tai_khoan")
   private TaiKhoan idTaiKhoan;
 
+
+  @JoinColumn(name = "MaKhachHang")
+  private String maKhachHang;
+
   @Nationalized
   @Column(name = "Ten")
   private String ten;

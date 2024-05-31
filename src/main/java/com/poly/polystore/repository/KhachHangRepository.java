@@ -10,9 +10,10 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, Integer> {
 
       @Query(value = """
 		  select k.ID as Id_KhachHang,
+		          k.MaKhachHang as MaKhachHang,
               k.Ten as TenKhachHang,
               k.Ngay_Sinh as NgaySinh,
-              k.Email as Email,
+              k.Email as EmailKhachHang,
               k.GioiTinh as GioiTinh,
               k.So_Dien_Thoai as SDT,
               k.TrangThai as TrangThai
