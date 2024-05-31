@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 @Controller
 //@CrossOrigin("*")
-@RequestMapping("/khach_hang")
+@RequestMapping("/")
 public class KhachHangController {
 
   private final KhachHangRepository khachHangRepository;
@@ -44,7 +44,7 @@ public class KhachHangController {
 
 
 
-  @GetMapping("/getAll_khachHang")
+  @GetMapping("/khachHang")
   public String getAll_KhachHang(Model model) {
     List<KhachHangRepose> KhachHangs = khachHangRepository.getAllKhachHang();
     model.addAttribute("KhachHangs",KhachHangs);
