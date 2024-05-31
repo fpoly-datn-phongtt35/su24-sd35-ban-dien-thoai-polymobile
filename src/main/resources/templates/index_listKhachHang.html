@@ -60,11 +60,11 @@
   <tbody>
     <tr thth:each= "khachhang:, start :${KhachHangs}">
       <td th:text="${start.count}"></td>
-      <td th:text="${khachHang.maKhachHang}"></td>
-      <td th:text="${khachHang.hoTen}"></td>
-      <td th:text="${khachHang.email}"></td>
-      <td th:text="${khachHang.soDienThoai}"></td>
-      <td th:text="${khachHang.trangThai}"></td>
+      <td th:text="${khachhang.MaKhachHang}"></td>
+      <td th:text="${khachhang.HoTen}"></td>
+      <td th:text="${khachhang.Excel}"></td>
+      <td th:text="${khachhang.SoDienThoai}"></td>
+      <td th:text="${khachhang.TrangThai}"></td>
       <td>
         <a th:href="@{/khachhang/edit/{id}(id=${khachHang.maKhachHang})}" class="btn btn-primary btn-sm">Chỉnh sửa</a>
         <a th:href="@{/khachhang/delete/{id}(id=${khachHang.maKhachHang})}" class="btn btn-danger btn-sm">Xóa</a>
