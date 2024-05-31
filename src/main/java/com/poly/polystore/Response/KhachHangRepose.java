@@ -1,5 +1,7 @@
 package com.poly.polystore.Response;
 
+import java.util.Date;
+
 public interface KhachHangRepose {
 
 //   class để hiển thị danh sách khách hang lên bảng danh sách
@@ -8,7 +10,7 @@ public interface KhachHangRepose {
 
   String getHoTen();
 
-  String getNgaySinhKhachHang();
+  Date getNgaySinhKhachHang();
 
   String getSoDienThoaiNguoiNhan();
 

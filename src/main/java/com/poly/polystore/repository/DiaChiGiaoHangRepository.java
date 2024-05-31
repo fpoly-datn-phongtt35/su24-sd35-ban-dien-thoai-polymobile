@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface DiaChiGiaoHangRepository extends JpaRepository<DiaChiGiaoHang, Integer> {
 
-  public Long deleteDiaChiGiaoHangByIdKhachHang(Integer id);
+//  public Long deleteDiaChiGiaoHangByIdKhachHang(Integer id);
 
   @Query(value = """
       update DIA_CHI_GIAO_HANG set Dia_chi =:newDiaChi where ID_Khach_hang =:idDIachi

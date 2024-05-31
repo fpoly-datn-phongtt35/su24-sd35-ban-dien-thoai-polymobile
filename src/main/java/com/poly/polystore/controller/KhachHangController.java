@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Objects;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +29,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("*")
+@CrossOrigin("*")
+@RequestMapping("/khach_hang")
 public class KhachHangController {
 
   private final KhachHangRepository khachHangRepository;
@@ -40,8 +44,11 @@ public class KhachHangController {
 
 
   @GetMapping("/getAll_khachHang")
-  public List<KhachHangRepose> getAll_KhachHang() {
-    return khachHangRepository.getAllKhachHang();
+  public String getAll_KhachHang(Model model) {
+    List<KhachHangRepose> KhachHangs = khachHangRepository.getAllKhachHang();
+    System.out.println(KhachHangs.toString());
+    model.addAttribute("KhachHangs",KhachHangs);
+    return "/index_listKhachHang";
   }
 
   @PostMapping("/addKhachHang")
@@ -51,7 +58,6 @@ public class KhachHangController {
     if (photo.isEmpty()) {
       return "khong có ảnh";
     } else {
-
       try {
         Path path = Paths.get("resources/static/Images/");
         String newPhoto = photo.getOriginalFilename();
@@ -79,12 +85,12 @@ public class KhachHangController {
     }
   }
 
-  @GetMapping("/delete/{id}")
-  public String deleteKhachHang(@PathVariable("id") Integer id) {
-    Long idKhachhang = diaChiGiaoHangRepository.deleteDiaChiGiaoHangByIdKhachHang(id);
-    khachHangRepository.deleteById(Math.toIntExact(idKhachhang));
-    return "remove";
-  }
+//  @GetMapping("/delete/{id}")
+//  public String deleteKhachHang(@PathVariable("id") Integer id) {
+//    Long idKhachhang = diaChiGiaoHangRepository.deleteDiaChiGiaoHangByIdKhachHang(id);
+//    khachHangRepository.deleteById(Math.toIntExact(idKhachhang));
+//    return "remove";
+//  }
 
   @PostMapping("/updateKhachHang")
   public String updateKhachHang(@RequestBody
@@ -117,7 +123,7 @@ public class KhachHangController {
 
       diaChiGiaoHangRepository.updateDiaChi(requestAddKhachHang.getDiaChi(),
           requestAddKhachHang.getId());
-      return "oke";
+      return "oke rồi nha";
     }
   }
 }
