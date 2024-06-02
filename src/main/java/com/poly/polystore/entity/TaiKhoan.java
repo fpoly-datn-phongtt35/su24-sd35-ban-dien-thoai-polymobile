@@ -1,6 +1,7 @@
 package com.poly.polystore.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,9 +18,11 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
+@Builder
 @Table(name = "TAI_KHOAN")
 public class TaiKhoan implements UserDetails {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
@@ -44,6 +47,16 @@ public class TaiKhoan implements UserDetails {
     @Enumerated(EnumType.STRING)
     Role role;
 
+    @Size(max = 255)
+    @Nationalized
+    @Column(name = "Anh")
+    private String anh;
+
+    @Size(max = 50)
+    @Nationalized
+    @Column(name = "Ten", length = 50)
+    private String ten;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -57,7 +70,7 @@ public class TaiKhoan implements UserDetails {
 
     @Override
     public String getUsername() {
-        return getSoDienThoai();
+        return getEmail();
     }
 
     @Override

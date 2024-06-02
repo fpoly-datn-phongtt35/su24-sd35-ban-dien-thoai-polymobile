@@ -1,5 +1,4 @@
-
-package com.example.springboot3jwtauthentication.services;
+package com.poly.polystore.service;
 
 import java.security.Key;
 import java.util.Date;
@@ -14,19 +13,20 @@ import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
 
-    @Value("${token.secret.key}")
+    @Value("${jwt.secret}")
     String jwtSecretKey;
 
-    @Value("${token.expirationms}")
+    @Value("${jwt.expiration}")
     Long jwtExpirationMs;
 
-    public String extractUserName(String token) {
-        return extractClaim(token, Claims::getSubject);//Claims::getSubject extract userName
+    public String extractEmail(String token) {
+        return extractClaim(token, Claims::getSubject);
     }
 
     public String generateToken(UserDetails userDetails) {
@@ -34,7 +34,7 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String userName = extractUserName(token);
+        final String userName = extractEmail(token);
         return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
@@ -54,16 +54,21 @@ public class JwtService {
                 .compact();
     }
 
-    private boolean isTokenExpired(String token) {//Kiểm tra thời gian hết hạn
-        return extractExpiration(token).before(new Date());//Lấy thời gian hết hạn so sánh với thười gian hiện tại
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
     }
 
     private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);//Lấy thời gian hết hạn
+        return extractClaim(token, Claims::getExpiration);
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(jwtSecretKey).parseClaimsJwt(token).getBody();//Lấy mảng claims
+        return Jwts
+                .parser()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     private Key getSigningKey() {

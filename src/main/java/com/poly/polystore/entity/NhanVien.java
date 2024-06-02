@@ -20,9 +20,8 @@ public class NhanVien {
     @JoinColumn(name = "ID_Tai_khoan")
     private TaiKhoan idTaiKhoan;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_Role")
-    private Role idRole;
+
+    private Role role;
 
     @Nationalized
     @Column(name = "Ma_nhan_vien")
