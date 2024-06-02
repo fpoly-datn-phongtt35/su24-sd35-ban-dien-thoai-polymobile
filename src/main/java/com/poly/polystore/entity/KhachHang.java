@@ -30,17 +30,32 @@ public class KhachHang {
   @Column(name = "Ten")
   private String ten;
 
+
   @Nationalized
   @Column(name = "So_Dien_Thoai", length = 10)
   private String soDienThoai;
+
+  @JoinColumn(name = "IDDiaChi")
+  @ManyToOne
+  private DiaChiGiaoHang idDiaChi;
+
+
   @Column(name = "Ngay_Sinh", length = 10)
   private Date ngaySinh;
+
+
   @Column(name = "Anh_Khach_Hang", length = 10)
   private String AnhKhachHang;
+
+
   @Column(name = "Trang_thai", length = 10)
   private String trangThai;
+
+
   @Column(name = "Email", length = 10)
   private String Email;
+
+
   @Column(name = "Deteted", length = 10)
   private int deteted;
 }
