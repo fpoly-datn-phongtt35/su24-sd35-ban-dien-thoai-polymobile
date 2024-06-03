@@ -1,4 +1,4 @@
-package com.poly.polystore.core.admin.ma_giam_gia.dto.resp;
+package com.poly.polystore.core.common.login.model.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

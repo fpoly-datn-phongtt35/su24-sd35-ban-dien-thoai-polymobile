@@ -1,8 +1,8 @@
 package com.poly.polystore.core.common.login.service;
 
 
-import com.poly.polystore.core.admin.ma_giam_gia.dto.req.SignUpRequest;
-import com.poly.polystore.core.admin.ma_giam_gia.dto.resp.JwtAuthenticationResponse;
+import com.poly.polystore.core.common.login.model.request.SignUpRequest;
+import com.poly.polystore.core.common.login.model.response.JwtAuthenticationResponse;
 import com.poly.polystore.entity.TaiKhoan;
 import com.poly.polystore.repository.TaiKhoanRepository;
 import lombok.RequiredArgsConstructor;
