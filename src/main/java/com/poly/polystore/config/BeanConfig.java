@@ -1,7 +1,6 @@
 package com.poly.polystore.config;
 
-import com.poly.polystore.repository.TaiKhoanRepository;
-import com.poly.polystore.service.TaiKhoanService;
+import com.poly.polystore.core.common.login.service.TaiKhoanService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;

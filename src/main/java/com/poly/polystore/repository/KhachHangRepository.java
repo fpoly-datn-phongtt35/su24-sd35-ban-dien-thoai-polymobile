@@ -1,6 +1,6 @@
 package com.poly.polystore.repository;
 
-import com.poly.polystore.Response.KhachHangRepose;
+import com.poly.polystore.core.client.models.response.KhachHangRepose;
 import com.poly.polystore.entity.KhachHang;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
