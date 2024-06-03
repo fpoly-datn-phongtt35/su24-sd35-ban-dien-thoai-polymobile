@@ -3,6 +3,7 @@ package com.poly.polystore.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -16,8 +17,12 @@ import java.time.Instant;
 @Table(name = "MA_GIAM_GIA")
 public class MaGiamGia {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
+
+    @Column(name = "Code", nullable = false,unique = true)
+    private String code;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_San_pham_chi_tiet")
@@ -36,9 +41,11 @@ public class MaGiamGia {
     private Integer soLuong;
 
     @Column(name = "Thoi_gian_ket_thuc")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Instant thoiGianKetThuc;
 
     @Column(name = "Thoi_gian_bat_dau")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Instant thoiGianBatDau;
 
     @Column(name = "Create_at")

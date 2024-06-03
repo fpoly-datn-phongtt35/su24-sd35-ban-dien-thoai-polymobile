@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{/layout/layout_admin :: main-fragment(
+                                                ~{:: title},
+                                                'header',
+                                                'sidebar',
+                                                ~{:: #css-resources},
+                                                ~{:: #js-resources},
+                                                ~{:: #main-content}
+                                               )}">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách khuyến mại</title>
+    <th:block id="css-resources">
+        <link rel="stylesheet" th:href="@{/adminlte/pagination/simplePagination.css}">
+    </th:block>
+</head>
+<body>
+<section role="main" class="content-body" id="main-content">
+    <header class="page-header">
+        <!--        <h2>Editable Tables</h2>-->
+        <div class="right-wrapper text-right">
+            <ol class="breadcrumbs">
+                <li>
+                    <a href="index.html">
+                        <i class="bx bx-home-alt"></i>
+                    </a>
+                </li>
+                <li><span>Danh sách khuyến mại</span></li>
+            </ol>
+            <a class="sidebar-right-toggle" data-open="sidebar-right"><i
+                    class="fas fa-chevron-left"></i></a>
+        </div>
+    </header>
+
+    <section class="card">
+        <header class="card-header">
+            <div class="card-actions">
+                <a href="#" class="card-action card-action-toggle" data-card-toggle></a>
+                <a href="#" class="card-action card-action-dismiss" data-card-dismiss></a>
+            </div>
+            <h2 class="card-title">Danh sách khuyến mại</h2>
+        </header>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="mb-3">
+                        <a href="/admin/promotions/create" id="addToTable" class="btn btn-primary">Thêm mới khuyến mại <i
+                                class="fas fa-plus"></i></a>
+                        <a href="/admin/promotions/list" class="btn btn-primary">Refresh <i
+                                class="fas fa-redo-alt"></i></a>
+                        <button id="btn-search" class="btn btn-primary">Tìm kiếm <i
+                                class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-bordered table-striped mb-0" id="datatable-editable">
+                <thead>
+                <tr>
+                    <th width="15%">ID</th>
+                    <th>Mã khuyến mại</th>
+                    <th>Phần trăm giảm</th>
+                    <th>Giảm Tối Đa</th>
+                    <th>Số lượng</th>
+                    <th>Ngày bắt đầu</th>
+                    <th>Ngày hết hạn</th>
+                </tr>
+                <tr class="heading-search">
+                    <form method="GET" th:action="@{/admin/promotions/list}" id="search-form">
+                        <th></th>
+                        <th>
+                            <input type="text" name="code" id="code" placeholder="Tìm kiếm theo tên" class="form-control search-input" th:value="${code}">
+                        </th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th>
+                            <input type="date" name="beginDate" id="begin" placeholder="Ngày bắt đầu" class="form-control search-input">
+                        </th>
+                        <th>
+                            <input type="date" name="endDate" id="end" placeholder="Ngày kết thúc" class="form-control search-input">
+                        </th>
+                    </form>
+                </tr>
+                </thead>
+                <tbody>
+                <th:block th:each="promotion : ${promotionPage}">
+                    <tr>
+                        <td>
+                            <a th:href="@{/admin/promotions/update/{id}(id=${promotion.id})}"
+                               th:text="${promotion.id}"></a>
+                        </td>
+                        <td th:text="${promotion.code}"></td>
+                        <td th:text="${promotion.phanTramGiam}">
+                        </td>
+                        <td th:text="${promotion.giamToiDa}">
+                        </td>
+                        <td th:text="${promotion.soLuong}">
+                        </td>
+                        <td>
+                            <span th:text="${#dates.format(promotion.thoiGianBatDau, 'dd-MM-yyyy')}"></span>
+                        </td>
+                        <td>
+                            <span th:text="${#dates.format(promotion.thoiGianKetThuc, 'dd-MM-yyyy')}"></span>
+                        </td>
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+            <br>
+            <!-- Pagination -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination" id="pagination">
+                </ul>
+            </nav>
+        </div>
+    </section>
+
+</section>
+
+<th:block id="js-resources">
+    <script type="text/javascript" th:src="@{/adminlte/pagination/jquery.simplePagination.js}"></script>
+    <script type="text/javascript" th:src="@{/adminlte/js/table.js}"></script>
+    <script type="text/javascript">
+        let name, code, publish, active, page;
+        $(function () {
+            let vars = parseUrl();
+            name = vars["name"] || ""
+            code = vars["code"] || ""
+            publish = vars["publish"] || ""
+            active = vars["active"] || ""
+            page = vars["page"] || "1"
+
+            $('#name').val(name);
+            $('#code').val(code);
+            $('#publish').val(publish)
+            $('#active').val(active)
+            $('#page').val(page)
+
+            pagination([[${totalPages}]], [[${currentPage}]])
+        });
+    </script>
+</th:block>
+</body>
+</html>
