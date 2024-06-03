@@ -25,7 +25,7 @@ public class MauSac {
     @Column(name = "Ten", nullable = false, length = 50)
     private String ten;
 
-    @Column(name = "TrangThai", nullable = false)
+    @Column(name = "Trang_Thai", nullable = false)
     private Boolean trangThai;
 
 }
