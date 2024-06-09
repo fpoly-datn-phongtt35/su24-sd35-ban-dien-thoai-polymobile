@@ -37,7 +37,7 @@ public class PhieuGiamGiaController {
 
     @PostMapping("/admin/phieugiamgia/create")
     public ResponseEntity<Object> create(@Valid @RequestBody CreatePhieuGiamGiaRequest createPhieuGiamGiaRequest) {
-        if(phieuGiamGiaRepository.findByCode(createPhieuGiamGiaRequest.getCode()) == null){
+        if(phieuGiamGiaRepository.findByCode(createPhieuGiamGiaRequest.getCode()) != null){
             throw new RuntimeException("Code đã tồn tại");
         }
         PhieuGiamGia phieuGiamGia = new PhieuGiamGia();
@@ -59,7 +59,7 @@ public class PhieuGiamGiaController {
         return "admin/phieu-giam-gia/edit";
     }
 
-    @PutMapping("/api/admin/phieugiamgia/{id}")
+    @PutMapping("/admin/phieugiamgia/{id}")
     public ResponseEntity<Object> updatePromotion(@Valid @RequestBody CreatePhieuGiamGiaRequest createPhieuGiamGiaRequest, @PathVariable long id) {
         PhieuGiamGia phieuGiamGia = phieuGiamGiaRepository.findById((int)id).get();
         phieuGiamGia.setUpdateAt(Instant.now());
@@ -73,7 +73,7 @@ public class PhieuGiamGiaController {
         return ResponseEntity.ok(phieuGiamGia.getId());
     }
 
-    @DeleteMapping("/api/admin/phieugiamgia/{id}")
+    @DeleteMapping("/admin/phieugiamgia/{id}")
     public ResponseEntity<Object> deletePromotion(@PathVariable long id) {
         PhieuGiamGia phieuGiamGia = phieuGiamGiaRepository.findById((int)id).get();
         phieuGiamGia.setDeleted(true);

@@ -39,7 +39,7 @@ public class PromotionController {
 
     @PostMapping("/create")
     public ResponseEntity<Object> create(@Valid @RequestBody CreatePromotionRequest createPromotionRequest) {
-        if(maGiamGiaRepository.findByCode(createPromotionRequest.getCode()) == null){
+        if(maGiamGiaRepository.findByCode(createPromotionRequest.getCode()) != null){
             throw new RuntimeException("Code đã tồn tại");
         }
         MaGiamGia maGiamGia = new MaGiamGia();
@@ -56,14 +56,14 @@ public class PromotionController {
         return ResponseEntity.ok(maGiamGia.getId());
     }
 
-    @GetMapping("/admin/promotions/update/{id}")
+    @GetMapping("/{id}")
     public String updatePromotionPage(Model model, @PathVariable long id) {
         MaGiamGia promotion = maGiamGiaRepository.findById((int)id).get();
         model.addAttribute("promotion", promotion);
         return "admin/promotion/edit";
     }
 
-    @PutMapping("/api/admin/promotions/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Object> updatePromotion(@Valid @RequestBody CreatePromotionRequest createPromotionRequest, @PathVariable long id) {
         MaGiamGia maGiamGia = maGiamGiaRepository.findById((int)id).get();
         maGiamGia.setCode(createPromotionRequest.getCode());
@@ -79,7 +79,7 @@ public class PromotionController {
         return ResponseEntity.ok(maGiamGia.getId());
     }
 
-    @DeleteMapping("/api/admin/promotions/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Object> deletePromotion(@PathVariable long id) {
         MaGiamGia maGiamGia = maGiamGiaRepository.findById((int)id).get();
         maGiamGia.setDeleted(true);

@@ -33,7 +33,7 @@ public class PhieuGiamGiaRepositoryImpl {
                 "      ,[Update_at]\n" +
                 "      ,[Last_modified_by]\n" +
                 "      ,[Deleted]\n" +
-                "  FROM [dbo].[MA_GIAM_GIA] where [Deleted] = 0");
+                "  FROM [dbo].[PHIEU_GIAM_GIA] where [Deleted] = 0");
         if(!Strings.isNullOrEmpty(code)){
             sql.append(" and code = :code");
             params.put("code", code);
