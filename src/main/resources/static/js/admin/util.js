@@ -36,9 +36,7 @@ const showWarnigToast = (message) => {
     $('body').append(Toast);
     Toast.toast('show');
 }
-$(document).ready(() => {
-    $('.modal').on('show', clearForm())
-})
+
 const clearForm = () => {
     console.log('Clear form')
     if ($('.was-validated').length) {
