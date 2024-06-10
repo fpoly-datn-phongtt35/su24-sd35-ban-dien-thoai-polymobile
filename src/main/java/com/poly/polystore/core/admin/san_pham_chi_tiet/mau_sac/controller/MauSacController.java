@@ -1,10 +1,10 @@
-package com.poly.polystore.core.admin.san_pham_chi_tiet.controller;
+package com.poly.polystore.core.admin.san_pham_chi_tiet.mau_sac.controller;
 
-import com.poly.polystore.core.admin.san_pham_chi_tiet.dto.MauSacDto;
+import com.poly.polystore.core.admin.san_pham_chi_tiet.mau_sac.dto.MauSacDto;
 
 import com.poly.polystore.entity.MauSac;
 import com.poly.polystore.repository.MauSacRepository;
-import com.poly.polystore.utils.Utils;
+import com.poly.polystore.utils.ExportExcel;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -89,8 +89,8 @@ public class MauSacController {
 @GetMapping("/admin/san-pham-chi-tiet/mau-sac/export-excel")
 public ResponseEntity<byte[]> exportToExcel() throws IOException {
     List<MauSac> mauSacList = mauSacRepository.findAll();
-    Utils<MauSac> utils = new Utils();
-    ByteArrayInputStream in = utils.printAllFields(mauSacList);
+    ExportExcel<MauSac> exportExcel = new ExportExcel();
+    ByteArrayInputStream in = exportExcel.export(mauSacList);
 
     HttpHeaders headers = new HttpHeaders();
     headers.add("Content-Disposition", "attachment; filename=mau_sac.xlsx");

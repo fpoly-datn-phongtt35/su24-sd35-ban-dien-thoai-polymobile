@@ -72,8 +72,6 @@ function dataToJson(event) {
                 const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
                 const jsonData = XLSX.utils.sheet_to_json(firstSheet);
 
-                // Chuyển JSON thành chuỗi và lưu vào input ẩn
-                // document.getElementById('json-data').value = JSON.stringify(jsonData);
                 resolve(jsonData)
                 console.log(jsonData)
                 event.target.files[0].value=""

@@ -60,7 +60,7 @@ public class TaiKhoan implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority(role==null?"ROLE_GUEST":role.name()));
     }
 
     @Override

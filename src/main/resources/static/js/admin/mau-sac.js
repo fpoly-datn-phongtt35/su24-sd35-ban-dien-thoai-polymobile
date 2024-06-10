@@ -52,9 +52,6 @@ const reloadDataTable = () => {
     $('#dataTable').DataTable().ajax.reload();
 }
 $(document).ready(loadData());
-$('#reload_table').click(function () {
-    reloadDataTable();
-});
 
 //edit evnt
 var existingCodes
@@ -126,10 +123,16 @@ $('#delete_confirm').click(function () {
         type: 'DELETE',
         success: function () {
             reloadDataTable();
-            showSuccessToast("Xóa thành công !");
+            Toast.fire({
+                icon:"success",
+                title:"Xóa thành công"
+            })
         },
         error: () => {
-            showErrorToast("Xóa thất bại")
+            Toast.fire({
+                icon:"success",
+                title:"Xóa thất bại"
+            })
         }
     })
 
@@ -329,3 +332,7 @@ const import_excel=(jsonData)=>{
 
     })
 }
+
+$('#reload_table').click(function () {
+    reloadDataTable();
+});

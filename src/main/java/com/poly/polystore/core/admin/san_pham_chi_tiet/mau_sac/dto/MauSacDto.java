@@ -1,4 +1,4 @@
-package com.poly.polystore.core.admin.san_pham_chi_tiet.dto;
+package com.poly.polystore.core.admin.san_pham_chi_tiet.mau_sac.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

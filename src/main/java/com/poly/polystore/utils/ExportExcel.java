@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class Utils<Type> {
-    public ByteArrayInputStream printAllFields(List<Type> lstObj) throws IOException {
+public class ExportExcel<Type> {
+    public ByteArrayInputStream export(List<Type> lstObj) throws IOException {
         if (lstObj == null || lstObj.size() == 0) return null;
 
 

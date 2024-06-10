@@ -1,6 +1,9 @@
 package com.poly.polystore.config;
 
 import com.poly.polystore.config.jwt.JwtAuthenticationFilter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,14 +15,21 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
+
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -31,6 +41,25 @@ public class SecurityConfig {
     private final PasswordEncoder passwordEncoder;
     private final UserDetailsService userDetailsService;
 
+    String[] unAuthURL = {
+
+
+            "/sign-in/**",
+            "/sign-in",
+            "/sign-up",
+            "/error",
+            "/logout",
+            "/vendor/**",
+            "/js/**",
+            "/css/**"
+
+    };
+    String[] adminURL = {
+
+
+            "/admin/**"
+
+    };
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -46,18 +75,48 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        //Functional interface
+        return (request, response, authException) -> {
+            if (request.getRequestURI().contains("api")) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            } else {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.sendRedirect("/sign-in?error=401");
+            }
+        };
+    }
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return new CustomAccessDeniedHandler();
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().permitAll()
-                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(authenticationEntryPoint())
+                        .accessDeniedHandler(accessDeniedHandler())
 
-                .authenticationProvider(authenticationProvider()).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+                )
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(unAuthURL).permitAll()
+                        .requestMatchers(adminURL).hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .authenticationProvider(authenticationProvider())
+//                .formLogin(form -> form
+//                        .loginPage("/sign-in?error=401")
+//                )
+        ;
 
         return http.build();
     }
+
 }

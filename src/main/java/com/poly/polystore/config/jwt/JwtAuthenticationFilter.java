@@ -1,8 +1,11 @@
 package com.poly.polystore.config.jwt;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Optional;
 
 import com.poly.polystore.core.common.login.service.JwtService;
+import jakarta.servlet.http.Cookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,17 +37,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
+        String authorization = request.getHeader("Authorization");
         final String jwt;
         final String email;
-        //Không có header cho đi tiếp nhưng không authorize
-        if (authHeader==null || !authHeader.startsWith("Bearer ")) {
+        if(authorization == null) {
+            final Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                Optional<Cookie> jwtCookie = Arrays.stream(cookies)
+                        .filter(cookie -> "Authorization".equals(cookie.getName()))
+                        .findFirst();
+                if (jwtCookie.isPresent()) {
+                    authorization ="Bearer "+ jwtCookie.get().getValue();
+                }
+            }
+        }
+        if (authorization==null || !authorization.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        jwt = authHeader.substring(7);
+        //Không có header cho đi tiếp nhưng không authorize
+        System.out.println("Request URL: " + ((HttpServletRequest) request).getRequestURI());
+
+
+        jwt = authorization.substring(7);
         log.debug("JWT - {}", jwt.toString());
+        if(jwtService.isTokenExpired(jwt)){
+            log.debug("Token is expired");
+            filterChain.doFilter(request, response);
+            return;
+        }
         email = jwtService.extractEmail(jwt);
         if (email!=null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails =userDetailsService.loadUserByUsername(email);

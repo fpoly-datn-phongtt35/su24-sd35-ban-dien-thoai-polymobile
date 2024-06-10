@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
+    <link rel="stylesheet" href="/css/sb-admin-2.min.css">
+    <script src="/vendor/sweetalert2/sweetalert2.min.js"></script>
 
     <title>Đăng nhập</title>
     <style>
@@ -238,7 +239,7 @@
                 <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
                 <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
             </div>
-            <span>hoặc đăng ký tài khoản mới với email và mật khẩu</span>
+            <span >hoặc đăng ký tài khoản mới với email và mật khẩu</span>
             <input type="text" placeholder="Name">
             <input type="email" placeholder="Email">
             <input type="password" placeholder="Password">
@@ -246,7 +247,7 @@
         </form>
     </div>
     <div class="form-container sign-in">
-        <form action="/sign-in" method="post">
+        <form id="loginForm">
             <h1>Đăng nhập</h1>
             <div class="social-icons">
                 <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
@@ -254,9 +255,14 @@
                 <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
                 <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
             </div>
-            <span>hoặc đăng nhập với tài khoản của bạn</span>
-            <input type="email" placeholder="Email">
-            <input type="password" placeholder="Password">
+            <input type="email" class="form-control" id="email" placeholder="Email" required>
+            <div class="invalid-feedback">
+                Vui lòng nhập chính xác địa chỉ email của bạn
+            </div>
+            <input type="password" class="form-control" id="password" placeholder="Password" required>
+            <div class="invalid-feedback">
+                Vui lòng nhập mật khẩu
+            </div>
             <a href="#">Quên mật khẩu?</a>
             <button>Đăng nhập</button>
         </form>
@@ -279,19 +285,70 @@
 </div>
 <script src="/vendor/jquery/jquery.min.js"></script>
 
-<script>
-    const container = document.getElementById('container');
-    const registerBtn = document.getElementById('register');
-    const loginBtn = document.getElementById('login');
 
-    registerBtn.addEventListener('click', () => {
-        container.classList.add("active");
+<script>
+
+    const container = $('#container');
+    const registerBtn = $('#register');
+    const loginBtn = $('#login');
+
+
+    registerBtn.on('click', () => {
+        console.log(container)
+        container.addClass("active");
         $('title').html("Đăng ký")
     });
 
-    loginBtn.addEventListener('click', () => {
-        container.classList.remove("active");
+    loginBtn.on('click', () => {
+        container.removeClass("active");
         $('title').html("Đăng nhập")
+    });
+
+    $(document).ready(function () {
+        $('#loginForm').on('submit', function (event) {
+            event.preventDefault();
+
+            var isValid = true;
+            $('#loginForm input').each(function () {
+                if (!this.checkValidity()) {
+                    isValid = false;
+                    $(this).addClass('is-invalid');
+                } else {
+                    $(this).removeClass('is-invalid');
+                }
+            });
+
+            if (isValid) {
+                var username = $('#email').val();
+                var password = $('#password').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/sign-in',
+                    data: JSON.stringify( {
+                        email: username,
+                        password: password
+                    }),
+                    contentType: 'application/json',
+
+                    success: function (response) {
+                        // Lưu token vào localStorage nếu cần
+                        if (response.token) {
+                            localStorage.setItem('Authorization',"Bearer "+ response.token);
+                            Toast.fire({
+                                icon:"success",
+                                title:"Đăng nhập thành công"
+                            })
+                        }
+                        // Chuyển hướng người dùng đến trang chính hoặc trang trước đó (nếu có)
+                        // window.location.href = response.redirectUrl;
+                    },
+                    error: function (response) {
+                        $('#error-message').text('Invalid username or password.');
+                    }
+                });
+            }
+        });
     });
 </script>
 </body>

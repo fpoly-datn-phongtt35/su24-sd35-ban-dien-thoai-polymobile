@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,7 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 
+    private static final Logger log = LoggerFactory.getLogger(JwtService.class);
     @Value("${jwt.secret}")
     String jwtSecretKey;
 
@@ -54,8 +58,15 @@ public class JwtService {
                 .compact();
     }
 
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    public boolean isTokenExpired(String token) {
+        try {
+            var result=extractExpiration(token).before(new Date());
+            return result;
+        }catch (ExpiredJwtException e) {
+            log.error("Token đã hết hạn");
+            return true;
+
+        }
     }
 
     private Date extractExpiration(String token) {
