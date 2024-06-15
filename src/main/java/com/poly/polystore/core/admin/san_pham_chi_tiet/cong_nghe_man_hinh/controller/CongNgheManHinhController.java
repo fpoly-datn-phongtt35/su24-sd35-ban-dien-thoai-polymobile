@@ -19,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -26,13 +28,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
 public class CongNgheManHinhController {
     private static final Logger log = LoggerFactory.getLogger(CongNgheManHinhController.class);
-
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
@@ -61,16 +63,6 @@ public class CongNgheManHinhController {
         response.setStatus(HttpStatus.CREATED.value());
         return cnmhRP;
     }
-    @ResponseBody
-    @PostMapping("/api/v1/san-pham-chi-tiet/cong-nghe-man-hinh/import-excel")
-    public List<Response> importExcel(@Valid @RequestBody List<@Valid ImportReq> lstCNMH, Errors errors) {
-        if (errors.hasErrors()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lỗi: Vui lòng kiểm tra lại các trường trong file excel !");
-        }
-        List<CongNgheManHinh> lstMS = lstCNMH.stream().map((element) -> modelMapper.map(element, CongNgheManHinh.class)).collect(Collectors.toList());
-        List<Response> lstRP = congNgheManHinhRepository.saveAll(lstMS).stream().map((element) -> modelMapper.map(element, Response.class)).collect(Collectors.toList());
-        return lstRP;
-    }
 
 
     @ResponseBody
@@ -94,25 +86,65 @@ public class CongNgheManHinhController {
         if (id == null || !congNgheManHinhRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
         }
-        var cnmh = congNgheManHinhRepository.findById(id).map((element) -> modelMapper.map(element, Response.class)).get();
-        congNgheManHinhRepository.deleteById(id);
+        var cnmhE = congNgheManHinhRepository.findById(id).get();
+        cnmhE.setDeleted(true);
+        var cnmhR = modelMapper.map(cnmhE, Response.class);
+        congNgheManHinhRepository.save(cnmhE);
         resp.setStatus(HttpStatus.ACCEPTED.value());
-        return cnmh;
+        return cnmhR;
+    }
+
+    @ResponseBody
+    @PostMapping("/api/v1/san-pham-chi-tiet/cong-nghe-man-hinh/revert")
+    public Response revert(@RequestParam(name = "id") Integer id, HttpServletResponse resp) {
+        if (id == null || !congNgheManHinhRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
+        }
+        var cnmhE = congNgheManHinhRepository.findById(id).get();
+        cnmhE.setDeleted(false);
+        var cnmhR = modelMapper.map(cnmhE, Response.class);
+        congNgheManHinhRepository.save(cnmhE);
+        resp.setStatus(HttpStatus.ACCEPTED.value());
+        return cnmhR;
     }
 
 
-@GetMapping("/admin/san-pham-chi-tiet/cong-nghe-man-hinh/export-excel")
-public ResponseEntity<byte[]> exportToExcel() throws IOException {
-    List<CongNgheManHinh> mauSacList = congNgheManHinhRepository.findAll();
-    ExportExcel<CongNgheManHinh> exportExcel = new ExportExcel();
-    ByteArrayInputStream in = exportExcel.export(mauSacList);
+    @ResponseBody
+    @PostMapping("/api/v1/san-pham-chi-tiet/cong-nghe-man-hinh/import-excel")
+    @Transactional
+    public List<Response> importExcel(@Valid @RequestBody List<@Valid ImportReq> lstCNMH, Errors errors) {
+        if (errors.hasErrors()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lỗi: Vui lòng kiểm tra lại các trường trong file excel !");
+        }
+        try{
+            List<CongNgheManHinh> lstMS = lstCNMH.stream()
+                    .map((element) -> modelMapper.map(element, CongNgheManHinh.class))
+                    .collect(Collectors.toList());
+            List<Response> lstRP = congNgheManHinhRepository.saveAll(lstMS).stream()
+                    .map((element) -> modelMapper.map(element, Response.class))
+                    .collect(Collectors.toList());
+            return lstRP;
+        }
+        catch (Exception e) {
+            log.error("Lỗi import file");
+            TransactionAspectSupport.currentTransactionStatus().isRollbackOnly();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lỗi: Vui lòng kiểm tra lại các trường trong file excel !");
+        }
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Content-Disposition", "attachment; filename=cong_nghe_man_hinh.xlsx");
+    }
 
-    return ResponseEntity.ok()
-            .headers(headers)
-            .contentType(MediaType.APPLICATION_OCTET_STREAM)
-            .body(in.readAllBytes());
-}
+    @GetMapping("/admin/san-pham-chi-tiet/cong-nghe-man-hinh/export-excel")
+    public ResponseEntity<byte[]> exportToExcel() throws IOException {
+        List<CongNgheManHinh> mauSacList = congNgheManHinhRepository.findAll();
+        ExportExcel<CongNgheManHinh> exportExcel = new ExportExcel();
+        ByteArrayInputStream in = exportExcel.export(mauSacList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=cong_nghe_man_hinh.xlsx");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(in.readAllBytes());
+    }
 }

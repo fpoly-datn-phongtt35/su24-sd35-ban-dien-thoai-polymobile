@@ -27,7 +27,7 @@ public class JwtService {
     String jwtSecretKey;
 
     @Value("${jwt.expiration}")
-    Long jwtExpirationMs;
+    Long jwtExpiration;
 
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -53,7 +53,7 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration*1000))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -61,9 +61,9 @@ public class JwtService {
     public boolean isTokenExpired(String token) {
         try {
             var result=extractExpiration(token).before(new Date());
-            return result;
+                        return result;
         }catch (ExpiredJwtException e) {
-            log.error("Token đã hết hạn");
+                log.error("Token đã hết hạn, EXPIRATION TIME:"+extractExpiration(token));
             return true;
 
         }

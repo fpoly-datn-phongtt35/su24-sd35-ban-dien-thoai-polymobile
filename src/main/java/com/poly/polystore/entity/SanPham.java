@@ -28,29 +28,10 @@ public class SanPham {
     @JoinColumn(name = "ID_Man_Hinh")
     private CongNgheManHinh idCongNgheManHinh;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_Camera_truoc")
-    private Camera idCameraTruoc;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_Camera_sau")
-    private Camera idCameraSau;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_He_dieu_hanh")
-    private HeDieuHanh idHeDieuHanh;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_CPU")
-    private Cpu idCpu;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_Series")
     private Series idSeries;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_Pin")
-    private Pin idPin;
 
     @Nationalized
     @Column(name = "RAM")

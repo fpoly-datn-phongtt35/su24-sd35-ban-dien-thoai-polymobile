@@ -30,7 +30,7 @@ public class AuthenticationController {
         if (error != null) {
             switch (error) {
                 case "401":
-                    model.addAttribute("message", "Trước tiên bạn cần đăng nhập");
+                    model.addAttribute("message", "Bạn cần đăng nhập để truy cập trang này");
             }
         }
         return "authentication/authentication";

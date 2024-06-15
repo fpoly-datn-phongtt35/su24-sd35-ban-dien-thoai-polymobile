@@ -1,8 +1,11 @@
 package com.poly.polystore.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Nationalized;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,19 +16,23 @@ import org.hibernate.annotations.ColumnDefault;
 @Table(name = "TINH_NANG_DAC_BIET")
 public class TinhNangDacBiet {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "ID_Camera", nullable = false)
-    private Camera idCamera;
+    @Size(max = 255)
+    @NotNull
+    @Nationalized
+    @Column(name = "TEN", nullable = false)
+    private String ten;
 
-    @Lob
-    @Column(name = "Mo_ta_tinh_nang")
-    private String moTaTinhNang;
+    @Size(max = 255)
+    @Nationalized
+    @Column(name = "LINK")
+    private String link;
 
     @ColumnDefault("0")
-    @Column(name = "Deleted")
+    @Column(name = "DELETED")
     private Boolean deleted;
 
 }

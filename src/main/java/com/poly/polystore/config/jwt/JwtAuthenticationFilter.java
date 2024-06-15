@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        //Không có header cho đi tiếp nhưng không authorize
+        //Không có header/cookie cho đi tiếp nhưng không authorize
         System.out.println("Request URL: " + ((HttpServletRequest) request).getRequestURI());
 
 

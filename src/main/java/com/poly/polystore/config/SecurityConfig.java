@@ -82,7 +82,7 @@ public class SecurityConfig {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             } else {
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                response.sendRedirect("/sign-in?error=401");
+                response.sendRedirect("/sign-in?error=401&successUrl=" + request.getRequestURL().toString());
             }
         };
     }

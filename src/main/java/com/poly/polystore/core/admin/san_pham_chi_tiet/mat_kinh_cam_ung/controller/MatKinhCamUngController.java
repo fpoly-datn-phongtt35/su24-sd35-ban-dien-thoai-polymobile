@@ -5,6 +5,7 @@ import com.poly.polystore.core.admin.san_pham_chi_tiet.mat_kinh_cam_ung.model.re
 import com.poly.polystore.core.admin.san_pham_chi_tiet.mat_kinh_cam_ung.model.request.ImportReq;
 import com.poly.polystore.core.admin.san_pham_chi_tiet.mat_kinh_cam_ung.model.response.Response;
 import com.poly.polystore.entity.MatKinhCamUng;
+import com.poly.polystore.entity.MatKinhCamUng;
 import com.poly.polystore.repository.MatKinhCamUngRepository;
 import com.poly.polystore.utils.ExportExcel;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -63,13 +66,26 @@ public class MatKinhCamUngController {
     }
     @ResponseBody
     @PostMapping("/api/v1/san-pham-chi-tiet/mat-kinh-cam-ung/import-excel")
-    public List<Response> importExcel(@Valid @RequestBody List<@Valid ImportReq> lstCNMH, Errors errors) {
+    @Transactional
+    public List<Response> importExcel(@Valid @RequestBody List<@Valid ImportReq> mkcusIR, Errors errors) {
         if (errors.hasErrors()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lỗi: Vui lòng kiểm tra lại các trường trong file excel !");
         }
-        List<MatKinhCamUng> lstMS = lstCNMH.stream().map((element) -> modelMapper.map(element, MatKinhCamUng.class)).collect(Collectors.toList());
-        List<Response> lstRP = matKinhCamUngRepository.saveAll(lstMS).stream().map((element) -> modelMapper.map(element, Response.class)).collect(Collectors.toList());
-        return lstRP;
+        try{
+            List<MatKinhCamUng> lstMkcuR = mkcusIR.stream()
+                    .map((element) -> modelMapper.map(element, MatKinhCamUng.class))
+                    .collect(Collectors.toList());
+            List<Response> lstRP = matKinhCamUngRepository.saveAll(lstMkcuR).stream()
+                    .map((element) -> modelMapper.map(element, Response.class))
+                    .collect(Collectors.toList());
+            return lstRP;
+        }
+        catch (Exception e) {
+            log.error("Lỗi import file");
+            TransactionAspectSupport.currentTransactionStatus().isRollbackOnly();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lỗi: Vui lòng kiểm tra lại các trường trong file excel !");
+        }
+
     }
 
 
@@ -94,24 +110,39 @@ public class MatKinhCamUngController {
         if (id == null || !matKinhCamUngRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
         }
-        var cnmh = matKinhCamUngRepository.findById(id).map((element) -> modelMapper.map(element, Response.class)).get();
-        matKinhCamUngRepository.deleteById(id);
+        var mkcuE= matKinhCamUngRepository.findById(id).get();
+        mkcuE.setDeleted(true);
+        var mkcuR = modelMapper.map(mkcuE, Response.class);
+        matKinhCamUngRepository.save(mkcuE);
         resp.setStatus(HttpStatus.ACCEPTED.value());
-        return cnmh;
+        return mkcuR;
+    }
+    @ResponseBody
+    @PostMapping("/api/v1/san-pham-chi-tiet/mat-kinh-cam-ung/revert")
+    public Response revert(@RequestParam(name = "id") Integer id, HttpServletResponse resp) {
+        if (id == null || !matKinhCamUngRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
+        }
+        var mkcuE= matKinhCamUngRepository.findById(id).get();
+        mkcuE.setDeleted(false);
+        var mkcuR = modelMapper.map(mkcuE, Response.class);
+        matKinhCamUngRepository.save(mkcuE);
+        resp.setStatus(HttpStatus.ACCEPTED.value());
+        return mkcuR;
     }
 
 
-@GetMapping("/admin/san-pham-chi-tiet/mat-kinh-cam-ung/export-excel")
-public ResponseEntity<byte[]> exportToExcel() throws IOException {
-    List<MatKinhCamUng> mauSacList = matKinhCamUngRepository.findAll();
-    ExportExcel<MatKinhCamUng> exportExcel = new ExportExcel();
-    ByteArrayInputStream in = exportExcel.export(mauSacList);
+    @GetMapping("/admin/san-pham-chi-tiet/mat-kinh-cam-ung/export-excel")
+    public ResponseEntity<byte[]> exportToExcel() throws IOException {
+        List<MatKinhCamUng> mauSacList = matKinhCamUngRepository.findAll();
+        ExportExcel<MatKinhCamUng> exportExcel = new ExportExcel();
+        ByteArrayInputStream in = exportExcel.export(mauSacList);
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Content-Disposition", "attachment; filename=mat_kinh_cam_.xlsx");
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=mat_kinh_cam_.xlsx");
 
-    return ResponseEntity.ok()
-            .headers(headers)
-            .body(in.readAllBytes());
-}
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(in.readAllBytes());
+    }
 }

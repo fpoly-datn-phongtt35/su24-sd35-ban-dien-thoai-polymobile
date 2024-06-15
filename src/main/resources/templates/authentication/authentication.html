@@ -255,6 +255,8 @@
                 <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
                 <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
             </div>
+            <span th:if="${message!=null}" th:text="${message}" class="text-danger"></span>
+            <span th:unless="${message!=null}">hoặc đăng ký tài khoản mới với email và mật khẩu</span>
             <input type="email" class="form-control" id="email" placeholder="Email" required>
             <div class="invalid-feedback">
                 Vui lòng nhập chính xác địa chỉ email của bạn
@@ -341,7 +343,10 @@
                             })
                         }
                         // Chuyển hướng người dùng đến trang chính hoặc trang trước đó (nếu có)
-                        // window.location.href = response.redirectUrl;
+                        let successUrl=new URLSearchParams(window.location.href).get('successUrl')
+                        if(successUrl)
+                        window.location.href = successUrl;
+
                     },
                     error: function (response) {
                         $('#error-message').text('Invalid username or password.');

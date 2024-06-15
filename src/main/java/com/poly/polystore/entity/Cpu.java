@@ -1,6 +1,8 @@
 package com.poly.polystore.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Nationalized;
@@ -14,32 +16,28 @@ import org.hibernate.annotations.Nationalized;
 @Table(name = "CPU")
 public class Cpu {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
+    @Size(max = 255)
+    @NotNull
     @Nationalized
-    @Column(name = "CPU")
-    private String cpu;
+    @Column(name = "TEN", nullable = false)
+    private String ten;
 
+    @Size(max = 255)
     @Nationalized
     @Column(name = "GPU")
     private String gpu;
 
+    @Size(max = 255)
     @Nationalized
-    @Column(name = "Ten")
-    private String ten;
-
-    @Nationalized
-    @Lob
-    @Column(name = "Mo_ta")
-    private String moTa;
-
-    @Nationalized
-    @Column(name = "Duong_dan")
-    private String duongDan;
+    @Column(name = "LINK")
+    private String link;
 
     @ColumnDefault("0")
-    @Column(name = "Deleted")
+    @Column(name = "DELETED")
     private Boolean deleted;
 
 }

@@ -7,11 +7,11 @@
 // <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
 const apiURL = "/api/v1/san-pham-chi-tiet/cong-nghe-man-hinh";
-let existingNames;
-$(document).attr("title","Quản lý công nghệ màn hình")
+let _existingNames;
+$(document).attr("title", "Quản lý công nghệ màn hình")
 
 function loadData() {
-    $('#dataTable').DataTable({
+    let table = $('#dataTable').DataTable({
 
         "language": {
             "sProcessing": "Đang xử lý...",
@@ -46,28 +46,42 @@ function loadData() {
             {
                 "data": "link",
                 "render": function (data, type, row) {
-                    if(data.length>36)
-                    return `<a href="${data}">${data.substring(0, 35)}...</a>`
+                    if (data == null)
+                        return ""
+                    if (data.length > 36)
+                        return `<a href="${data}">${data.substring(0, 35)}...</a>`
                     else
-                    return `<a href="${data}">${data}</a>`
+                        return `<a href="${data}">${data}</a>`
                 }
             },
             {
                 "data": "deleted",
                 "render": function (data, type, row) {
-                    return (data) ?"Đã xóa"  : "Hoạt động"
+                    return (data) ? "Đã xóa" : "Hoạt động"
                 }
             },
             {
-                "data": null,
+                "data": "deleted",
                 "render": function (data, type, row) {
-                    return '<div class="d-flex justify-content-end"><button type="button" class="btn btn-sm btn-primary mr-3 btn-edit">Chỉnh sửa</button><button type="button" class="btn btn-sm btn-danger btn-delete">Xóa</button></div>';
+                    if (data)
+                        return '<div class="d-flex justify-content-end"><button type="button" class="btn btn-sm btn-primary mr-3 btn-edit">Chỉnh sửa</button><button type="button" class="btn btn-sm btn-danger btn-revert">Khôi phục</button></div>';
+                    else
+                        return '<div class="d-flex justify-content-end"><button type="button" class="btn btn-sm btn-primary mr-3 btn-edit">Chỉnh sửa</button><button type="button" class="btn btn-sm btn-danger btn-delete">Xóa</button></div>';
+
                 },
                 "orderable": false
 
             }
         ]
     });
+    let selectedStatus = $('#statusFilter').val();
+    if (selectedStatus) {
+        table.column(3).search('^' + selectedStatus + '$', true, false).draw();
+    } else {
+        // Xóa bộ lọc nếu không có gì được chọn
+        table.column(3).search('').draw();
+    }
+    ;
 }
 
 const reloadDataTable = () => {
@@ -86,6 +100,7 @@ $(document).ready(() => {
 
 //Add
 $(document).ready(() => {
+    let existingNames;
     //Event
     $('#btn-add').on('click', () => {
         clearForm();
@@ -146,9 +161,9 @@ $(document).ready(() => {
         }
     });
 })
-
 //Edit
 $(document).ready(() => {
+    let existingNames;
     //Event
     $('#dataTable tbody').on('click', '.btn-edit', function () {
         clearForm()
@@ -165,9 +180,15 @@ $(document).ready(() => {
             $('#edit-ten').val(ten);
             $('#edit-link').val(link);
             $('#edit-deleted').html(`
-                <option value="true">Hoạt động</option>
-                <option ${deleted ? "selected" : ""}  value="false">Đã xóa</option>
-            `)
+                <option value="false">Hoạt động</option>
+                <option ${deleted ? "selected" : ""}  value="true">Đã xóa</option>`)
+            if (deleted) {
+                $('#edit-deleted').parent(".form-group").removeClass("d-none");
+
+            } else {
+                $('#edit-deleted').parent(".form-group").addClass("d-none");
+
+            }
             // Hiển thị modal
             $('#modal-edit').modal('show');
             existingNames = $('#dataTable').DataTable().column(1).data().toArray().filter(elm => elm !== ten).map(name => name.toLowerCase().trim());
@@ -257,17 +278,68 @@ $(document).ready(() => {
                         url: apiURL + '?id=' + id,
                         type: 'DELETE',
                         success: function () {
-                            reloadDataTable();
                             Toast.fire({
                                 icon: "success",
                                 title: "Xóa thành công"
                             })
+                            reloadDataTable();
                         },
                         error: () => {
                             Toast.fire({
                                 icon: "error",
                                 title: "Xóa thất bại"
                             })
+                            reloadDataTable();
+                        }
+
+                    })
+                }
+            });
+
+
+        }
+
+    });
+
+
+})
+
+
+//Revert
+$(document).ready(() => {
+    $('#dataTable tbody').on('click', '.btn-revert', function () {
+        let rowData = $('#dataTable').DataTable().row($(this).closest('tr')).data();
+        if (rowData) {
+            // Lấy dữ liệu từ hàng
+            let id = rowData.id;
+            let ten = rowData.ten;
+            // Hiển thị modal
+            Swal.fire({
+                title: `Bạn chắc chắn muốn khôi phục ${ten}?`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                cancelButtonText: "Hủy",
+                confirmButtonText: "Xác nhận"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: apiURL + '/revert?id=' + id,
+                        type: 'POST',
+                        success: function () {
+                            Toast.fire({
+                                icon: "success",
+                                title: "Khôi phục thành công"
+                            })
+                            reloadDataTable();
+                        },
+                        error: () => {
+                            Toast.fire({
+                                icon: "error",
+                                title: "Khôi phục thất bại"
+                            })
+                            reloadDataTable();
                         }
                     })
                 }
@@ -275,8 +347,12 @@ $(document).ready(() => {
 
 
 
+
         }
+
     });
+
+
 })
 
 //Filter
@@ -286,7 +362,7 @@ $(document).ready(function () {
 
     // Lắng nghe sự kiện thay đổi của select option
     $('#statusFilter').on('change', function () {
-        let selectedStatus = $(this).val();
+        let selectedStatus = $('#statusFilter').val();
 
         if (selectedStatus) {
             // Áp dụng bộ lọc theo cột Status
@@ -361,7 +437,7 @@ $(document).ready(function () {
                 })
                 Toast.fire({
                     icon: "success",
-                    title: "Đã thay đổi" + data.length
+                    title: "Đã thay đổi " + data.length + " bản ghi"
                 })
                 reloadDataTable();
             },
@@ -373,5 +449,6 @@ $(document).ready(function () {
 
         })
     }
+
 });
 
