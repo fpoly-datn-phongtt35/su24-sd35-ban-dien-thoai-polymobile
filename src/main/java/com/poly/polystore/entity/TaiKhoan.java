@@ -41,8 +41,12 @@ public class TaiKhoan implements UserDetails {
 
 
     @Nationalized
-    @Column(name = "Trang_thai")
-    private String trangThai;
+    @Column(name = "Ngay_Sinh")
+    private String ngaySinh;
+
+    @Nationalized
+    @Column(name = "Ten_dang_nhap")
+    private String tenDangNhap;
 
     @Enumerated(EnumType.STRING)
     Role role;
@@ -57,6 +61,13 @@ public class TaiKhoan implements UserDetails {
     @Column(name = "Ten", length = 50)
     private String ten;
 
+    @Nationalized
+    @Column(name = "Loai_tai_khoan", length = 255)
+    private String loaiTaikhoan;
+
+    @Nationalized
+    @Column(name = "Trang_thai", length = 255)
+    private Boolean trangthai;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
