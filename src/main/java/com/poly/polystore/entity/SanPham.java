@@ -14,6 +14,7 @@ import org.hibernate.annotations.Nationalized;
 public class SanPham {
     @Id
     @Column(name = "ID", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Nationalized

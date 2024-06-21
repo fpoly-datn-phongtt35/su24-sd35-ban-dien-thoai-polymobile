@@ -29,6 +29,7 @@
         <button type="button" class="btn btn-warning">Làm Mới</button>
       </div>
       <div class="col">
+        <a th:href="@{/khachhang/danh-sach-den}" class="btn btn-danger">Danh sách đen</a>
       </div>
       <div class="col">
 
@@ -83,11 +84,17 @@
         <td th:text="${khachhang.SDT}"></td>
         <td th:text="${khachhang.TrangThai}"></td>
         <td>
-          <a th:href="@{/khachhang/edit/{id}(id=${khachhang.MaKhachHang})}" class="">
-            <i class="fa-solid fa-pen-to-square">...</i></a>
-          <a th:href="@{/khachhang/delete/{id}(id=${khachhang.MaKhachHang})}" class="">
-            <i class="fa-solid fa-rotate"></i>
-          </a>
+          <div class="row">
+            <div class="col">
+              <a th:href="@{/khachhang/edit/{id}(id=${khachhang.MaKhachHang})}" class="">
+                <i class="fa-solid fa-pen-to-square"></i></a>
+            </div>
+            <div class="col">
+              <a th:href="@{/khachhang/delete/{id}(id=${khachhang.MaKhachHang})}" class="">
+                <i class="fa-solid fa-rotate"></i>
+              </a>
+            </div>
+          </div>
         </td>
       </tr>
       </tbody>

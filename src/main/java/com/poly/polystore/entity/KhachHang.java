@@ -16,6 +16,7 @@ public class KhachHang {
 
   @Id
   @Column(name = "ID", nullable = false)
+  @GeneratedValue(strategy =  GenerationType.IDENTITY)
   private Integer id;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -28,8 +29,8 @@ public class KhachHang {
 
   @Nationalized
   @Column(name = "Ten")
-  private String ten;
 
+  private String ten;
 
   @Nationalized
   @Column(name = "So_Dien_Thoai", length = 10)
@@ -48,7 +49,7 @@ public class KhachHang {
   private String AnhKhachHang;
 
 
-  @Column(name = "Trang_thai", length = 10)
+  @Column(name = "Trang_Thai", length = 10)
   private String trangThai;
 
 
@@ -56,6 +57,6 @@ public class KhachHang {
   private String Email;
 
 
-  @Column(name = "Deteted", length = 10)
+  @Column(name = "Deleted", length = 10)
   private int deteted;
 }

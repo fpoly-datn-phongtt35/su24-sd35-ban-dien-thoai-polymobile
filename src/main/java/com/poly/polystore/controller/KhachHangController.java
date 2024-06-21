@@ -39,61 +39,26 @@ public class KhachHangController {
   }
 
 
-  @GetMapping("/khach-hang")
+  @GetMapping("/list-khach-hang")
   public String getAll_KhachHang(Model model) {
     List<KhachHangRepose> KhachHangs = khachHangRepository.getAllKhachHang();
     model.addAttribute("KhachHangs", KhachHangs);
     return "index_listKhachHang";
   }
 
+  @GetMapping("/khachhang/danh-sach-den")
+  public String getAll_KhachHang_ds_den(Model model) {
+   Integer soLuanHuy = 3;
+    List<KhachHangRepose> KhachHangs = khachHangRepository.getAllKhachHang_den(soLuanHuy);
+    model.addAttribute("KhachHangs", KhachHangs);
+    return "index_listKhachHang";
+  }
+
   @GetMapping("view-add-KhachHang")
-  public String viewAdd_khachHang(Model model ) {
+  public String viewAdd_khachHang(Model model) {
     model.addAttribute("requestAddKhachHang", new RequestAddKhachHang());
     return "add_khachhang";
   }
-
-//  @PostMapping("add-KhachHang")
-//  public String addKhachHang(@RequestBody
-//  RequestAddKhachHang requestAddKhachHang
-//      ,@RequestParam("anhKhachHang") MultipartFile anhKhachHang
-//  ) throws IOException {
-//    KhachHang newKhachHang = new KhachHang();
-//    if (anhKhachHang.isEmpty()) {
-//      return "redirect:/add_khachhang";
-//    } else {
-//      try {
-//        Path path = Paths.get("resources/static/Images/");
-//        String newPhoto = anhKhachHang.getOriginalFilename();
-//        newKhachHang.setAnhKhachHang(newPhoto);
-//        InputStream inputStream = anhKhachHang.getInputStream();
-//        Files.copy(inputStream, path.resolve(Objects.requireNonNull(anhKhachHang.getOriginalFilename())),
-//            StandardCopyOption.REPLACE_EXISTING);
-//      } catch (IOException e) {
-//        e.printStackTrace();
-//      }
-//
-//      newKhachHang.setTen(requestAddKhachHang.getTenKhachHang());
-//
-//      newKhachHang.setEmail(requestAddKhachHang.getEmail());
-//      newKhachHang.setNgaySinh(requestAddKhachHang.getNgaySinh());
-//      newKhachHang.setSoDienThoai(requestAddKhachHang.getSoDienThoai());
-//      newKhachHang.setTrangThai(String.valueOf(1));
-//      KhachHang id_KhachHang = khachHangRepository.save(newKhachHang);
-//
-//      DiaChiGiaoHang newDiaChi = new DiaChiGiaoHang();
-//      newDiaChi.setIdKhachHang(id_KhachHang);
-//      newDiaChi.setDiaChi(requestAddKhachHang.getDiaChi());
-//      diaChiGiaoHangRepository.save(newDiaChi);
-//      return "add_khachhang";
-//    }
-//  }
-
-//  @GetMapping("/delete/{id}")
-//  public String deleteKhachHang(@PathVariable("id") Integer id) {
-//    Long idKhachhang = diaChiGiaoHangRepository.deleteDiaChiGiaoHangByIdKhachHang(id);
-//    khachHangRepository.deleteById(Math.toIntExact(idKhachhang));
-//    return "remove";
-//  }
 
   @PostMapping("/updateKhachHang")
   public String updateKhachHang(@ModelAttribute("requestAddKhachHang")
@@ -134,44 +99,69 @@ public class KhachHangController {
       KhachHang id_KhachHang = khachHangRepository.save(newKhachHang);
 
       diaChiGiaoHangRepository.updateDiaChi(requestAddKhachHang.getDiaChi(),
-          requestAddKhachHang.getId());
+          id_KhachHang.getId());
       return "oke rồi nha";
     }
   }
 
 
-
   // create new a customer
   @PostMapping("add-KhachHang")
   public String addKhachHang(@ModelAttribute("requestAddKhachHang")
-  RequestAddKhachHang requestAddKhachHang
+  RequestAddKhachHang requestAddKhachHang,@RequestParam("photo") MultipartFile photo
   ) throws IOException {
     KhachHang newKhachHang = new KhachHang();
+    if (photo.isEmpty()) {
+      return "redirect:/add_khachhang";
+    } else {
+      try {
+        Path path = Paths.get("resources/static/Images/");
+        String newPhoto = photo.getOriginalFilename();
+        newKhachHang.setAnhKhachHang(newPhoto);
+        InputStream inputStream = photo.getInputStream();
+        Files.copy(inputStream, path.resolve(Objects.requireNonNull(photo.getOriginalFilename())),
+            StandardCopyOption.REPLACE_EXISTING);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
 
-    newKhachHang.setTen(requestAddKhachHang.getTenKhachHang());
-    newKhachHang.setEmail(requestAddKhachHang.getEmail());
+//    thêm địa chỉ trước
 
-    Date ngaySinh;
-    try {
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-      ngaySinh = sdf.parse(requestAddKhachHang.getNgaySinhInput());
-    } catch (ParseException e) {
-      // Handle the exception
-      e.printStackTrace();
-      return "Invalid date format";
+      String newDiaChiInput = requestAddKhachHang.getDiaChi() + " " + requestAddKhachHang.getXa()
+          + " " + requestAddKhachHang.getHuyen() + " " + requestAddKhachHang.getThanhPho();
+      System.out.println("địa chỉ sau khi công chuỗi" + newDiaChiInput);
+      DiaChiGiaoHang newDiaChi = new DiaChiGiaoHang();
+      newDiaChi.setDiaChi(newDiaChiInput);
+      newDiaChi.setTenNguoiNhan(requestAddKhachHang.getTenNguoiNhan());
+      newDiaChi.setSoDienThoai(requestAddKhachHang.getSoDienThoaiNguoiNhan());
+
+      DiaChiGiaoHang idDiaChi = diaChiGiaoHangRepository.save(newDiaChi);
+// thêm địa chỉ và id của nó
+      Date ngaySinh;
+      try {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        ngaySinh = sdf.parse(requestAddKhachHang.getNgaySinhInput());
+      } catch (ParseException e) {
+        // Handle the exception
+        e.printStackTrace();
+        return "Invalid date format";
+      }
+      newKhachHang.setTen(requestAddKhachHang.getTenKhachHang());
+      newKhachHang.setEmail(requestAddKhachHang.getEmail());
+//    thêm id địa chỉ vào bảng khách hàng
+      newKhachHang.setIdDiaChi(idDiaChi);
+
+      newKhachHang.setDeteted(0);
+      newKhachHang.setNgaySinh(ngaySinh);
+      newKhachHang.setSoDienThoai(requestAddKhachHang.getSoDienThoai());
+      newKhachHang.setTrangThai("Hoạt Động");
+      KhachHang id_KhachHang = khachHangRepository.save(newKhachHang);
+      System.out.println(id_KhachHang);
+
+//update id khách hàng tại bảng địa chỉ giao hàng
+      diaChiGiaoHangRepository.updateId(id_KhachHang.getId(), idDiaChi.getId());
+      return "oke";
+
     }
-    newKhachHang.setNgaySinh(ngaySinh);
-    newKhachHang.setSoDienThoai(requestAddKhachHang.getSoDienThoai());
-    newKhachHang.setTrangThai(String.valueOf(1));
-     khachHangRepository.save(newKhachHang);
-//    if(id_KhachHang.getId()!=0) {
-//      return "redirect:/view-add-KhachHang";
-//    }
-    DiaChiGiaoHang newDiaChi = new DiaChiGiaoHang();
-//    newDiaChi.setIdKhachHang(id_KhachHang);
-    newDiaChi.setDiaChi(requestAddKhachHang.getDiaChi());
-    diaChiGiaoHangRepository.save(newDiaChi);
-    return "add_khachhang";
-
   }
-}
+  }

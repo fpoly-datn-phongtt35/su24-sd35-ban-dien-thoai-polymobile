@@ -1,6 +1,7 @@
 package com.poly.polystore.entity;
 
 import jakarta.persistence.*;
+import java.util.Date;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
 
@@ -17,6 +18,7 @@ import java.time.Instant;
 public class HoaDon {
     @Id
     @Column(name = "ID", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,6 +48,10 @@ public class HoaDon {
     @Column(name = "Tong_san_pham")
     private Integer tongSanPham;
 
+
+    @Column(name = "tong_Tien_hoa_Don")
+    private BigDecimal tong_Tien_hoa_Don;
+
     @Column(name = "Giam_voucher", precision = 18, scale = 2)
     private BigDecimal giamVoucher;
 
@@ -54,7 +60,7 @@ public class HoaDon {
 
     @Nationalized
     @Column(name = "Trang_thai")
-    private String trangThai;
+    private Integer trangThai;
 
     @Nationalized
     @Column(name = "Hinh_thuc_giao_hang")
@@ -69,5 +75,9 @@ public class HoaDon {
     @Nationalized
     @Column(name = "Last_modified_by")
     private String lastModifiedBy;
+
+    @Column(name = "thoi_Gian_Mua_Hang")
+    private Date thoiGianMuaHang;
+
 
 }

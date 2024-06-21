@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>Title</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+        crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+          crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"/>
+</head>
+<style>
+  .btn-custom {
+    width: 100%;
+    height: 100%;
+  }
+
+  .row.no-gutters {
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  .row.no-gutters > [class*='col-'] {
+    padding-right: 0;
+    padding-left: 0;
+  }
+</style>
+
+<body>
+<div class="container">
+  <!--  <div class="card"></div>-->
+  <br>
+  <div class="row align-items-start">
+    <div class="col-4">
+      <h2> Đơn hàng đã mua </h2>
+    </div>
+    <div class="col-3">
+      <p>từ ngày </p>
+    </div>
+    <div class="col-2">
+      <a href="#" class="" style="text-decoration: none;">
+        <i class="fa-regular fa-calendar-days"></i>Thay đổi</a>
+    </div>
+  </div>
+  <hr>
+  <div class="row no-gutters d-flex justify-content-center">
+    <div class="col-1 d-flex justify-content-center">
+      <a href="/lich-su-hoa-don" class="btn btn-light border-primary">Tất cả</a>
+    </div>
+    <div class="col-2 d-flex justify-content-center">
+      <a href="/lich-su-hoa-donWhere/1" class="btn btn-light border-primary" onclick="">Chờ xử
+        lý</a>
+    </div>
+    <div class="col-2 d-flex justify-content-center">
+      <a href="/lich-su-hoa-donWhere/2" class="btn btn-light border-primary" onclick="">Đã xác
+        nhận</a>
+    </div>
+    <div class="col-2 d-flex justify-content-center">
+      <a href="/lich-su-hoa-donWhere/3" class="btn btn-light border-primary" onclick="">Đang vận
+        chuyển</a>
+    </div>
+    <div class="col-2 d-flex justify-content-center">
+      <a href="/lich-su-hoa-donWhere/4" class="btn btn-light border-primary" onclick="">Đang giao
+        hàng</a>
+    </div>
+    <div class="col-1 d-flex justify-content-center">
+      <a href="/lich-su-hoa-donWhere/5" class="btn btn-light border-primary" onclick="">Đã hủy</a>
+    </div>
+    <div class="col-2 d-flex justify-content-center">
+      <a href="/lich-su-hoa-donWhere/6" class="btn btn-light border-primary" onclick="">Thành
+        công</a>
+    </div>
+  </div>
+  <hr>
+  <th:each th:each="list, index :${listLichSu}">
+    <div class="card mb-4">
+      <div class="card-header">
+        <div class="row">
+          <div class="col-3 d-flex justify-content-start">
+            <p><b>Đơn hàng : </b>
+            <p th:text="${list.maHoaDon}"></p>
+            </p>
+          </div>
+          <div class="col-3">
+            <p><b>Nhận trước ngày:</b>
+              <!--<p th:text="${#list.maHoaDon}"></p>-->
+            </p>
+          </div>
+          <div class="col-3">
+          </div>
+          <div class="col-3">
+            <p class="text-primary" th:text="${list.trangThaiHoaDon}"></p>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-3"><img id="image" class="card-img" alt="Preview Image"
+          th:src="@{${list.AnhSanPham}}"></div>
+          <div class="col-5">
+            <p th:text="${list.tenSanPham}">
+          </div>
+          <div class="col-2 d-flex justify-content-end">
+            <p><b>Tổng Tiền: </b>
+          </div>
+          <div class="col-2 d-flex justify-content-start">
+            <p class="text-success" th:text="${list.tongTienHoaDon}"></p>
+            <p>VNĐ</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-9">
+          </div>
+          <div class="col-3">
+            <a th:href="@{'/lich-su-hoa-donWhereID/' + ${list.IDHoaDon}}"
+               class="btn btn-light border-primary text-primary">Xem chi tiết</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </th:each>
+</div>
+</body>
+
+</html>

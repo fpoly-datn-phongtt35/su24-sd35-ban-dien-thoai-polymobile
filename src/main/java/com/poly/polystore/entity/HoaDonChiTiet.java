@@ -2,6 +2,8 @@ package com.poly.polystore.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -19,6 +21,7 @@ import java.math.BigDecimal;
 public class HoaDonChiTiet {
     @Id
     @Column(name = "ID", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "ID_Hoa_don")
@@ -42,6 +45,10 @@ public class HoaDonChiTiet {
 
     @Nationalized
     @Column(name = "Trang_thai")
-    private String trangThai;
+    private Integer trangThai;
+
+    @Column(name = "anh_San_Pham")
+    private String anhSanPham;
+
 
 }
