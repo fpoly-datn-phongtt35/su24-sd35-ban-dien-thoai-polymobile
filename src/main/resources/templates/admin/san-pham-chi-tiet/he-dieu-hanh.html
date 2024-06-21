@@ -26,12 +26,12 @@
 <!--            <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>-->
 
             <div class="row">
-                <h1 class="h3 text-gray-800 col-5">Quản lý công nghệ màn hình</h1>
+                <h1 class="h3 text-gray-800 col-4">Quản lý hệ điều hành</h1>
                 <!-- Additional controls -->
-                <div class="col-7 d-flex justify-content-sm-end align-items-center">
+                <div class="col-8 d-flex justify-content-sm-end align-items-center">
                     <form class="form-inline mr-3 d-flex align-items-center">
                         <label class="mr-2" for="statusFilter">Trạng thái</label>
-                        <select id="statusFilter" class="form-control-plaintext w-50 text-primary">
+                        <select id="statusFilter" class="form-control-plaintext text-primary" style="width: 100px">
                             <option  value="">Tất cả</option>
                             <option selected>Hoạt động</option>
                             <option>Đã xóa</option>
@@ -103,7 +103,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="EditModalLabel">Chỉnh sửa công nghệ màn hình</h5>
+                <h5 class="modal-title" id="EditModalLabel">Chỉnh sửa hệ điều hành</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -112,14 +112,14 @@
 
                 <form id="form-edit" class="needs-validation" novalidate>
                     <div class="form-group">
-                        <label for="edit-id">ID công nghệ màn hình:</label>
+                        <label for="edit-id">ID hệ điều hành:</label>
                         <input type="text" class="form-control" id="edit-id" placeholder="ID" readonly>
                         <div class="invalid-feedback">ID không được để trống</div>
                     </div>
                     <div class="form-group">
-                        <label for="edit-ten">Tên công nghệ màn hình:</label>
-                        <input type="text" class="form-control" id="edit-ten" placeholder="Tên công nghệ màn hình" required>
-                        <div class="invalid-feedback">Tên công nghệ màn hình đã tồn tại hoặc không hợp lệ</div>
+                        <label for="edit-ten">Tên hệ điều hành:</label>
+                        <input type="text" class="form-control" id="edit-ten" placeholder="Tên hệ điều hành" required>
+                        <div class="invalid-feedback">Tên hệ điều hành đã tồn tại hoặc không hợp lệ</div>
                     </div>
                     <div class="form-group">
                         <label for="edit-link">Đường dẫn chi tiết:</label>
@@ -161,8 +161,8 @@
 
                 <form id="form-add" class="needs-validation" novalidate>
                     <div class="form-group">
-                        <label for="add-ten">Tên công nghệ:</label>
-                        <input type="text" class="form-control " id="add-ten" placeholder="Tên công nghệ màn hình" required>
+                        <label for="add-ten">Tên hệ điều hành:</label>
+                        <input type="text" class="form-control " id="add-ten" placeholder="Tên hệ điều hành" required>
                         <div class="invalid-feedback">Tên đã tồn tại hoặc không hợp lệ</div>
                     </div>
                     <div class="form-group">

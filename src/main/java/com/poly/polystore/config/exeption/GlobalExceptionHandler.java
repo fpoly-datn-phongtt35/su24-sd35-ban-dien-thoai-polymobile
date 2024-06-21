@@ -11,9 +11,8 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 public class GlobalExceptionHandler {
     @ExceptionHandler(NoResourceFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handle404(NoHandlerFoundException ex) {
-        System.out.println(ex.getRequestURL());
-        return "error/404"; // Thay đổi view name tương ứng với trang lỗi 404 của bạn
+    public String handle404(NoResourceFoundException ex) {
+        return "errorPage/403"; // Thay đổi view name tương ứng với trang lỗi 404 của bạn
     }
 
     

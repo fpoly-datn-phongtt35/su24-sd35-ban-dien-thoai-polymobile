@@ -50,7 +50,7 @@ public class ExportExcel<Type> {
                     } catch (IllegalAccessException e) {
                         value = "N/A";
                     }
-                    row.createCell(j).setCellValue(value.toString());
+                    row.createCell(j).setCellValue(value==null?"":value.toString());
                 }
 
             }

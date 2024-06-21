@@ -1,7 +1,33 @@
-const apiURL = "/api/v1/san-pham-chi-tiet/mau-sac";
+// // dependency
+// Top
+// <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet"/>
+// <script src="/vendor/sweetalert2/sweetalert2.min.js"></script>
+// Bottom
+// <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
+// <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
+const apiURL = "/api/v1/san-pham-chi-tiet/mau-sac";
+let _existingNames;
+$(document).attr("title", "Quản lý màu sắc")
+//Evnt color code
+$(document).ready(()=>{
+    $(document).ready(()=>{
+        $('#add-code').on('input', function() {
+            $('#add-ma').val( $(this).val().toUpperCase())
+        });
+        $('#add-ma').on('input', function() {
+            $('#add-code').val( $(this).val())
+        });
+        $('#edit-code').on('input', function() {
+            $('#edit-ma').val( $(this).val().toUpperCase())
+        });
+        $('#edit-ma').on('input', function() {
+            $('#edit-code').val( $(this).val())
+        });
+    });
+});
 function loadData() {
-    $('#dataTable').DataTable({
+    let table = $('#dataTable').DataTable({
 
         "language": {
             "sProcessing": "Đang xử lý...",
@@ -25,169 +51,331 @@ function loadData() {
             "cache": true,
             "dataSrc": ""
         },
+        "columnDefs": [
+            {width: 30, targets: 0},
+            {width: 300, targets: 1}
+        ],
         "columns": [
 
             {"data": "id"},
-            {"data": "ma"},
             {"data": "ten"},
             {
-                "data": "trangThai",
+                "data": "ma",
                 "render": function (data, type, row) {
-                    return data ? "Hoạt động" : "Ngưng hoạt động"
+                    return  `<button type='button' class='btn'  style='background-color: ${data}'></button> ${data}`
                 }
             },
             {
-                "data": null,
+                "data": "deleted",
                 "render": function (data, type, row) {
-                    return '<div class="d-flex justify-content-end"><button type="button" class="btn btn-sm btn-primary mr-3 btn-edit">Chỉnh sửa</button><button type="button" class="btn btn-sm btn-danger btn-delete">Xóa</button></div>';
+                    return (data) ? "Đã xóa" : "Hoạt động"
+                }
+            },
+            {
+                "data": "deleted",
+                "render": function (data, type, row) {
+                    if (data)
+                        return '<div class="d-flex justify-content-end"><button type="button" class="btn btn-sm btn-primary mr-3 btn-edit">Chỉnh sửa</button><button type="button" class="btn btn-sm btn-danger btn-revert">Khôi phục</button></div>';
+                    else
+                        return '<div class="d-flex justify-content-end"><button type="button" class="btn btn-sm btn-primary mr-3 btn-edit">Chỉnh sửa</button><button type="button" class="btn btn-sm btn-danger btn-delete">Xóa</button></div>';
+
                 },
                 "orderable": false
 
             }
         ]
     });
+    let selectedStatus = $('#statusFilter').val();
+    if (selectedStatus) {
+        table.column(3).search('^' + selectedStatus + '$', true, false).draw();
+    } else {
+        // Xóa bộ lọc nếu không có gì được chọn
+        table.column(3).search('').draw();
+    }
+    ;
 }
 
 const reloadDataTable = () => {
     $('#dataTable').DataTable().ajax.reload();
 }
+
+//config dataTable
 $(document).ready(loadData());
 
-//edit evnt
-var existingCodes
-var table = $('#dataTable').DataTable()
-$('#dataTable tbody').on('click', '.btn-edit', function () {
-    clearForm()
-    var rowData = table.row($(this).closest('tr')).data();
-    if (rowData) {
-        // Lấy dữ liệu từ hàng
-        let id = rowData.id;
-        ma = rowData.ma;
-        let ten = rowData.ten;
-        let trangThai = rowData.trangThai;
-
-        // Binding dữ liệu vào modal
-        $('#edit_Idms').val(id);
-        $('#edit_mms').val(ma);
-        $('#edit_tms').val(ten);
-        $('#edit_ttms').html(`
-    <option  disabled value="">Chọn...</option>
-    <option value="true">Hoạt động</option>
-    <option ${!trangThai ? "selected" : ""}  value="false">Ngưng hoạt động</option>
-    `)
-
-        // Hiển thị modal
-        $('#EditModal').modal('show');
-        existingCodes = $('#dataTable').DataTable().column(1).data().toArray().filter(elm => elm !== ma);
-
-        // validate
-    }
-});
-$('#edit_mms').on('input paste', function () {
-    let mms = $('#edit_mms').val();
-    console.log(existingCodes)
-    $('#edit_mms').val(mms.replace(/\s/g, ''));
-    if (existingCodes.includes(mms) || mms.trim() === "") {
-        $('#edit_mms').addClass('is-invalid');
-        $('#edit_mms').removeClass('is-valid');
-
-    } else {
-        $('#edit_mms').removeClass('is-invalid');
-        $('#edit_mms').addClass('is-valid');
-
-    }
-
-});
-//Xóa evnt
-$('#dataTable tbody').on('click', '.btn-delete', function () {
-    var rowData = table.row($(this).closest('tr')).data();
-    if (rowData) {
-        // Lấy dữ liệu từ hàng
-        let id = rowData.id;
-        let ma = rowData.ma;
-        // Hiển thị modal
-
-        $('#modalDelete').modal('show');
-        $('#delete_ma').html(ma);
-        $('#delete_id').html(id);
-
-
-    }
-});
-// core delete
-$('#delete_confirm').click(function () {
-    let id = $('#delete_id').html();
-    hideModal();
-    $.ajax({
-        url: apiURL + '?id=' + id,
-        type: 'DELETE',
-        success: function () {
-            reloadDataTable();
-            Toast.fire({
-                icon:"success",
-                title:"Xóa thành công"
-            })
-        },
-        error: () => {
-            Toast.fire({
-                icon:"success",
-                title:"Xóa thất bại"
-            })
-        }
+//Reload event
+$(document).ready(() => {
+    $('#btn-reload').on("click", () => {
+        reloadDataTable()
     })
+})
 
-});
-// Core edit
-$(document).ready(function () {
-    // Fetch all the forms we want to apply custom Bootstrap validation styles to
-    var forms = $('#from_edit')
-
-    // Loop over them and prevent submission
-    var validation = Array.prototype.filter.call(forms, function (form) {
-        form.addEventListener('submit', function (event) {
-            if (form.checkValidity() === false) {
-                event.preventDefault();
-                event.stopPropagation();
-                showErrorToast("Cập nhật thất bại !")
-            } else {
-                hideModal();
-                event.preventDefault();
-                $.ajax({
-                    url: apiURL,
-                    type: 'POST',
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({
-                        "id": $('#edit_Idms').val(),
-                        "ma": $('#edit_mms').val(),
-                        "ten": $('#edit_tms').val(),
-                        "trangThai": $('#edit_ttms').val()
-                    }),
-                    success: function () {
-                        form.classList.remove('was-validated');
-                        showSuccessToast("Cập nhật thành công !");
-                        reloadDataTable();
-                    },
-                    error: () => {
-                        form.classList.remove('was-validated');
-                        showSuccessToast("Cập nhật thất bại !");
-                        reloadDataTable();
-                    }
-                })
-            }
-            form.classList.add('was-validated');
-
-        }, false);
+//Add
+$(document).ready(() => {
+    let existingNames;
+    //Event
+    $('#btn-add').on('click', () => {
+        clearForm();
+        existingNames = $('#dataTable').DataTable().column(1).data().toArray().map(name => name.toLowerCase());
+        $('#add-ma').val("#000000")
+        $('#modal-add').modal('show');
+        console.log(existingNames)
+    })
+    //Validate exitst
+    $('#add-ten').on('input paste', function () {
+        let ten = $('#add-ten').val().toLowerCase().trim();
+        if (existingNames.includes(ten) || ten.trim() === "") {
+            $('#add-ten').addClass('is-invalid');
+            $('#add-ten').removeClass('is-valid');
+        } else {
+            $('#add-ten').removeClass('is-invalid');
+            $('#add-ten').addClass('is-valid');
+        }
     });
-});
+    //Core
+    $('#form-add').submit(function (event) {
+        event.preventDefault(); // Ngăn chặn submit mặc định của form
+        const form = $(this);
+        if (!form[0].checkValidity()) {
+            // Nếu form không hợp lệ, hiển thị các lỗi validation từ Bootstrap
+            event.stopPropagation();
+            form.addClass('was-validated');
+        } else {
+            let formData = {
+                ten: $('#add-ten').val(),
+                ma: $('#add-ma').val()
+            }
+            // Nếu form hợp lệ, gửi dữ liệu form lên server
+            $.ajax({
+                url: apiURL, // Thay 'URL_API' bằng đường dẫn của API của bạn
+                method: 'PUT', // Phương thức HTTP
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+                success: function (response) {
+                    Toast.fire({
+                        icon: "success",
+                        title: "Thêm mới thành công"
+                    })
+                    $('#modal-add').modal('hide');
+                    reloadDataTable();
+                    console.log(response);
+                },
+                error: function (xhr, status, error) {
+                    Toast.fire({
+                        icon: "error",
+                        title: "Thêm mới thất bại"
+                    });
+                    reloadDataTable();
+                    console.log(response);
+                    console.error(xhr.responseText);
+                }
+            });
 
-// Lọc
+        }
+    });
+})
+//Edit
+$(document).ready(() => {
+    let existingNames;
+    //Event
+    $('#dataTable tbody').on('click', '.btn-edit', function () {
+        clearForm()
+        let rowData = $('#dataTable').DataTable().row($(this).closest('tr')).data();
+        if (rowData) {
+            // Lấy dữ liệu từ hàng
+            let id = rowData.id;
+            let ten = rowData.ten;
+            let ma = rowData.ma;
+            let deleted = rowData.deleted;
+
+            // Binding dữ liệu vào modal
+            $('#edit-id').val(id);
+            $('#edit-ten').val(ten);
+            $('#edit-ma').val(ma);
+            $('#edit-code').val(ma);
+            $('#edit-deleted').html(`
+                <option value="false">Hoạt động</option>
+                <option ${deleted ? "selected" : ""}  value="true">Đã xóa</option>`)
+            if (deleted) {
+                $('#edit-deleted').parent(".form-group").removeClass("d-none");
+
+            } else {
+                $('#edit-deleted').parent(".form-group").addClass("d-none");
+
+            }
+            // Hiển thị modal
+            $('#modal-edit').modal('show');
+            existingNames = $('#dataTable').DataTable().column(1).data().toArray().filter(elm => elm !== ten).map(name => name.toLowerCase().trim());
+            console.log(existingNames)
+
+        }
+
+    });
+    //Validate
+    $('#edit-ten').off();
+    $('#edit-ten').on('input paste', function () {
+        let ten = $('#edit-ten').val().toLowerCase().trim();
+        if (existingNames.includes(ten) || ten.trim() === "") {
+            $('#edit-ten').addClass('is-invalid');
+            $('#edit-ten').removeClass('is-valid');
+        } else {
+            $('#edit-ten').removeClass('is-invalid');
+            $('#edit-ten').addClass('is-valid');
+        }
+    });
+    //Core
+    $('#form-edit').submit(function (event) {
+        event.preventDefault(); // Ngăn chặn submit mặc định của form
+        const form = $(this);
+        if (!form[0].checkValidity()) {
+            // Nếu form không hợp lệ, hiển thị các lỗi validation từ Bootstrap
+            event.stopPropagation();
+            form.addClass('was-validated');
+        } else {
+            let formData = {
+                id: $('#edit-id').val(),
+                ten: $('#edit-ten').val(),
+                ma: $('#edit-ma').val(),
+                deleted: $('#edit-deleted').val()
+            }
+            // Nếu form hợp lệ, gửi dữ liệu form lên server
+            $.ajax({
+                url: apiURL, // Thay 'URL_API' bằng đường dẫn của API của bạn
+                method: 'POST', // Phương thức HTTP
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+                success: function (response) {
+                    Toast.fire({
+                        icon: "success",
+                        title: "Cập nhật thành công"
+                    })
+                    $('#modal-edit').modal('hide');
+                    reloadDataTable();
+                    console.log(response);
+                },
+                error: function (xhr, status, error) {
+                    Toast.fire({
+                        icon: "error",
+                        title: "Cập nhật thất bại"
+                    });
+                    reloadDataTable();
+                    console.log(response);
+                    console.error(xhr.responseText);
+                }
+            });
+
+        }
+    });
+})
+
+//Delete
+$(document).ready(() => {
+    $('#dataTable tbody').on('click', '.btn-delete', function () {
+        let rowData = $('#dataTable').DataTable().row($(this).closest('tr')).data();
+        if (rowData) {
+            // Lấy dữ liệu từ hàng
+            let id = rowData.id;
+            let ten = rowData.ten;
+            // Hiển thị modal
+
+            Swal.fire({
+                title: `Bạn chắc chắn muốn xóa ${ten}?`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                cancelButtonText: "Hủy",
+                confirmButtonText: "Xác nhận"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: apiURL + '?id=' + id,
+                        type: 'DELETE',
+                        success: function () {
+                            Toast.fire({
+                                icon: "success",
+                                title: "Xóa thành công"
+                            })
+                            reloadDataTable();
+                        },
+                        error: () => {
+                            Toast.fire({
+                                icon: "error",
+                                title: "Xóa thất bại"
+                            })
+                            reloadDataTable();
+                        }
+
+                    })
+                }
+            });
+
+
+        }
+
+    });
+
+
+})
+
+
+//Revert
+$(document).ready(() => {
+    $('#dataTable tbody').on('click', '.btn-revert', function () {
+        let rowData = $('#dataTable').DataTable().row($(this).closest('tr')).data();
+        if (rowData) {
+            // Lấy dữ liệu từ hàng
+            let id = rowData.id;
+            let ten = rowData.ten;
+            // Hiển thị modal
+            Swal.fire({
+                title: `Bạn chắc chắn muốn khôi phục ${ten}?`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                cancelButtonText: "Hủy",
+                confirmButtonText: "Xác nhận"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: apiURL + '/revert?id=' + id,
+                        type: 'POST',
+                        success: function () {
+                            Toast.fire({
+                                icon: "success",
+                                title: "Khôi phục thành công"
+                            })
+                            reloadDataTable();
+                        },
+                        error: () => {
+                            Toast.fire({
+                                icon: "error",
+                                title: "Khôi phục thất bại"
+                            })
+                            reloadDataTable();
+                        }
+                    })
+                }
+            });
+
+
+
+
+        }
+
+    });
+
+
+})
+
+//Filter
 $(document).ready(function () {
     // Khởi tạo DataTable
-    var table = $('#dataTable').DataTable();
+    let table = $('#dataTable').DataTable();
 
     // Lắng nghe sự kiện thay đổi của select option
     $('#statusFilter').on('change', function () {
-        var selectedStatus = $(this).val();
+        let selectedStatus = $('#statusFilter').val();
 
         if (selectedStatus) {
             // Áp dụng bộ lọc theo cột Status
@@ -198,129 +386,72 @@ $(document).ready(function () {
         }
     });
 });
-//add event
-$(document).ready(() => {
-    $('#btn-add').on('click', () => {
-        clearForm();
-        $('#modal-add').modal('show');
-    })
-    // validate exitst
-    $('#add-ma').on('input paste', function () {
-        let existingCodes = $('#dataTable').DataTable().column(1).data().toArray();
-        let ma = $('#add-ma').val().trim();
-        $('#add-ma').val(ma.replace(/\s/g, ''))
-        if (existingCodes.includes(ma) || ma.trim() === "") {
-            $('#add-ma').addClass('is-invalid');
-            $('#add-ma').removeClass('is-valid');
-        } else {
-            console.log("Sai");
-            console.log(existingCodes)
-            $('#add-ma').removeClass('is-invalid');
-            $('#add-ma').addClass('is-valid');
 
-        }
-
-    });
-})
-//core add
+//Import file
 $(document).ready(function () {
-    // Fetch all the forms we want to apply custom Bootstrap validation styles to
-    let forms = $('#from-add')
-    let validation = Array.prototype.filter.call(forms, function (form) {
-        form.addEventListener('submit', function (event) {
-            if (form.checkValidity() === false || forms.find('.is-invalid').length > 0) {
-                event.preventDefault();
-                event.stopPropagation();
-                showErrorToast("Thêm mới thất bại !")
-            } else {
-                hideModal();
-                event.preventDefault();
-                $.ajax({
-                    url: apiURL,
-                    type: 'PUT',
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify([{
-                        "ma": $('#add-ma').val().replace('\s', ''),
-                        "ten": $('#add-ten').val(),
-                        "trangThai": $('#add-trangThai').val()
-                    }]),
-                    success: function () {
-                        form.classList.remove('was-validated');
-                        showSuccessToast("Thêm mới thành công !");
-                        reloadDataTable();
-                    },
-                    error: () => {
-                        form.classList.remove('was-validated');
-                        showErrorToast("Thêm mới thất bại !");
-                        reloadDataTable();
-                    }
-
-
-                })
-            }
-            form.classList.add('was-validated');
-
-        }, false);
-    });
-});
-
-//Import file evnt
-$(document).ready(function () {
+    //Event
     $('#btn-import').on("click", (event) => {
         $('#import-file').click();
         $('#import-file').val("");
     })
-});
-$(document).ready(function () {
+    //Core
     $('#import-file').on("change", (event) => {
         dataToJson(event)
-            .then(
-               jsonData=>validate_import(jsonData).then(
-                   jsonData=>{
+            .then(jsonData => validate_import(jsonData)
+                .then(
+                    jsonData => {
+                        Swal.fire({
+                            title: "Bạn chắc chắn chứ ?",
+                            text: "Sau khi import bạn sẽ không thể quay lại!",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            cancelButtonText: "Hủy",
+                            confirmButtonText: "Xác nhận"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                import_excel(jsonData);
 
-                       showConfirm("Bạn chắc chắn muốn import ?","Các bản ghi sẽ được update nếu có trong file !")
-                           .then(result=>{
-                               console.log('User confirmed:', result);
-                               import_excel(jsonData);
-                           })
-                           .catch(reason => {
-                               console.log("Cancel import")
-                           })
+                            }
+                        });
 
-                   }
-               )
+                    }
+                )
             )
-            .catch(e=>
-                showErrorToast("Lỗi: "+e)
+            .catch(e =>
+                showErrorToast("Lỗi: " + e)
             )
     })
-});
+    //Validate
+    const validate_import = (jsonData) => {
+        return new Promise((resolve, reject) => {
+            for (let obj of jsonData) {
+                // Kiểm tra field
 
-const validate_import = (jsonData) => {
-    return new Promise((resolve, reject) => {
-        for (let obj of jsonData) {
-            // Kiểm tra field
-
-            if (!obj.hasOwnProperty('ma')
-                || !obj.hasOwnProperty('ten')
-                || !obj.hasOwnProperty('trangThai')
-            ) {
-                reject("Lỗi định dạng: Thiếu trường")
+                if (!obj.hasOwnProperty('ten')) {
+                    reject("Lỗi định dạng: Thiếu tên màu sắc")
+                }
             }
-
-        }
-        resolve(jsonData)
-    })
-}
-//Core import
-const import_excel=(jsonData)=>{
+            resolve(jsonData)
+        })
+    }
+    //Import
+    const import_excel = (jsonData) => {
         $.ajax({
-            url: apiURL,
-            type: 'PUT',
+            url: apiURL + "/import-excel",
+            type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(jsonData),
-            success: function () {
-                showSuccessToast("Import thành công !");
+            success: function (data) {
+                Toast.fire({
+                    icon: "success",
+                    title: "Nhập excel thành công"
+                })
+                Toast.fire({
+                    icon: "success",
+                    title: "Đã thay đổi " + data.length + " bản ghi"
+                })
                 reloadDataTable();
             },
             error: (jqXHR, textStatus, errorThrown) => {
@@ -329,10 +460,8 @@ const import_excel=(jsonData)=>{
             }
 
 
+        })
+    }
 
-    })
-}
-
-$('#reload_table').click(function () {
-    reloadDataTable();
 });
+

@@ -8,7 +8,7 @@
 
 const apiURL = "/api/v1/san-pham-chi-tiet/he-dieu-hanh";
 let _existingNames;
-$(document).attr("title", "Quản lý công nghệ màn hình")
+$(document).attr("title", "Quản lý hệ điều hành")
 
 function loadData() {
     let table = $('#dataTable').DataTable({
@@ -417,7 +417,7 @@ $(document).ready(function () {
                 // Kiểm tra field
 
                 if (!obj.hasOwnProperty('ten')) {
-                    reject("Lỗi định dạng: Thiếu tên công nghệ màn hình")
+                    reject("Lỗi định dạng: Thiếu tên hệ điều hành")
                 }
             }
             resolve(jsonData)

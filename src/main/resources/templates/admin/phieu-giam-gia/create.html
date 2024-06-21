@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/admin/layout-dashboard/layout.html">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm sản khuyến mại</title>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/bootstrap/css/bootstrap.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/animate/animate.compat.css}">
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/font-awesome/css/all.min.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/boxicons/css/boxicons.min.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/magnific-popup/magnific-popup.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/bootstrap-datepicker/css/bootstrap-datepicker3.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/jquery-ui/jquery-ui.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/jquery-ui/jquery-ui.theme.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/bootstrap-multiselect/css/bootstrap-multiselect.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/morris/morris.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/css/theme.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/css/custom.css}">
+    <link rel="stylesheet" th:href="@{/shop/toastr/toastr.min.css}"/>
+
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/bootstrap-datepicker/css/bootstrap-datepicker3.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/select2/css/select2.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/select2-bootstrap-theme/select2-bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/bootstrap-multiselect/css/bootstrap-multiselect.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/bootstrap-tagsinput/bootstrap-tagsinput.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/bootstrap-colorpicker/css/bootstrap-colorpicker.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/bootstrap-timepicker/css/bootstrap-timepicker.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/dropzone/basic.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/dropzone/dropzone.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/bootstrap-markdown/css/bootstrap-markdown.min.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/summernote/summernote-bs4.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/codemirror/lib/codemirror.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/vendor/codemirror/theme/monokai.css}"/>
+    <link rel="stylesheet" th:href="@{/adminlte/pagination/simplePagination.css}">
+    <style>
+        .promotion-box {
+            border: 1px solid #cccccc;
+        }
+    </style>
+</head>
+<body layout:fragment="content">
+<section role="main" class="content-body" id="main-content">
+    <header class="page-header">
+        <!--        <h2>Editable Tables</h2>-->
+        <div class="right-wrapper text-right">
+            <ol class="breadcrumbs">
+                <li>
+                    <a href="index.html">
+                        <i class="bx bx-home-alt"></i>
+                    </a>
+                </li>
+                <li><a href="/admin/phieugiamgia/list"><span>Danh sách khuyến mại</span></a></li>
+                <li><span>Tạo mới khuyến mại</span></li>
+            </ol>
+            <a class="sidebar-right-toggle" data-open="sidebar-right"><i
+                    class="fas fa-chevron-left"></i></a>
+        </div>
+    </header>
+    <section class="card">
+        <header class="card-header">
+            <div class="card-actions">
+                <a href="#" class="card-action card-action-toggle" data-card-toggle></a>
+                <a href="#" class="card-action card-action-dismiss" data-card-dismiss></a>
+            </div>
+            <h2 class="card-title">Tạo khuyến mại</h2>
+            <br>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="mb-3">
+                        <a href="/admin/phieugiamgia/list" class="btn btn-primary"><i
+                                class="fas fa-chevron-left"></i> Trở về</a>
+                        <button type="button" id="addToTable" class="btn btn-primary btn-create-promotion">Tạo khuyến
+                            mại <i
+                                    class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="card-body ">
+            <!-- Main content -->
+            <div class="row">
+                <div class="col-lg-4 col-md-8 col-12">
+                    <div class="card card-outline">
+                        <div class="card-body pad promotion-box">
+                            <div class="form-group">
+                                <div>
+                                         <span style="color:red">(Mã kích hoạt chỉ bao gồm ký tự
+                                        viết hoa từ A-Z và số từ 0-9 và dấu gạch ngang (độ dài từ 4 - 16 ký tự)]</span>
+                                    <br>
+                                    <label class="required-label" for="code">Mã code</label>
+                                    <span class="invalid-feedback"
+                                          id="invalid-feedback-code">Mã kích hoạt không hợp lệ</span>
+                                </div>
+                                <input type="text" class="form-control" id="code">
+                            </div>
+                            <div class="form-group">
+                                <div>
+                                    <label class="required-label" for="discount-value">Số lượng giảm</label>
+                                    <span class="invalid-feedback" id="invalid-feedback-discount-value"></span>
+                                </div>
+                                <input type="number" min="1" class="form-control" id="discount-value">
+                            </div>
+                            <div class="form-group discount-exactly">
+                                <div>
+                                    <label class="required-label" for="type">Loại giảm giá</label>
+                                    <span class="invalid-feedback" id="invalid-feedback-max-value">Mức giảm giá tối đa cần lớn hơn 1000đ</span>
+                                </div>
+                                <select class="form-control" id="type">
+                                    <option value="%">Phần trăm</option>
+                                    <option value="number">Số tiền giảm</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <div>
+                                    <label class="required-label" for="begin-date">Ngày bắt đầu</label>
+                                    <span class="invalid-feedback"
+                                          id="invalid-feedback-begin-date">Thời gian không hợp lệ</span>
+                                </div>
+                                <input type="date" class="form-control" id="begin-date">
+                            </div>
+                            <div class="form-group">
+                                <div>
+                                    <label class="required-label" for="expired-date">Ngày hết hạn</label>
+                                    <span class="invalid-feedback"
+                                          id="invalid-feedback-expired-date">Thời gian không hợp lệ</span>
+                                </div>
+                                <input type="date" class="form-control" id="expired-date">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+<script th:src="@{/adminlte/vendor/jquery/jquery.js}"></script>
+<script th:src="@{/adminlte/vendor/modernizr/modernizr.js}"></script>
+<script th:src="@{/adminlte/vendor/jquery-browser-mobile/jquery.browser.mobile.js}"></script>
+<script th:src="@{/adminlte/vendor/jquery-cookie/jquery.cookie.js}"></script>
+<!--<script th:src="@{/adminlte/vendor/style-switcher/style.switcher.js}"></script>-->
+<!--<script th:src="@{/adminlte/vendor/style-switcher/style.switcher.localstorage.js}"></script>-->
+<script th:src="@{/adminlte/vendor/popper/umd/popper.min.js}"></script>
+<script th:src="@{/adminlte/vendor/bootstrap/js/bootstrap.js}"></script>
+<script th:src="@{/adminlte/vendor/bootstrap-datepicker/js/bootstrap-datepicker.js}"></script>
+<script th:src="@{/adminlte/vendor/common/common.js}"></script>
+<script th:src="@{/adminlte/vendor/nanoscroller/nanoscroller.js}"></script>
+<script th:src="@{/adminlte/vendor/magnific-popup/jquery.magnific-popup.js}"></script>
+<script th:src="@{/adminlte/vendor/jquery-placeholder/jquery.placeholder.js}"></script>
+<script th:src="@{/adminlte/vendor/jquery-ui/jquery-ui.js}"></script>
+<script th:src="@{/adminlte/vendor/jqueryui-touch-punch/jquery.ui.touch-punch.js}"></script>
+<script th:src="@{/adminlte/vendor/jquery-appear/jquery.appear.js}"></script>
+<script th:src="@{/adminlte/vendor/bootstrap-multiselect/js/bootstrap-multiselect.js}"></script>
+<script th:src="@{/adminlte/vendor/jquery.easy-pie-chart/jquery.easypiechart.js}"></script>
+<script th:src="@{/adminlte/vendor/flot/jquery.flot.js}"></script>
+<script th:src="@{/adminlte/vendor/flot.tooltip/jquery.flot.tooltip.js}"></script>
+<script th:src="@{/adminlte/vendor/flot/jquery.flot.pie.js}"></script>
+<script th:src="@{/adminlte/vendor/flot/jquery.flot.categories.js}"></script>
+<script th:src="@{/adminlte/vendor/flot/jquery.flot.resize.js}"></script>
+<script th:src="@{/adminlte/vendor/jquery-sparkline/jquery.sparkline.js}"></script>
+<script th:src="@{/adminlte/vendor/raphael/raphael.js}"></script>
+<script th:src="@{/adminlte/vendor/morris/morris.js}"></script>
+<script th:src="@{/adminlte/vendor/gauge/gauge.js}"></script>
+<script th:src="@{/adminlte/vendor/snap.svg/snap.svg.js}"></script>
+<script th:src="@{/adminlte/vendor/liquid-meter/liquid.meter.js}"></script>
+<script th:src="@{/adminlte/vendor/jqvmap/jquery.vmap.js}"></script>
+<script th:src="@{/adminlte/vendor/jqvmap/data/jquery.vmap.sampledata.js}"></script>
+<script th:src="@{/adminlte/vendor/jqvmap/maps/jquery.vmap.world.js}"></script>
+<script th:src="@{/adminlte/vendor/jqvmap/maps/continents/jquery.vmap.africa.js}"></script>
+<script th:src="@{/adminlte/vendor/jqvmap/maps/continents/jquery.vmap.asia.js}"></script>
+<script th:src="@{/adminlte/vendor/jqvmap/maps/continents/jquery.vmap.australia.js}"></script>
+<script th:src="@{/adminlte/vendor/jqvmap/maps/continents/jquery.vmap.europe.js}"></script>
+<script th:src="@{/adminlte/vendor/jqvmap/maps/continents/jquery.vmap.north-america.js}"></script>
+<script th:src="@{/adminlte/vendor/jqvmap/maps/continents/jquery.vmap.south-america.js}"></script>
+
+<script th:src="@{/adminlte/vendor/select2/js/select2.js}"></script>
+<script th:src="@{/adminlte/vendor/bootstrap-multiselect/js/bootstrap-multiselect.js}"></script>
+<script th:src="@{/adminlte/vendor/jquery-maskedinput/jquery.maskedinput.js}"></script>
+<script th:src="@{/adminlte/vendor/bootstrap-tagsinput/bootstrap-tagsinput.js}"></script>
+<script th:src="@{/adminlte/vendor/bootstrap-colorpicker/js/bootstrap-colorpicker.js}"></script>
+<script th:src="@{/adminlte/vendor/bootstrap-timepicker/js/bootstrap-timepicker.js}"></script>
+<script th:src="@{/adminlte/vendor/fuelux/js/spinner.js}"></script>
+<script th:src="@{/adminlte/vendor/dropzone/dropzone.js}"></script>
+<script th:src="@{/adminlte/vendor/bootstrap-markdown/js/markdown.js}"></script>
+<script th:src="@{/adminlte/vendor/bootstrap-markdown/js/to-markdown.js}"></script>
+<script th:src="@{/adminlte/vendor/bootstrap-markdown/js/bootstrap-markdown.js}"></script>
+<script th:src="@{/adminlte/vendor/codemirror/lib/codemirror.js}"></script>
+<script th:src="@{/adminlte/vendor/codemirror/addon/selection/active-line.js}"></script>
+<script th:src="@{/adminlte/vendor/codemirror/addon/edit/matchbrackets.js}"></script>
+<script th:src="@{/adminlte/vendor/codemirror/mode/javascript/javascript.js}"></script>
+<script th:src="@{/adminlte/vendor/codemirror/mode/xml/xml.js}"></script>
+<script th:src="@{/adminlte/vendor/codemirror/mode/htmlmixed/htmlmixed.js}"></script>
+<script th:src="@{/adminlte/vendor/codemirror/mode/css/css.js}"></script>
+<script th:src="@{/adminlte/vendor/summernote/summernote-bs4.js}"></script>
+<!--<script th:src="@{/adminlte/vendor/bootstrap-maxlength/bootstrap-maxlength.js}"></script>-->
+<script th:src="@{/adminlte/vendor/ios7-switch/ios7-switch.js}"></script>
+<script th:src="@{/adminlte/js/theme.js}"></script>
+
+<script th:src="@{/adminlte/js/custom.js}"></script>
+
+<script th:src="@{/adminlte/js/theme.init.js}"></script>
+<script th:src="@{/adminlte/js/simple.money.format.js}"></script>
+
+
+<script th:src="@{/adminlte/js/examples/examples.dashboard.js}"></script>
+<script type="text/javascript" th:src="@{/shop/toastr/toastr.min.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.9.0/sweetalert2.all.min.js"></script>
+<th:block id="js-resources">
+    <script th:inline="javascript">
+        $('#discount-type').change(function () {
+            let choice = $('#discount-type').val();
+            if (choice == 1) {
+                $('.discount-exactly').show();
+            } else {
+                $('.discount-exactly').hide();
+            }
+        });
+
+        $('.btn-create-promotion').click(function () {
+            let code = $('#code').val();
+            let discountValue = parseInt($('#discount-value').val());
+            let type = $('#type').val();
+            let expiredDate = $('#expired-date').val();
+            let beginDate = $('#begin-date').val();
+            let isValid = true;
+
+            let regex = new RegExp("^[0-9A-Z-]+$");
+            if (code.length === 0 || regex.test(code) === false) {
+                $('#invalid-feedback-code').show();
+                isValid = false;
+            }
+
+            if (expiredDate.length === 0) {
+                $('#invalid-feedback-expired-date').show();
+                isValid = false;
+            }
+
+            if (beginDate.length === 0) {
+                $('#invalid-feedback-begin-date').show();
+                isValid = false;
+            }
+            if (isValid) {
+                req = {
+                    code: code,
+                    discount_value: discountValue,
+                    type: type,
+                    begin_Date: beginDate,
+                    expired_date: expiredDate
+                }
+                var myJSON = JSON.stringify(req);
+                $.ajax({
+                    url: '/admin/phieugiamgia/create',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: myJSON,
+                    success: function (data) {
+                        toastr.success("Tạo khuyến mại thành công");
+                        setTimeout(function () {
+                            location.href = "/admin/phieugiamgia/list";
+                        }, 1000);
+                    },
+                    error: function (error) {
+                        toastr.warning(error.responseJSON.message);
+                    }
+                })
+            }
+        })
+    </script>
+</th:block>
+</body>
+</html>

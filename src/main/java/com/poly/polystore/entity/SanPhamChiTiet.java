@@ -15,19 +15,26 @@ import java.math.BigDecimal;
 @Table(name = "SAN_PHAM_CHI_TIET")
 public class SanPhamChiTiet {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_San_pham")
-    private SanPham idSanPham;
+    @JoinColumn(name = "ID_SAN_PHAM")
+    private SanPham sanPham;
+//TODO: Triển khai đợt giảm giá, tương tự với voucher
+//    @ManyToMany(fetch = FetchType.LAZY)
+//    @JoinTable(
+//            name = "SAN_PHAM_CHI_TIET_DOT_GIAM_GIA",
+//            joinColumns = @JoinColumn(name="SAN_PHAM_CHI_TIET_ID"),
+//            inverseJoinColumns = @JoinColumn(name="DOT_GIAM_GIA_ID")
+//    )
+//    private DotGiamGia dotGiamGia;
 
-    @Column(name = "ID_Dot_giam_gia")
-    private Integer idDotGiamGia;
 
-    @Nationalized
-    @Column(name = "Mau_sac")
-    private String mauSac;
+    @ManyToOne
+    @JoinColumn(name = "MAU_SAC_ID")
+    private MauSac mauSac;
 
     @Nationalized
     @Column(name = "ROM")

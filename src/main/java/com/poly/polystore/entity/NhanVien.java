@@ -20,18 +20,22 @@ public class NhanVien {
     @JoinColumn(name = "ID_Tai_khoan")
     private TaiKhoan idTaiKhoan;
 
-
-    private Role role;
-
     @Nationalized
     @Column(name = "Ma_nhan_vien")
     private String maNhanVien;
 
-    @Nationalized
-    @Column(name = "Ten_nhan_vien")
-    private String tenNhanVien;
-
     @Column(name = "Deleted")
     private Boolean deleted;
 
+    @Column(name = "Vi_tri_cong_viec")
+    private String position;
+
+    @Column(name = "Bo_phan")
+    private String department;
+
+    @Column(name = "Gioi_tinh")
+    private String gioiTinh;
+
+    @Column(name = "CCCD")
+    private String identityCard;
 }
