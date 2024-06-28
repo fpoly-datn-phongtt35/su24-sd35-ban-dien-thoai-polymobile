@@ -4,7 +4,7 @@
       layout:decorate="/admin/layout-dashboard/layout.html">
 <head>
     <meta charset="UTF-8">
-    <title>Thêm sản khuyến mại</title>
+    <title>Danh sách nhân viên</title>
     <link rel="stylesheet" th:href="@{/adminlte/vendor/bootstrap/css/bootstrap.css}"/>
     <link rel="stylesheet" th:href="@{/adminlte/vendor/animate/animate.compat.css}">
     <link rel="stylesheet" th:href="@{/adminlte/vendor/font-awesome/css/all.min.css}"/>
@@ -110,7 +110,7 @@
                 <th:block th:each="nhanvien : ${list}">
                     <tr>
                         <td>
-                            <a th:href="@{/admin/nhan-vien/update/{id}(id=${nhanvien.id})}"
+                            <a th:href="@{/admin/nhanvien/{id}(id=${nhanvien.id})}"
                                th:text="${nhanvien.id}"></a>
                         </td>
                         <td th:text="${nhanvien.maNhanVien}"></td>

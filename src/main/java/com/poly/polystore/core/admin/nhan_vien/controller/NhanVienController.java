@@ -29,7 +29,7 @@ public class NhanVienController {
     @GetMapping("/list")
     public String promotions(Model model, @RequestParam(name = "page", defaultValue = "1") int page,
                              @RequestParam(name = "size", defaultValue = "5") int size) {
-        Page<NhanVien> nhanViens = nhanVienRepository.findAll(PageRequest.of(page,size));
+        Page<NhanVien> nhanViens = nhanVienRepository.findAll(PageRequest.of(page - 1,size));
         model.addAttribute("list", nhanViens);
         return "admin/nhan-vien/list";
     }
@@ -52,7 +52,7 @@ public class NhanVienController {
         taiKhoan.setEmail(createNhanVienRequest.getEmail());
         taiKhoan.setTen(createNhanVienRequest.getName());
         taiKhoan.setMatKhau(passwordEncoder.encode("123456aA@"));
-        taiKhoan.setNgaySinh(createNhanVienRequest.getDob().toString());
+        taiKhoan.setNgaySinh(createNhanVienRequest.getDob().toInstant());
         taiKhoan.setTenDangNhap(createNhanVienRequest.getLoginName());
         taiKhoan.setSoDienThoai(createNhanVienRequest.getSdt());
         taiKhoan.setTrangthai(true);
@@ -89,7 +89,7 @@ public class NhanVienController {
         taiKhoan.setEmail(createNhanVienRequest.getEmail());
         taiKhoan.setTen(createNhanVienRequest.getName());
         taiKhoan.setMatKhau(passwordEncoder.encode("123456aA@"));
-        taiKhoan.setNgaySinh(createNhanVienRequest.getDob().toString());
+        taiKhoan.setNgaySinh(createNhanVienRequest.getDob().toInstant());
         taiKhoan.setTenDangNhap(createNhanVienRequest.getLoginName());
         taiKhoan.setSoDienThoai(createNhanVienRequest.getSdt());
         taiKhoanRepository.save(taiKhoan);

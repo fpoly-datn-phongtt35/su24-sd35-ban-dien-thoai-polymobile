@@ -8,16 +8,16 @@ import org.hibernate.annotations.Nationalized;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "NHAN_VIEN")
 public class NhanVien {
     @Id
     @Column(name = "ID", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_Tai_khoan")
+    @OneToOne
+    @JoinColumn(name = "Tai_khoan_ID", referencedColumnName = "ID")
     private TaiKhoan idTaiKhoan;
 
     @Nationalized

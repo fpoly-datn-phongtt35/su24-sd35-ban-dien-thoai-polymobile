@@ -51,7 +51,7 @@
                         <i class="bx bx-home-alt"></i>
                     </a>
                 </li>
-                <li><a th:href="@{/admin/phieugiamgia/list}"><span>Danh sách khuyến mại</span></a></li>
+                <li><a th:href="@{/admin/nhanvien/list}"><span>Danh sách nhân viên</span></a></li>
             </ol>
             <a class="sidebar-right-toggle" data-open="sidebar-right"><i
                     class="fas fa-chevron-left"></i></a>
@@ -68,11 +68,11 @@
             <div class="row">
                 <div class="col-sm-6">
                     <div class="mb-3">
-                        <a th:href="@{/admin/nhan-vien/list}" class="btn btn-primary"><i
+                        <a th:href="@{/admin/nhanvien/list}" class="btn btn-primary"><i
                                 class="fas fa-chevron-left"></i> Trở về</a>
-                        <button type="button" id="addToTable" class="btn btn-primary btn-update-promotion">Cập nhật khuyến mại <i
+                        <button type="button" id="addToTable" class="btn btn-primary btn-update-promotion">Cập nhật nhân viên <i
                                 class="fas fa-plus"></i></button>
-                        <button id="btn-delete" type="button" class="btn btn-danger btn-delete-promotion">Xóa khuyến mại <i
+                        <button id="btn-delete" type="button" class="btn btn-danger btn-delete-promotion">Xóa<i
                                 class="fas fa-trash-alt"></i></button>
                     </div>
                 </div>
@@ -98,14 +98,14 @@
                                     <label class="required-label" for="sdt">Số điện thoại</label>
                                     <span class="invalid-feedback" id="invalid-feedback-sdt">Số điện thoại không hợp lệ</span>
                                 </div>
-                                <input type="number" min="1" class="form-control" id="sdt" th:value="${nhanVien.idTaiKhoan.soDienThoai}">
+                                <input type="text" class="form-control" id="sdt" th:value="${nhanVien.idTaiKhoan.soDienThoai}">
                             </div>
                             <div class="form-group discount-exactly">
                                 <div>
                                     <label class="required-label" for="name">Tên</label>
                                     <span class="invalid-feedback" id="invalid-feedback-name">Họ tên không được để trống</span>
                                 </div>
-                                <input type="number" min="1" class="form-control" id="name" th:value="${nhanVien.idTaiKhoan.ten}">
+                                <input type="text" min="1" class="form-control" id="name" th:value="${nhanVien.idTaiKhoan.ten}">
                             </div>
                             <div class="form-group">
                                 <div>
@@ -121,7 +121,7 @@
                                     <span class="invalid-feedback"
                                           id="invalid-feedback-login-name">Trường này không được phép để trống</span>
                                 </div>
-                                <input type="date" class="form-control" id="login-name" th:value="${nhanVien.idTaiKhoan.tenDangNhap}">
+                                <input type="text" class="form-control" id="login-name" th:value="${nhanVien.idTaiKhoan.tenDangNhap}">
                             </div>
                             <div class="form-group">
                                 <div>
@@ -129,7 +129,7 @@
                                     <span class="invalid-feedback"
                                           id="invalid-feedback-position">Trường này không được phép để trống</span>
                                 </div>
-                                <input type="date" class="form-control" id="position" th:value="${nhanVien.position}">
+                                <input type="text" class="form-control" id="position" th:value="${nhanVien.position}">
                             </div>
                             <div class="form-group">
                                 <div>
@@ -137,7 +137,7 @@
                                     <span class="invalid-feedback"
                                           id="invalid-feedback-department">Trường này không được phép để trống</span>
                                 </div>
-                                <input type="date" class="form-control" id="department" th:value="${nhanVien.department}">
+                                <input type="text" class="form-control" id="department" th:value="${nhanVien.department}">
                             </div>
                             <div class="form-group">
                                 <div>
@@ -145,7 +145,7 @@
                                     <span class="invalid-feedback"
                                           id="invalid-feedback-cccd">Trường này không được phép để trống</span>
                                 </div>
-                                <input type="date" class="form-control" id="cccd" th:value="${nhanVien.identityCard}">
+                                <input type="text" class="form-control" id="cccd" th:value="${nhanVien.identityCard}">
                             </div>
                             <div class="form-group">
                                 <div>
@@ -253,13 +253,12 @@
             let isValid = true;
 
             let regex = new RegExp("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
-            let regexSdt = /(84|0[3|5|7|8|9])+([0-9]{8})\b/g;
             if (email.length === 0 || regex.test(email) === false) {
                 $('#invalid-feedback-email').show();
                 isValid = false;
             }
 
-            if (sdt.length === 0 || regexSdt.test(sdt)) {
+            if (sdt.length === 0 ) {
                 $('#invalid-feedback-sdt').show();
                 isValid = false;
             }

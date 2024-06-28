@@ -8,7 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
@@ -16,7 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Builder
 @Table(name = "TAI_KHOAN")
@@ -42,7 +41,7 @@ public class TaiKhoan implements UserDetails {
 
     @Nationalized
     @Column(name = "Ngay_Sinh")
-    private String ngaySinh;
+    private Instant ngaySinh;
 
     @Nationalized
     @Column(name = "Ten_dang_nhap")
@@ -50,6 +49,9 @@ public class TaiKhoan implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     Role role;
+
+    @OneToOne(mappedBy = "idTaiKhoan")
+    private NhanVien nhanVien;
 
     @Size(max = 255)
     @Nationalized
