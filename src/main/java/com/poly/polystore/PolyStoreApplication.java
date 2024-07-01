@@ -22,7 +22,7 @@ public class PolyStoreApplication {
 
         @Override
         public void run(ApplicationArguments args) throws Exception {
-            System.out.println(sanPhamRepository.findAll().get(0));
+//            System.out.println(sanPhamRepository.findAll().get(0));
         }
     }
 

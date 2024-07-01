@@ -5,6 +5,7 @@ import com.poly.polystore.core.admin.san_pham.model.reponse.ResponseDataList;
 import com.poly.polystore.entity.SanPham;
 import com.poly.polystore.repository.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,26 +18,27 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/admin/data-list")
+@RequestMapping("/api/v1/admin/data-list-add-san-pham")
 @RestController
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SanPhamChiTietDataListController {
-    private final MauSacRepository mauSacRepository;
-    private final CongNgheManHinhRepository congNgheManHinhRepository;
-    private final BluetoothRepository bluetoothRepository;
-    private final CongNghePinRepository congNghePinRepository;
-    private final CpuRepository cpuRepository;
-    private final GpsRepository gpsRepository;
-    private final MatKinhCamUngRepository matKinhCamUngRepository;
-    private final SeriesRepository seriesRepository;
-    private final TinhNangCameraRepository tinhNangCameraRepository;
-    private final HeDieuHanhRepository heDieuHanhRepository;
-    private final TinhNangDacBietRepository tinhNangDacBietRepository;
-    private final WifiRepository wifiRepository;
-    private final KhuyenMaiRepository khuyenMaiRepository;
+    MauSacRepository mauSacRepository;
+    CongNgheManHinhRepository congNgheManHinhRepository;
+    BluetoothRepository bluetoothRepository;
+    CongNghePinRepository congNghePinRepository;
+    CpuRepository cpuRepository;
+    GpsRepository gpsRepository;
+    MatKinhCamUngRepository matKinhCamUngRepository;
+    SeriesRepository seriesRepository;
+    TinhNangCameraRepository tinhNangCameraRepository;
+    HeDieuHanhRepository heDieuHanhRepository;
+    TinhNangDacBietRepository tinhNangDacBietRepository;
+    WifiRepository wifiRepository;
+    KhuyenMaiRepository khuyenMaiRepository;
 
-    private final SanPhamController sanPhamController;
-    private final ModelMapper modelMapper;
-    private final SanPhamRepository sanPhamRepository;
+    SanPhamController sanPhamController;
+    ModelMapper modelMapper;
+    SanPhamRepository sanPhamRepository;
 
 
     @GetMapping("")
@@ -44,55 +46,55 @@ public class SanPhamChiTietDataListController {
 
         var lstMauSac = mauSacRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
         var lstCongNgheManHinh = congNgheManHinhRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
         var lstBluetooth = bluetoothRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
         var lstCongNghePin = congNghePinRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
         var lstCpu = cpuRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
         var lstGps = gpsRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
         var lstMatKinhCamUng = matKinhCamUngRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
         var lstSeries = seriesRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
         var lstTinhNangCamera = tinhNangCameraRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
         var lstTinhNangDacBiet = tinhNangDacBietRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
         var lstWifi = wifiRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
         var lstKhuyenMai = khuyenMaiRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
         var lstHeDieuHanh = heDieuHanhRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
 
         // Không phải thuộc tính chính
@@ -190,19 +192,19 @@ public class SanPhamChiTietDataListController {
 
 
     @GetMapping("mau-sac")
-    public List<ResponseDataList> getMauSac() {
+    public List<DataList> getMauSac() {
         return mauSacRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, ResponseDataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
 
     }
 
     @GetMapping("he-dieu-hanh")
-    public List<ResponseDataList> getHeDieuHanh() {
+    public List<DataList> getHeDieuHanh() {
         return heDieuHanhRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, ResponseDataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
 
     }
@@ -211,7 +213,7 @@ public class SanPhamChiTietDataListController {
     public List<DataList> getCongNgheManHinh() {
         return congNgheManHinhRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
     }
 
@@ -219,7 +221,7 @@ public class SanPhamChiTietDataListController {
     public List<DataList> getBluetooth() {
         return bluetoothRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
     }
 
@@ -227,7 +229,7 @@ public class SanPhamChiTietDataListController {
     public List<DataList> getCongNghePin() {
         return congNghePinRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
     }
 
@@ -235,7 +237,7 @@ public class SanPhamChiTietDataListController {
     public List<DataList> getCPU() {
         return cpuRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
     }
 
@@ -243,7 +245,7 @@ public class SanPhamChiTietDataListController {
     public List<DataList> getGPS() {
         return gpsRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
     }
 
@@ -251,7 +253,7 @@ public class SanPhamChiTietDataListController {
     public List<DataList> getMatKinhCamUng() {
         return matKinhCamUngRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
     }
 
@@ -259,7 +261,7 @@ public class SanPhamChiTietDataListController {
     public List<DataList> getSeries() {
         return seriesRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
     }
 
@@ -267,7 +269,7 @@ public class SanPhamChiTietDataListController {
     public List<DataList> getTinhNangCamera() {
         return tinhNangCameraRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
     }
 
@@ -275,7 +277,7 @@ public class SanPhamChiTietDataListController {
     public List<DataList> getTinhNagDacBiet() {
         return tinhNangDacBietRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
     }
 
@@ -283,17 +285,11 @@ public class SanPhamChiTietDataListController {
     public List<DataList> getWifi() {
         return wifiRepository.findAllByDeletedIsFalse()
                 .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
+                .map(element->new DataList(element.getId(),element.getTen()))
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("san-pham")
-    public List<DataList> getSanPham() {
-        return sanPhamController.findAllByDeletedIsFalse()
-                .stream()
-                .map((element) -> modelMapper.map(element, DataList.class))
-                .collect(Collectors.toList());
-    }
+
 
 }
 

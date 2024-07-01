@@ -7,5 +7,5 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public interface SeriesRepository extends JpaRepository<Series, Integer> {
-    Collection<Object> findAllByDeletedIsFalse();
+    Collection<Series> findAllByDeletedIsFalse();
 }

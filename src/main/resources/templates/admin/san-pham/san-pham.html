@@ -9,6 +9,10 @@
     <th:block layout:fragment="head_link">
         <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
         <script src="/vendor/sweetalert2/sweetalert2.min.js"></script>
+        <link href="/vendor/select2/select2.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/css/ion.rangeSlider.min.css" rel="stylesheet">
+
+
     </th:block>
 
 </head>
@@ -23,19 +27,19 @@
 
     <div class="card shadow m-2 w-100 ">
         <div class="card-header py-3">
-<!--            <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>-->
+            <!--            <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>-->
 
             <div class="row">
                 <h1 class="h3 text-gray-800 col-4">Quản lý sản phẩm</h1>
                 <!-- Additional controls -->
                 <div class="col-8 d-flex justify-content-sm-end align-items-center">
                     <form class="form-inline mr-3 d-flex align-items-center">
-                        <label class="mr-2" for="statusFilter">Trạng thái</label>
-                        <select id="statusFilter" class="form-control-plaintext text-primary" style="width: 100px">
-                            <option  value="">Tất cả</option>
-                            <option selected>Hoạt động</option>
-                            <option>Đã xóa</option>
-                        </select>
+                        <div class="btn-group-toggle" data-toggle="buttons">
+                            <label class="btn btn-outline-primary" data-toggle="modal" data-target="#modal-filter">
+                                <input type="checkbox" id="filter"><i class="fa fa-filter mr-1"></i> Bộ lọc
+                            </label>
+                        </div>
+
                     </form>
                     <a id="btn-reload" href="#" class="btn btn-primary btn-icon-split mr-2">
                                         <span class="icon text-white-50">
@@ -58,7 +62,8 @@
                         <span class="text">Import</span>
                     </a>
                     <input type="file" class="d-none" id="import-file"/>
-                    <a th:href="@{/admin/san-pham-chi-tiet/cong-nghe-man-hinh/export-excel}" class="btn btn-primary btn-icon-split" id="btn-export">
+                    <a th:href="@{/admin/san-pham-chi-tiet/cong-nghe-man-hinh/export-excel}"
+                       class="btn btn-primary btn-icon-split" id="btn-export">
                                         <span class="icon text-white-50">
                                             <i class="fas fa-file-export"></i>
                                         </span>
@@ -74,10 +79,12 @@
                     <tr>
                         <th>ID</th>
                         <th>Tên</th>
-                        <th>Số lượng</th>
+                        <th>Series</th>
+                        <th>Series</th>
                         <th>Màu sắc</th>
                         <th>Bộ nhớ</th>
-                        <th>Chỉnh sửa</th>
+                        <th>Thời gian bảo hành</th>
+                        <th>Trạng thái</th>
 
                     </tr>
                     </thead>
@@ -85,9 +92,12 @@
                     <tr>
                         <th>ID</th>
                         <th>Tên</th>
-                        <th>Đường dẫn</th>
+                        <th>Series</th>
+                        <th>Số lượng</th>
+                        <th>Màu sắc</th>
+                        <th>Bộ nhớ</th>
+                        <th>Thời gian bảo hành</th>
                         <th>Trạng thái</th>
-                        <th>Chỉnh sửa</th>
 
                     </tr>
                     </tfoot>
@@ -124,7 +134,8 @@
                     </div>
                     <div class="form-group">
                         <label for="edit-link">Đường dẫn chi tiết:</label>
-                        <input type="text" class="form-control" id="edit-link" placeholder="Đường dẫn chi tiết" pattern="^$|^((https?:\/\/)?([a-zA-Z0-9\-\_]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?$">
+                        <input type="text" class="form-control" id="edit-link" placeholder="Đường dẫn chi tiết"
+                               pattern="^$|^((https?:\/\/)?([a-zA-Z0-9\-\_]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?$">
                         <div class="invalid-feedback">Đường dẫn không hợp lệ</div>
                     </div>
                     <div class="form-group">
@@ -149,11 +160,12 @@
     </div>
 </div>
 <!--add modal-->
-<div class="modal fade" id="modal-add" tabindex="-1" role="dialog" aria-labelledby="modal-addLabel" aria-hidden="true">
+<div class="modal fade" id="modal-filter" tabindex="-1" role="dialog" aria-labelledby="modal-filterLabel"
+     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modal-addLabel">Thêm mới</h5>
+                <h5 class="modal-title" id="modal-filterLabel">Thêm mới</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -162,26 +174,54 @@
 
                 <form id="form-add" class="needs-validation" novalidate>
                     <div class="form-group">
-                        <label for="add-ten">Tên công nghệ:</label>
-                        <input type="text" class="form-control " id="add-ten" placeholder="Tên sản phẩm" required>
-                        <div class="invalid-feedback">Tên đã tồn tại hoặc không hợp lệ</div>
+                        <label for="filter-series" class="form-label">Bộ nhớ</label>
+                        <select class="form-control" style="width: 100%" id="filter-series" multiple="multiple" required>
+                        </select>
+                        <div class="invalid-feedback">
+                            Vui lòng không để trống tên sản phẩm
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="add-link">Đường dẫn chi tiết:</label>
-                        <input type="text" class="form-control" id="add-link" placeholder="Đường dẫn chi tiết" pattern="^$|^((https?:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?$">
-                        <div class="invalid-feedback">Đường dẫn không hợp lệ</div>
+                        <label for="filter-mau-sac" class="form-label">Bộ nhớ</label>
+                        <select class="form-control" style="width: 100%" id="filter-mau-sac" multiple="multiple" required>
+                        </select>
+                        <div class="invalid-feedback">
+                            Vui lòng không để trống tên sản phẩm
+                        </div>
                     </div>
-                    <div class="form-group justify-content-end ">
-                        <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Hủy</button>
+                    <div class="form-group">
+                        <label for="filter-rom" class="form-label">Bộ nhớ</label>
+                        <select class="form-control" style="width: 100%" id="filter-rom" multiple="multiple" required>
+                            <option value="32">32 GB</option>
+                            <option value="64">64 GB</option>
+                            <option value="128">128 GB</option>
+                            <option value="256">256 GB</option>
+                            <option value="512">512 GB</option>
+                            <option value="1024">1 TB</option>
+                            <option value="2048">2 TB</option>
+                            <option value="3072">3 TB</option>
+                        </select>
 
-                        <button type="submit" class="btn btn-primary">Xác nhận</button>
+                        <div class="invalid-feedback">
+                            Vui lòng không để trống tên sản phẩm
+                        </div>
                     </div>
+                    <div class="form-group">
+                        <label for="rangeSlider" class="form-label">Số lượng</label>
+                        <input id="rangeSlider" type="text" name="range">
+                    </div>
+
+
+
 
                 </form>
             </div>
-
-
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Xóa bộ lọc</button>
+                <button type="button" class="btn btn-primary">Hiển thị</button>
+            </div>
         </div>
+
     </div>
 </div>
 
@@ -189,10 +229,14 @@
 
 <th:block layout:fragment="bottom_link">
     <!-- Page level plugins -->
+
     <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
     <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="/vendor/select2/select2.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/js/ion.rangeSlider.min.js"></script>
 
     <!-- Page level custom scripts -->
-    <script type="module" src="/js/admin/san-pham/san-pham.js"></script>
+    <script src="/js/admin/san-pham/san-pham.js"></script>
 </th:block>
 </html>

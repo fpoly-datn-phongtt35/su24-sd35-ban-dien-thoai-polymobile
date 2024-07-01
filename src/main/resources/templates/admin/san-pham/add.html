@@ -11,6 +11,8 @@
         <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
         <script src="/vendor/sweetalert2/sweetalert2.min.js"></script>
         <link href="/css/admin/san-pham/add.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/css/ion.rangeSlider.min.css" rel="stylesheet">
+
 
     </th:block>
 
@@ -20,6 +22,8 @@
 <!-- Custom styles for this page -->
 
 <body layout:fragment="content">
+
+
 
 
 <div class="row">
@@ -50,7 +54,13 @@
                 </div>
             </div>
         </div>
-        <div class="card-body">
+        <div class="card-body" style="position: relative">
+            <!-- Spinner và Overlay HTML -->
+            <div id="overlay" style="display:none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
             <div>
 
                 <form class="container-fluid">
@@ -76,23 +86,23 @@
                                 </div>
 
                             </div>
-<!--                            <div class="form-group col-6">-->
-<!--                                <label for="sp-series" class="form-label">Bộ nhớ</label>-->
-<!--                                <select class="form-control w-100" id="sp-rom" multiple="multiple" required>-->
-<!--                                    <option value="32">32 GB</option>-->
-<!--                                    <option value="64">64 GB</option>-->
-<!--                                    <option value="128">128 GB</option>-->
-<!--                                    <option value="256">256 GB</option>-->
-<!--                                    <option value="512">512 GB</option>-->
-<!--                                    <option value="1024">1 TB</option>-->
-<!--                                    <option value="2048">2 TB</option>-->
-<!--                                    <option value="3072">3 TB</option>-->
-<!--                                </select>-->
+                            <div class="form-group col-6">
+                                <label for="sp-series" class="form-label">Bộ nhớ</label>
+                                <select class="form-control w-100" id="sp-rom" multiple="multiple" required>
+                                    <option value="32">32 GB</option>
+                                    <option value="64">64 GB</option>
+                                    <option value="128">128 GB</option>
+                                    <option value="256">256 GB</option>
+                                    <option value="512">512 GB</option>
+                                    <option value="1024">1 TB</option>
+                                    <option value="2048">2 TB</option>
+                                    <option value="3072">3 TB</option>
+                                </select>
 
-<!--                                <div class="invalid-feedback">-->
-<!--                                    Vui lòng không để trống tên sản phẩm-->
-<!--                                </div>-->
-<!--                            </div>-->
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống tên sản phẩm
+                                </div>
+                            </div>
 
 <!--                            <div class="form-group col-6">-->
 <!--                                <label for="sp-series" class="form-label">Màu sắc</label>-->
@@ -112,7 +122,7 @@
                             </div>
                             <div class="form-group col-4">
                                 <label for="input-text" class="form-label">Tên sản phẩm</label>
-                                <input type="text" class="form-control" name="input-text" id="input-text" required>
+                                <input type="text" class="form-control" name="input-text" id="input-text2" required>
                                 <div class="invalid-feedback">
                                     Vui lòng không để trống tên sản phẩm
                                 </div>
@@ -147,8 +157,11 @@
                             </div>
                         </div>
                     </div>
+
+
                 </form>
             </div>
+
         </div>
     </div>
 
@@ -241,6 +254,29 @@
         </div>
     </div>
 </div>
+<select class="js-example-basic-multiple js-states form-control" id="id_label_multiple" multiple="multiple">
+
+    <option>Christmas Island</option>
+    <option>South Sudan</option>
+    <option>Jamaica</option>
+    <option>Kenya</option>
+    <option>French Guiana</option>
+    <option>Mayotta</option>
+    <option>Liechtenstein</option>
+    <option>Denmark</option>
+    <option>Eritrea</option>
+    <option>Gibraltar</option>
+    <option>Saint Helena, Ascension and Tristan da Cunha</option>
+    <option>Haiti</option>
+    <option>Namibia</option>
+    <option>South Georgia and the South Sandwich Islands</option>
+    <option>Vietnam</option>
+    <option>Yemen</option>
+    <option>Philippines</option>
+    <option>Benin</option>
+    <option>Czech Republic</option>
+    <option>Russia</option>
+</select>
 
 
 </body>
@@ -254,6 +290,8 @@
 
     <!-- Page level custom scripts -->
     <script type="module" src="/js/admin/san-pham/add-san-pham.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/js/ion.rangeSlider.min.js"></script>
+
 
 
 </th:block>

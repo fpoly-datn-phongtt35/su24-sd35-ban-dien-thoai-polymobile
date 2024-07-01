@@ -13,5 +13,5 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class DataList implements Serializable {
     private Integer id;
-    private String ten;
+    private String text;
 }

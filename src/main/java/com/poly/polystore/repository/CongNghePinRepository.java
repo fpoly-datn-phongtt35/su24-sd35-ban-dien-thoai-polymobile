@@ -7,5 +7,5 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public interface CongNghePinRepository extends JpaRepository<CongNghePin, Integer> {
-    Collection<Object> findAllByDeletedIsFalse();
+    Collection<CongNghePin> findAllByDeletedIsFalse();
 }

@@ -7,5 +7,5 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public interface TinhNangCameraRepository extends JpaRepository<TinhNangCamera, Integer> {
-    Collection<Object> findAllByDeletedIsFalse();
+    Collection<TinhNangCamera> findAllByDeletedIsFalse();
 }

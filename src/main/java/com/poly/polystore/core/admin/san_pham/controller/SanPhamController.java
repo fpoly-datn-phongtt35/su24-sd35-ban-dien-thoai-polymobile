@@ -1,46 +1,65 @@
 package com.poly.polystore.core.admin.san_pham.controller;
 
-import com.poly.polystore.core.admin.san_pham.model.reponse.AllSanPhamResponse;
-import com.poly.polystore.core.admin.san_pham_chi_tiet.cong_nghe_man_hinh.model.response.Response;
+import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamDataTable;
+import com.poly.polystore.entity.SanPham;
 import com.poly.polystore.repository.SanPhamRepository;
+import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
+@RequiredArgsConstructor
 @Controller
 public class SanPhamController {
     private static final Logger log = LoggerFactory.getLogger(SanPhamController.class);
-    @Autowired
-    private ModelMapper modelMapper;
-    @Autowired
-    private SanPhamRepository sanPhamRepository;
+    private final ModelMapper modelMapper;
+    private final SanPhamRepository sanPhamRepository;
+    private final EntityManager entityManager;
 
     @GetMapping("/admin/san-pham")
     public String ui(Model model) {
         return "/admin/san-pham/san-pham";
     }
+
     @GetMapping("/admin/san-pham/add")
     public String add(Model model) {
         return "/admin/san-pham/add";
     }
 
+
+
     @ResponseBody
-    @GetMapping("/api/v1/san-pham")
-    public List<Response> getAll() {
-        return modelMapper.map(sanPhamRepository.findAll(), new TypeToken<List<AllSanPhamResponse>>() {
-        }.getType());
+    @GetMapping("/api/v1/san-pham-data-table")
+    public List<SanPhamDataTable> getAll(
+//            @RequestParam Map<String, String> params
+    ) {
+//        System.out.println(params);
+//        var searchKey=params.get("search[value]");
+//        var draw=Integer.parseInt(params.get("draw"));
+//        var start=Integer.parseInt(params.get("start"));
+//        var lenght=Integer.parseInt(params.get("length"));
+//        var orderBy=params.get("columns["+params.get("order[0][column]")+"][data]");
+//        var orderDir=params.get("order[0][dir]").toUpperCase();
+//        Pageable pageable = PageRequest.of(start,  lenght);
+        var spdt=sanPhamRepository.findAllSanPhamDataTable();
+        return spdt;
     }
 
-    public Collection<Object> findAllByDeletedIsFalse() {
+    public Collection<SanPham> findAllByDeletedIsFalse() {
         return null;
     }
 //

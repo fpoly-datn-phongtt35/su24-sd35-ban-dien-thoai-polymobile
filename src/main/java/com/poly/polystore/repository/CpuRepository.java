@@ -7,5 +7,5 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public interface CpuRepository extends JpaRepository<Cpu, Integer> {
-    Collection<Object> findAllByDeletedIsFalse();
+    Collection<Cpu> findAllByDeletedIsFalse();
 }

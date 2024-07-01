@@ -1,41 +1,53 @@
-var urlAPI="/admin/data-list/";
+var urlAPI = "/api/v1/admin/data-list-add-san-pham";
 
 var dataListMauSac,
-dataListCongNgheManHinh,
-dataListBluetooth,
-dataListCongNghePin,
-dataListCpu,
-dataListGps,
-dataListMatKinhCamUng,
-dataListSeries,
-dataListTinhNangCamera,
-dataListTinhNangDacBiet,
-dataListWifi,
+    dataListCongNgheManHinh,
+    dataListBluetooth,
+    dataListCongNghePin,
+    dataListCpu,
+    dataListGps,
+    dataListMatKinhCamUng,
+    dataListSeries,
+    dataListTinhNangCamera,
+    dataListTinhNangDacBiet,
+    dataListWifi
+
+$("#overlay").show();
+$(document).ajaxStart(function() {
+}).ajaxStop(function() {
+    $("#overlay").hide();
+});
 
 
+const cloneData = new Promise(function (resolve, reject) {
+    $.ajax({
+            url: urlAPI,
+            success: function (response) {
+                resolve(response);
+            },
+            error: function (xhr, status, error) {
+                reject(status);
+            }
+        }
+    )
+})
 
 
 $(document).ready(function () {
-    $('#sp-rom').select2();
+    cloneData.then(function (data) {
+        // $('#sp-rom').select2();
+        // $("#sp-mau-sac").select2({
+        //     data: data.mauSac
+        // });
+        console.log(data.congNgheManHinh)
 
-    dataListMauSac.loadData().then(() => {
-        console.log("Thêm data", dataListMauSac.data);
-        $("#sp-mau-sac").select2({
-            data: dataListMauSac.data
+        $("#sp-cong-nghe-man-hinh").select2({
+            data: data.congNgheManHinh.map(function (item) { return { id: item.id, text: item.ten }; })
         });
-    })
-    dataListCongNgheManHinh.loadData().then(() => {
-        console.log("Thêm data", dataListCongNgheManHinh.data);
-        $("#sp-mau-sac").select2({
-            data: dataListCongNgheManHinh.data
-        });
-    })
-
-    dataListSeries.loadData().then(() => {
-        console.log("Thêm data", dataListSeries.data);
         $("#sp-series").select2({
-            data: dataListSeries.data
+            data: data.series.map(function (item) { return { id: item.id, text: item.ten }; })
         });
+        $("#sp-rom").select2({})
     })
 
 })

@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.Nationalized;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,8 +21,14 @@ public class SanPhamChiTiet {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_SAN_PHAM")
+    @JoinColumn(name = "SAN_PHAM_ID")
     private SanPham sanPham;
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            mappedBy = "sanPhamChiTiet"
+    )
+    private List<Imei> imeis;
+
 //TODO: Triển khai đợt giảm giá, tương tự với voucher
 //    @ManyToMany(fetch = FetchType.LAZY)
 //    @JoinTable(
@@ -40,12 +47,6 @@ public class SanPhamChiTiet {
     @Column(name = "ROM")
     private String rom;
 
-    @Nationalized
-    @Column(name = "Tinh_trang")
-    private String tinhTrang;
-
-    @Column(name = "So_luong")
-    private Integer soLuong;
 
     @Column(name = "Gia_ban", precision = 18, scale = 2)
     private BigDecimal giaBan;

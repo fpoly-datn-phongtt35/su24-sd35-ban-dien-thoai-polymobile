@@ -8,9 +8,72 @@
 
 const apiURL = "/api/v1/san-pham";
 let _existingNames;
+
+var lstSeries, lstMauSac;
+// fill data to select option
+
+$(document).ready(function () {
+    $('#modal-filter').on('show.bs.modal', function (event) {
+        //So Luong
+        let maxSoLuong = 0;
+        maxSoLuong = Math.max.apply(Math, $('#dataTable').DataTable().column(5).data().toArray());
+        maxSoLuong = Math.ceil(maxSoLuong / 100) * 100
+        console.log(maxSoLuong)
+
+
+        $("#rangeSlider").ionRangeSlider({
+            type: "double",
+            min: 0,
+            max: maxSoLuong,
+            from: 0,
+            to: maxSoLuong,
+            grid: true,
+            prettify: true,
+            skin: "round"
+        });
+    })
+})
+
+function loadFilter() {
+    //Mau sac
+    $.ajax({
+            url: "/api/v1/admin/data-list-add-san-pham/mau-sac",
+            success: function (response) {
+                lstMauSac = response;
+                $('#filter-mau-sac').select2({
+                    data: lstMauSac.map(ms => {
+                        return {id: ms.text, text: ms.text}
+                    })
+                })
+            },
+            error: function (xhr, status, error) {
+            }
+        }
+    )
+    //Series
+    $.ajax({
+            url: "/api/v1/admin/data-list-add-san-pham/series",
+            success: function (response) {
+                lstSeries = response;
+                $('#filter-series').select2({
+                    data: lstSeries.map(s => {
+                        return {id: s.text, text: s.text}
+                    })
+                })
+            },
+            error: function (xhr, status, error) {
+            }
+        }
+    )
+    //Rom
+    $('#filter-rom').select2({})
+
+}
+
 $(document).attr("title", "Quản lý sản phẩm")
 
 function loadData() {
+
     let table = $('#dataTable').DataTable({
 
         "language": {
@@ -31,67 +94,84 @@ function loadData() {
             }
         },
         "ajax": {
-            "url": apiURL,
+            "url": apiURL + "-data-table",
             "cache": true,
             "dataSrc": ""
         },
+
         "columnDefs": [
             {width: 30, targets: 0},
-            {width: 300, targets: 1}
+            {width: 150, targets: 1}
         ],
         "columns": [
 
             {"data": "id"},
-            {"data": "ten"},
-            {"data": "mauSac"},
+            {"data": "tenSanPham"},
+            {"data": "series"},
 
             {
-                "data": "link",
+
+                "data": "danhSachMauSac",
                 "render": function (data, type, row) {
-                    if (data == null)
+
+                    if (data == null || data.length == 0)
                         return ""
-                    if (data.length > 36)
-                        return `<a href="${data}">${data.substring(0, 35)}...</a>`
-                    else
-                        return `<a href="${data}">${data}</a>`
-                }
-            },
-            {
-                "data": "deleted",
-                "render": function (data, type, row) {
-                    return (data) ? "Đã xóa" : "Hoạt động"
-                }
-            },
-            {
-                "data": "deleted",
-                "render": function (data, type, row) {
-                    if (data)
-                        return '<div class="d-flex justify-content-end"><button type="button" class="btn btn-sm btn-primary mr-3 btn-edit">Chỉnh sửa</button><button type="button" class="btn btn-sm btn-danger btn-revert">Khôi phục</button></div>';
-                    else
-                        return '<div class="d-flex justify-content-end"><button type="button" class="btn btn-sm btn-primary mr-3 btn-edit">Chỉnh sửa</button><button type="button" class="btn btn-sm btn-danger btn-delete">Xóa</button></div>';
+                    let lstMs = data.split(",");
+                    let lstE = "";
+                    lstMs.forEach(function (m) {
+                        let ten = m.split(":")[1];
+                        let ma = m.split(":")[0];
+                        lstE += `<a type="button" class="btn btn-sm mr-2" style="background-color: ${ma}"></a>`;
+                        lstE += `<span type="button" class="btn btn-sm d-none" >${ten}</span>`
+                    })
+                    return lstE;
 
                 },
-                "orderable": false
+                "orderable": false,
 
-            }
+
+            },
+            {"data": "danhSachRom"},
+            {"data": "soLuong"},
+            {"data": "thoiGianBaoHanh"},
+            {"data": "trangThai"}
+            // {
+            //     "data": "deleted",
+            //     "render": function (data, type, row) {
+            //         if (data)
+            //             return '<div class="d-flex justify-content-end"><button type="button" class="btn btn-sm btn-primary mr-3 btn-edit">Chỉnh sửa</button><button type="button" class="btn btn-sm btn-danger btn-revert">Khôi phục</button></div>';
+            //         else
+            //             return '<div class="d-flex justify-content-end"><button type="button" class="btn btn-sm btn-primary mr-3 btn-edit">Chỉnh sửa</button><button type="button" class="btn btn-sm btn-danger btn-delete">Xóa</button></div>';
+            //
+            //     },
+            //     "orderable": false
+            //
+            // }
         ]
     });
-    let selectedStatus = $('#statusFilter').val();
-    if (selectedStatus) {
-        table.column(3).search('^' + selectedStatus + '$', true, false).draw();
-    } else {
-        // Xóa bộ lọc nếu không có gì được chọn
-        table.column(3).search('').draw();
-    }
-    ;
+    // let selectedStatus = $('#statusFilter').val();
+    // if (selectedStatus) {
+    //     table.column(3).search('^' + selectedStatus + '$', true, false).draw();
+    // } else {
+    //     // Xóa bộ lọc nếu không có gì được chọn
+    //     table.column(3).search('').draw();
+    // }
+    // ;
 }
 
-const reloadDataTable = () => {
-    $('#dataTable').DataTable().ajax.reload();
-}
+
+//
+// const reloadDataTable = () => {
+//     $('#dataTable').DataTable().ajax.reload();
+// }
 
 //config dataTable
-$(document).ready(loadData());
+$(document).ready(() => {
+        loadData();
+        loadFilter()
+
+    }
+);
 //
 // //Reload event
 // $(document).ready(() => {
@@ -357,24 +437,54 @@ $(document).ready(loadData());
 //
 // })
 //
-// //Filter
-// $(document).ready(function () {
-//     // Khởi tạo DataTable
-//     let table = $('#dataTable').DataTable();
-//
-//     // Lắng nghe sự kiện thay đổi của select option
-//     $('#statusFilter').on('change', function () {
-//         let selectedStatus = $('#statusFilter').val();
-//
-//         if (selectedStatus) {
-//             // Áp dụng bộ lọc theo cột Status
-//             table.column(3).search('^' + selectedStatus + '$', true, false).draw();
-//         } else {
-//             // Xóa bộ lọc nếu không có gì được chọn
-//             table.column(3).search('').draw();
-//         }
-//     });
-// });
+//Filter
+$(document).ready(function () {
+    // Khởi tạo DataTable
+    let table = $('#dataTable').DataTable();
+
+    // Lắng nghe sự kiện thay đổi của select option
+    $('#modal-filter').on('change', "select", function () {
+        let filterTrangThai = $('#filter-trang-thai').val();
+        let filterSeries = $('#filter-series').val();
+        let filterMauSac = $('#filter-mau-sac').val();
+        let filterRom = $('#filter-rom').val();
+
+
+        if (filterSeries) {
+            let regex = "(" + filterSeries.join("|") + ")"
+            console.log(regex)
+            table.column(2).search('^' + regex + '$', true, false);
+        } else {
+            // Xóa bộ lọc nếu không có gì được chọn
+            table.column(2).search('');
+        }
+        if (filterRom) {
+            let regex = "(" + filterRom.join("|") + ")"
+            console.log(regex)
+            table.column(4).search('^' + regex + '$', true, false);
+        } else {
+            // Xóa bộ lọc nếu không có gì được chọn
+            table.column(4).search('');
+        }
+        if (filterMauSac) {
+            // let regex="("+filterMauSac.join("|")+")"
+            var regex = new RegExp('\b' + "Xám" + '\b', 'i');
+            console.log("Ôk1")
+            // Lọc dữ liệu trong cột thứ hai (index 1)
+            table.column(3).search(function (d) {
+                console.log("OK")
+                return true;
+            }).draw();
+
+        } else {
+            // Xóa bộ lọc nếu không có gì được chọn
+            table.column(3).search('');
+        }
+
+
+        table.draw();
+    });
+});
 //
 // //Import file
 // $(document).ready(function () {

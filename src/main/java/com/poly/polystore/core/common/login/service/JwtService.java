@@ -42,7 +42,7 @@ public class JwtService {
         return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) throws ExpiredJwtException {
         final Claims claims = extractAllClaims(token);
         return claimsResolvers.apply(claims);
     }
@@ -53,27 +53,28 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration*1000))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration * 1000))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public boolean isTokenExpired(String token) {
         try {
-            var result=extractExpiration(token).before(new Date());
-                        return result;
-        }catch (ExpiredJwtException e) {
-                log.error("Token đã hết hạn, EXPIRATION TIME:"+extractExpiration(token));
+            var result = extractExpiration(token).before(new Date());
+            return result;
+        } catch (ExpiredJwtException e) {
+            System.err.println("Lỗi");
+            log.error("Token đã hết hạn");
             return true;
 
         }
     }
 
-    private Date extractExpiration(String token) {
+    private Date extractExpiration(String token) throws ExpiredJwtException {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    private Claims extractAllClaims(String token) {
+    private Claims extractAllClaims(String token) throws ExpiredJwtException {
         return Jwts
                 .parser()
                 .setSigningKey(getSigningKey())
