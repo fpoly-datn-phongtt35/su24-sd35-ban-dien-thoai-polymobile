@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,6 +34,14 @@ public class KhuyenMai {
     @NotNull
     @Column(name = "LINK", nullable = false)
     private String link;
+
+    @DateTimeFormat(pattern = "dd-MM-YYYY hh:mm A")
+    @Column(name = "THOI_GIAN_BAT_DAU", nullable = false)
+    private Date  thoiGianBatDau;
+
+    @DateTimeFormat(pattern = "dd-MM-YYYY hh:mm A")
+    @Column(name = "THOI_GIAN_KET_THUC", nullable = false)
+    private Date  thoiGianKetThuc;
 
     @Column(name = "DELETED")
     private Boolean deleted;

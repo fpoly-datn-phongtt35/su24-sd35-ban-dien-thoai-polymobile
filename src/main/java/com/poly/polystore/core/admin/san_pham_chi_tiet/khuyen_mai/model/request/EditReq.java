@@ -8,8 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * DTO for {@link com.poly.polystore.entity.KhuyenMai}
@@ -28,6 +30,10 @@ public class EditReq implements Serializable {
     private String ten;
     @Size(max = 255)
     private String link;
+    @DateTimeFormat(pattern = "dd-MM-YYYY hh:mm A")
+    private Date  thoiGianBatDau;
+    @DateTimeFormat(pattern = "dd-MM-YYYY hh:mm A")
+    private Date  thoiGianKetThuc;
     @NotNull
     private Boolean deleted;
 }

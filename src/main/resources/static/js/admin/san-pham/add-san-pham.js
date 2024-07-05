@@ -12,12 +12,18 @@ var dataListMauSac,
     dataListTinhNangDacBiet,
     dataListWifi
 
+//Hiển thị lớp phủ khi chưa load hết thuộc tính
 $("#overlay").show();
 $(document).ajaxStart(function() {
 }).ajaxStop(function() {
     $("#overlay").hide();
 });
 
+
+$(".custom-file-input").on("change", function() {
+    let fileName = $(this).val().split("\\").pop();
+    $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+});
 
 const cloneData = new Promise(function (resolve, reject) {
     $.ajax({
@@ -40,12 +46,14 @@ $(document).ready(function () {
         //     data: data.mauSac
         // });
         console.log(data.congNgheManHinh)
-
+        $("#sp-mau-sac").select2({
+            data: data.mauSac
+        });
         $("#sp-cong-nghe-man-hinh").select2({
-            data: data.congNgheManHinh.map(function (item) { return { id: item.id, text: item.ten }; })
+            data: data.congNgheManHinh
         });
         $("#sp-series").select2({
-            data: data.series.map(function (item) { return { id: item.id, text: item.ten }; })
+            data: data.series
         });
         $("#sp-rom").select2({})
     })

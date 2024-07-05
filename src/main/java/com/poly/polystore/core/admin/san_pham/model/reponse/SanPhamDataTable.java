@@ -20,6 +20,8 @@ import java.io.Serializable;
 
 public class SanPhamDataTable implements Serializable {
     private Integer id;
+
+    private String anhSanPham;
     private String tenSanPham;
     private String series;
     private String danhSachMauSac;

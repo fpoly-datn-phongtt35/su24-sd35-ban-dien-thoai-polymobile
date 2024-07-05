@@ -54,4 +54,8 @@ public class SanPhamChiTiet {
     @Column(name = "Gia_von", precision = 18, scale = 2)
     private BigDecimal giaVon;
 
+    @Nationalized
+    @Column(name = "STT")
+    private Integer stt;
+
 }

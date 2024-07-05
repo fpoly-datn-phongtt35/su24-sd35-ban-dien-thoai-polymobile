@@ -34,11 +34,10 @@
                 <!-- Additional controls -->
                 <div class="col-8 d-flex justify-content-sm-end align-items-center">
                     <form class="form-inline mr-3 d-flex align-items-center">
-                        <div class="btn-group-toggle" data-toggle="buttons">
-                            <label class="btn btn-outline-primary" data-toggle="modal" data-target="#modal-filter">
-                                <input type="checkbox" id="filter"><i class="fa fa-filter mr-1"></i> Bộ lọc
-                            </label>
-                        </div>
+                                <button type="button" data-toggle="modal" data-target="#modal-filter" id="filter" class="btn btn-primary position-relative">
+                                    Bộ lọc
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="badge-filter"></span>
+                                </button>
 
                     </form>
                     <a id="btn-reload" href="#" class="btn btn-primary btn-icon-split mr-2">
@@ -78,26 +77,32 @@
                     <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Hình ảnh</th>
                         <th>Tên</th>
                         <th>Series</th>
-                        <th>Series</th>
-                        <th>Màu sắc</th>
+                        <th>Mã màu</th>
+                        <th>Tên màu</th>
                         <th>Bộ nhớ</th>
+                        <th>Số lượng</th>
                         <th>Thời gian bảo hành</th>
                         <th>Trạng thái</th>
+                        <th>Chỉnh sửa</th>
 
                     </tr>
                     </thead>
                     <tfoot>
                     <tr>
                         <th>ID</th>
+                        <th>Hình ảnh</th>
                         <th>Tên</th>
                         <th>Series</th>
-                        <th>Số lượng</th>
-                        <th>Màu sắc</th>
+                        <th>Mã màu</th>
+                        <th>Tên màu</th>
                         <th>Bộ nhớ</th>
+                        <th>Số lượng</th>
                         <th>Thời gian bảo hành</th>
                         <th>Trạng thái</th>
+                        <th>Chỉnh sửa</th>
 
                     </tr>
                     </tfoot>
@@ -175,7 +180,8 @@
                 <form id="form-add" class="needs-validation" novalidate>
                     <div class="form-group">
                         <label for="filter-series" class="form-label">Bộ nhớ</label>
-                        <select class="form-control" style="width: 100%" id="filter-series" multiple="multiple" required>
+                        <select class="form-control" style="width: 100%" id="filter-series" multiple="multiple"
+                                required>
                         </select>
                         <div class="invalid-feedback">
                             Vui lòng không để trống tên sản phẩm
@@ -183,7 +189,8 @@
                     </div>
                     <div class="form-group">
                         <label for="filter-mau-sac" class="form-label">Bộ nhớ</label>
-                        <select class="form-control" style="width: 100%" id="filter-mau-sac" multiple="multiple" required>
+                        <select class="form-control" style="width: 100%" id="filter-mau-sac" multiple="multiple"
+                                required>
                         </select>
                         <div class="invalid-feedback">
                             Vui lòng không để trống tên sản phẩm
@@ -212,13 +219,11 @@
                     </div>
 
 
-
-
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Xóa bộ lọc</button>
-                <button type="button" class="btn btn-primary">Hiển thị</button>
+                <button type="button" id="filter-clear" class="btn btn-danger" data-dismiss="modal">Xóa bộ lọc</button>
+                <button type="button" id="filter-confirm" class="btn btn-primary">Hiển thị</button>
             </div>
         </div>
 

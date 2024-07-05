@@ -7,8 +7,11 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.validator.constraints.URL;
 import org.hibernate.validator.constraints.UniqueElements;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+
+import java.util.Date;
 
 /**
  * DTO for {@link com.poly.polystore.entity.KhuyenMai}
@@ -24,5 +27,9 @@ public class AddRequest implements Serializable {
     private String ten;
     @Size(max = 255)
     private String link;
-    final Boolean deleted=false;
+    @DateTimeFormat(pattern = "dd-MM-YYYY hh:mm A")
+    private Date  thoiGianBatDau;
+    @DateTimeFormat(pattern = "dd-MM-YYYY hh:mm A")
+    private Date  thoiGianKetThuc;
+    final Boolean deleted = false;
 }

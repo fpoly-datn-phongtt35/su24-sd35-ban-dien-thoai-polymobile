@@ -79,8 +79,7 @@
                                 <select class="form-control" id="sp-series" required>
                                     <option selected disabled value="">Chọn Series</option>
                                 </select>
-                                <a class="position-absolute" style="right: 5%;top: 40px"><i class="fa fa-plus"
-                                                                                            aria-hidden="true"></i></a>
+                                <a class="position-absolute" style="right: 5%;top: 40px"><i class="fa fa-plus" aria-hidden="true"></i></a>
                                 <div class="invalid-feedback">
                                     Vui lòng chọn series
                                 </div>
@@ -103,6 +102,16 @@
                                     Vui lòng không để trống tên sản phẩm
                                 </div>
                             </div>
+                            <div class="form-group col-6">
+                                <label for="sp-mau-sac" class="form-label">Màu sắc</label>
+                                <select class="form-control w-100" id="sp-mau-sac" multiple="multiple" required>
+                                </select>
+                                <a class="position-absolute" style="right: 5%;top: 40px"><i class="fa fa-plus" aria-hidden="true"></i></a>
+
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống tên sản phẩm
+                                </div>
+                            </div>
 
 <!--                            <div class="form-group col-6">-->
 <!--                                <label for="sp-series" class="form-label">Màu sắc</label>-->
@@ -113,6 +122,16 @@
 <!--                                </div>-->
 <!--                            </div>-->
                             <div class="form-group col-4">
+                                <label for="input-text" class="form-label">Mô tả sản phẩm</label>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" accept="image/*" id="customFile">
+                                    <label class="custom-file-label" for="customFile">Choose file</label>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống tên sản phẩm
+                                </div>
+                            </div>
+                            <div class="form-group col-6">
                                 <label  class="form-label">Công nghệ màn hình</label>
                                 <select class="form-control w-100" id="sp-cong-nghe-man-hinh" required></select>
                                 <a class="position-absolute" style="right: 5%;top: 40px"><i class="fa fa-plus" aria-hidden="true"></i></a>

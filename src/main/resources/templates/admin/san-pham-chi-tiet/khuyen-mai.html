@@ -9,7 +9,10 @@
     <th:block layout:fragment="head_link">
         <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
         <script src="/vendor/sweetalert2/sweetalert2.min.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     </th:block>
+
 
 </head>
 
@@ -75,6 +78,8 @@
                         <th>ID</th>
                         <th>Tên</th>
                         <th>Đường dẫn</th>
+                        <th>Thời gian bắt đầu</th>
+                        <th>Thời gian kết thúc</th>
                         <th>Trạng thái</th>
                         <th>Chỉnh sửa</th>
 
@@ -85,6 +90,8 @@
                         <th>ID</th>
                         <th>Tên</th>
                         <th>Đường dẫn</th>
+                        <th>Thời gian bắt đầu</th>
+                        <th>Thời gian kết thúc</th>
                         <th>Trạng thái</th>
                         <th>Chỉnh sửa</th>
 
@@ -122,10 +129,17 @@
                         <div class="invalid-feedback">Tên khuyến mãi đã tồn tại hoặc không hợp lệ</div>
                     </div>
                     <div class="form-group">
+                        <label for="edit-date">Thời gian:</label>
+
+                        <input type="text"  name="datetimes" class="form-control" id="edit-date" placeholder="Thời gian áp dụng" pattern="^$|^((https?:\/\/)?([a-zA-Z0-9\-\_]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?$">
+                        <div class="invalid-feedback">Đường dẫn không hợp lệ</div>
+                    </div>
+                    <div class="form-group">
                         <label for="edit-link">Đường dẫn chi tiết:</label>
                         <input type="text" class="form-control" id="edit-link" placeholder="Đường dẫn chi tiết" pattern="^$|^((https?:\/\/)?([a-zA-Z0-9\-\_]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?$">
                         <div class="invalid-feedback">Đường dẫn không hợp lệ</div>
                     </div>
+
                     <div class="form-group">
                         <label for="edit-deleted" class="form-label">Trạng thái</label>
                         <select class="form-control" id="edit-deleted" required>
@@ -166,6 +180,12 @@
                         <div class="invalid-feedback">Tên đã tồn tại hoặc không hợp lệ</div>
                     </div>
                     <div class="form-group">
+                        <label for="edit-date">Thời gian:</label>
+
+                        <input type="text"  name="datetimes"  class="form-control" id="add-date" placeholder="Thời gian áp dụng">
+                        <div class="invalid-feedback">Đường dẫn không hợp lệ</div>
+                    </div>
+                    <div class="form-group">
                         <label for="add-link">Đường dẫn chi tiết:</label>
                         <input type="text" class="form-control" id="add-link" placeholder="Đường dẫn chi tiết" pattern="^$|^((https?:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?$">
                         <div class="invalid-feedback">Đường dẫn không hợp lệ</div>
@@ -190,6 +210,8 @@
     <!-- Page level plugins -->
     <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
     <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
     <!-- Page level custom scripts -->
     <script type="module" src="/js/admin/khuyen-mai.js"></script>

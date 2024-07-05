@@ -13,25 +13,7 @@ var lstSeries, lstMauSac;
 // fill data to select option
 
 $(document).ready(function () {
-    $('#modal-filter').on('show.bs.modal', function (event) {
-        //So Luong
-        let maxSoLuong = 0;
-        maxSoLuong = Math.max.apply(Math, $('#dataTable').DataTable().column(5).data().toArray());
-        maxSoLuong = Math.ceil(maxSoLuong / 100) * 100
-        console.log(maxSoLuong)
 
-
-        $("#rangeSlider").ionRangeSlider({
-            type: "double",
-            min: 0,
-            max: maxSoLuong,
-            from: 0,
-            to: maxSoLuong,
-            grid: true,
-            prettify: true,
-            skin: "round"
-        });
-    })
 })
 
 function loadFilter() {
@@ -99,16 +81,26 @@ function loadData() {
             "dataSrc": ""
         },
 
-        "columnDefs": [
-            {width: 30, targets: 0},
-            {width: 150, targets: 1}
-        ],
         "columns": [
 
-            {"data": "id"},
-            {"data": "tenSanPham"},
-            {"data": "series"},
+            {"data": "id", "name": "id", "visible": false},
+            {
+                "data": "anhSanPham",
+                "name": "anhSanPham",
+                "orderable": false,
+                "searchable": false,
 
+
+                "render": function (data) {
+
+                    if (data == null || data.length == 0)
+                        return ""
+                    return `<img src="${data}" class="" style="width: 70px; height:100px;" alt="...">`
+
+                },
+            },
+            {"data": "tenSanPham", "name": "tenSanPham"},
+            {"data": "series", "name": "series", "visible": false},
             {
 
                 "data": "danhSachMauSac",
@@ -122,19 +114,56 @@ function loadData() {
                         let ten = m.split(":")[1];
                         let ma = m.split(":")[0];
                         lstE += `<a type="button" class="btn btn-sm mr-2" style="background-color: ${ma}"></a>`;
-                        lstE += `<span type="button" class="btn btn-sm d-none" >${ten}</span>`
+                        lstE += `<span type="button" class="btn btn-sm d-none" > ${ten} </span>`
+                    })
+                    return lstE;
+
+                },
+                "orderable": false
+                , "name": "danhSachMauSac"
+
+
+            },
+            {
+
+                "data": "danhSachMauSac",
+                "render": function (data, type, row) {
+
+                    if (data == null || data.length == 0)
+                        return ""
+                    let lstMs = data.split(",");
+                    let lstE = "";
+                    lstMs.forEach(function (m) {
+                        let ten = m.split(":")[1];
+                        let ma = m.split(":")[0];
+                        lstE += `<a type="button" class="btn btn-sm mr-2" style="background-color: ${ma}"></a>`;
+                        lstE += `<span type="button" class="btn btn-sm d-none" > _${ten}_ </span>`
                     })
                     return lstE;
 
                 },
                 "orderable": false,
+                "visible": false,
+                "name": "danhSachMaMau"
 
 
             },
-            {"data": "danhSachRom"},
-            {"data": "soLuong"},
-            {"data": "thoiGianBaoHanh"},
-            {"data": "trangThai"}
+            {"data": "danhSachRom", "name": "danhSachRom"},
+            {"data": "soLuong", "name": "soLuong"},
+            {"data": "thoiGianBaoHanh", "name": "thoiGianBaoHanh"},
+            {"data": "trangThai", "name": "trangThai"},
+            {
+                "data": "id",
+                "render": function (data, type, row) {
+                    if (data)
+                        return '<div class="d-flex justify-content-end"><button type="button" class="btn btn-sm btn-primary mr-3 btn-edit">Chỉnh sửa</button><button type="button" class="btn btn-sm btn-danger btn-revert">Khôi phục</button></div>';
+                    else
+                        return '<div class="d-flex justify-content-end"><button type="button" class="btn btn-sm btn-primary mr-3 btn-edit">Chỉnh sửa</button><button type="button" class="btn btn-sm btn-danger btn-delete">Xóa</button></div>';
+
+                },
+            }
+
+
             // {
             //     "data": "deleted",
             //     "render": function (data, type, row) {
@@ -160,10 +189,9 @@ function loadData() {
 }
 
 
-//
-// const reloadDataTable = () => {
-//     $('#dataTable').DataTable().ajax.reload();
-// }
+const reloadDataTable = () => {
+    $('#dataTable').DataTable().ajax.reload();
+}
 
 //config dataTable
 $(document).ready(() => {
@@ -172,14 +200,226 @@ $(document).ready(() => {
 
     }
 );
-//
-// //Reload event
-// $(document).ready(() => {
-//     $('#btn-reload').on("click", () => {
-//         reloadDataTable()
-//     })
-// })
-//
+
+//Reload event
+$(document).ready(() => {
+    $('#btn-reload').on("click", () => {
+        reloadDataTable()
+    })
+})
+
+//Filter
+$(document).ready(function () {
+    // Khởi tạo DataTable
+
+    let table = $('#dataTable').DataTable();
+    let filterCount = 1;
+
+    let filterTrangThai = $('#filter-trang-thai').val();
+    let filterSeries = $('#filter-series').val();
+    let filterMauSac = $('#filter-mau-sac').val();
+    let filterRom = $('#filter-rom').val();
+    let filterSoLuong = $('#rangeSlider').val();
+    let debounceTimeout1, debounceTimeout2;
+
+    //load filter, init default val
+    $('#modal-filter').on('show.bs.modal', function (event) {
+        //So Luong
+        filterCount = 1;
+        let maxSoLuong = 0;
+        maxSoLuong = Math.max.apply(Math, $('#dataTable').DataTable().column(7).data().toArray());
+        maxSoLuong = Math.ceil(maxSoLuong / 100) * 100
+        console.log(maxSoLuong)
+
+
+        $("#rangeSlider").ionRangeSlider({
+            type: "double",
+            min: 0,
+            max: maxSoLuong,
+            from: 0,
+            to: maxSoLuong,
+            grid: true,
+            prettify: true,
+            skin: "round"
+        });
+        $('#filter-confirm').text(`Xác nhận`)
+
+        filterTrangThai = $('#filter-trang-thai').val();
+        filterSeries = $('#filter-series').val();
+        filterMauSac = $('#filter-mau-sac').val();
+        filterRom = $('#filter-rom').val();
+        filterSoLuong = $('#rangeSlider').val();
+
+    })
+
+
+    function applyFilterField() {
+        debugger
+        let filterTrangThai = $('#filter-trang-thai').val();
+        let filterSeries = $('#filter-series').val();
+        let filterMauSac = $('#filter-mau-sac').val();
+        let filterRom = $('#filter-rom').val();
+        let filterSoLuong = $('#rangeSlider').val();
+        let currentRowsCount = table.rows({search: "removed"}).count();
+        console.log('applyFilter')
+        if (filterSeries.length > 0) {
+            let regex = "(" + filterSeries.join("|") + ")"
+            console.log(regex)
+            table.column('series:name').search(regex, true, false);
+            filterCount++;
+        } else {
+            // Xóa bộ lọc nếu không có gì được chọn
+            table.column('series:name').search('');
+        }
+        if (filterRom.length > 0) {
+            let regex = "(" + filterRom.join("|") + ")"
+            console.log(regex)
+            table.column('danhSachRom:name').search(regex, true, false);
+            filterCount++;
+        } else {
+            // Xóa bộ lọc nếu không có gì được chọn
+            table.column('danhSachRom:name').search('');
+        }
+        if (filterMauSac.length > 0) {
+            let regex = "(_" + filterMauSac.join("_|_") + "_)"
+            console.log(regex)
+            // Lọc dữ liệu trong cột thứ hai (index 1)
+            table.column('danhSachMaMau:name').search(regex, true, false);
+            filterCount++;
+
+        } else {
+            // Xóa bộ lọc nếu không có gì được chọn
+            table.column('danhSachMaMau:name').search('');
+        }
+
+
+        console.log(filterSoLuong)
+
+        //Hiển thị nếu cs thay đổi
+        if (table.rows({search: "removed"}).count() != currentRowsCount) {
+            $('#filter-confirm').text(`Áp dụng (${table.rows({search: "applied"}).count()})`)
+        }
+
+
+    }
+
+    function applyFilterRanger() {
+        $.fn.dataTable.ext.search.pop();
+        let currentFilterSoLuong = $('#rangeSlider').val();
+
+        console.log('applyFilterRanger')
+
+
+        $.fn.dataTable.ext.search.push(function (searchStr, data, index) {
+            let min = parseInt(currentFilterSoLuong.split(';')[0]);
+            let max = parseInt(currentFilterSoLuong.split(';')[1]);
+            let soLuong = parseFloat(data[7]) || 0; // use data for the soLuong column
+
+            if (
+                (isNaN(min) && isNaN(max)) ||
+                (isNaN(min) && soLuong <= max) ||
+                (min <= soLuong && isNaN(max)) ||
+                (min <= soLuong && soLuong <= max)
+            ) {
+                return true;
+            }
+
+            return false;
+        });
+        table.draw();
+        console.log(currentFilterSoLuong)
+        $('#filter-confirm').text(`Áp dụng (${table.rows({search: "applied"}).count()})`)
+        $.fn.dataTable.ext.search.pop();
+        $.fn.dataTable.ext.search.push(function (searchStr, data, index) {
+            let min = parseInt(filterSoLuong.split(';')[0]);
+            let max = parseInt(filterSoLuong.split(';')[1]);
+            let soLuong = parseFloat(data[7]) || 0; // use data for the soLuong column
+
+            if (
+                (isNaN(min) && isNaN(max)) ||
+                (isNaN(min) && soLuong <= max) ||
+                (min <= soLuong && isNaN(max)) ||
+                (min <= soLuong && soLuong <= max)
+            ) {
+                return true;
+            }
+
+            return false;
+        });
+        table.draw();
+        $.fn.dataTable.ext.search.pop();
+        $.fn.dataTable.ext.search.push(function (searchStr, data, index) {
+            let min = parseInt(currentFilterSoLuong.split(';')[0]);
+            let max = parseInt(currentFilterSoLuong.split(';')[1]);
+            let soLuong = parseFloat(data[7]) || 0; // use data for the soLuong column
+
+            if (
+                (isNaN(min) && isNaN(max)) ||
+                (isNaN(min) && soLuong <= max) ||
+                (min <= soLuong && isNaN(max)) ||
+                (min <= soLuong && soLuong <= max)
+            ) {
+                return true;
+            }
+
+            return false;
+        });
+
+    }
+
+    // Lắng nghe sự kiện thay đổi của select option
+
+    $('#modal-filter').on('change', "select", () => {
+        clearTimeout(debounceTimeout1)
+        debounceTimeout1 = setTimeout(applyFilterField, 10);
+    });
+    $('#modal-filter').on('change', "input", () => {
+        clearTimeout(debounceTimeout2)
+        debounceTimeout2 = setTimeout(applyFilterRanger, 500);
+    });
+    let flagEventClose = true;
+    $('#modal-filter').on('hide.bs.modal', function () {
+        if (flagEventClose) {
+            console.log("default-filter")
+            $('#filter-trang-thai').val(filterTrangThai).trigger('change');
+            $('#filter-series').val(filterSeries).trigger('change');
+            $('#filter-mau-sac').val(filterMauSac).trigger('change');
+            $('#filter-rom').val(filterRom).trigger('change');
+            console.log(filterSoLuong + "filterSoLuong");
+            $('#rangeSlider').data("ionRangeSlider").update({
+                from: filterSoLuong.split(";")[0],
+                to: filterSoLuong.split(";")[1]
+            })
+            table.draw();
+
+        }
+    })
+    $('#modal-filter').on('click', '#filter-confirm', function () {
+        flagEventClose = false
+        table.draw();
+        $('#badge-filter').text(`${filterCount}`)
+        $('#modal-filter').modal('hide')
+        flagEventClose = true;
+    })
+    $('#modal-filter').on('click', '#filter-clear', function () {
+
+
+        console.log("clear filter");
+        $('#badge-filter').text('')
+
+        filterTrangThai = []
+        filterSeries = []
+        filterMauSac = []
+        filterRom = []
+        let maxSoLuong = 0;
+        maxSoLuong = Math.max.apply(Math, $('#dataTable').DataTable().column(7).data().toArray());
+        maxSoLuong = Math.ceil(maxSoLuong / 100) * 100
+        filterSoLuong = `$0;${maxSoLuong}`
+
+    })
+
+});
+
 // //Add
 // $(document).ready(() => {
 //     let existingNames;
@@ -437,54 +677,8 @@ $(document).ready(() => {
 //
 // })
 //
-//Filter
-$(document).ready(function () {
-    // Khởi tạo DataTable
-    let table = $('#dataTable').DataTable();
-
-    // Lắng nghe sự kiện thay đổi của select option
-    $('#modal-filter').on('change', "select", function () {
-        let filterTrangThai = $('#filter-trang-thai').val();
-        let filterSeries = $('#filter-series').val();
-        let filterMauSac = $('#filter-mau-sac').val();
-        let filterRom = $('#filter-rom').val();
 
 
-        if (filterSeries) {
-            let regex = "(" + filterSeries.join("|") + ")"
-            console.log(regex)
-            table.column(2).search('^' + regex + '$', true, false);
-        } else {
-            // Xóa bộ lọc nếu không có gì được chọn
-            table.column(2).search('');
-        }
-        if (filterRom) {
-            let regex = "(" + filterRom.join("|") + ")"
-            console.log(regex)
-            table.column(4).search('^' + regex + '$', true, false);
-        } else {
-            // Xóa bộ lọc nếu không có gì được chọn
-            table.column(4).search('');
-        }
-        if (filterMauSac) {
-            // let regex="("+filterMauSac.join("|")+")"
-            var regex = new RegExp('\b' + "Xám" + '\b', 'i');
-            console.log("Ôk1")
-            // Lọc dữ liệu trong cột thứ hai (index 1)
-            table.column(3).search(function (d) {
-                console.log("OK")
-                return true;
-            }).draw();
-
-        } else {
-            // Xóa bộ lọc nếu không có gì được chọn
-            table.column(3).search('');
-        }
-
-
-        table.draw();
-    });
-});
 //
 // //Import file
 // $(document).ready(function () {

@@ -54,6 +54,9 @@ function loadData() {
                         return `<a href="${data}">${data}</a>`
                 }
             },
+            {"data": "thoiGianBatDau"},
+            {"data": "thoiGianKetThuc"},
+
             {
                 "data": "deleted",
                 "render": function (data, type, row) {
@@ -76,10 +79,10 @@ function loadData() {
     });
     let selectedStatus = $('#statusFilter').val();
     if (selectedStatus) {
-        table.column(3).search('^' + selectedStatus + '$', true, false).draw();
+        table.column(5).search('^' + selectedStatus + '$', true, false).draw();
     } else {
         // Xóa bộ lọc nếu không có gì được chọn
-        table.column(3).search('').draw();
+        table.column(5).search('').draw();
     }
     ;
 }
@@ -90,12 +93,73 @@ const reloadDataTable = () => {
 
 //config dataTable
 $(document).ready(loadData());
+$(document).ready((function () {
+    $('input[name="datetimes"]').daterangepicker({
+        "showDropdowns": true,
+        "showWeekNumbers": true,
+        "showISOWeekNumbers": true,
+        "timePicker": true,
+        "autoApply": true,
+        "locale": {
+            "format": "DD/MM/YYYY hh:mm A",
+            "separator": " tới ",
+            "applyLabel": "Chọn",
+            "cancelLabel": "Hủy",
+            "fromLabel": "Từ",
+            "toLabel": "Tới",
+            "customRangeLabel": "Tùy chọn",
+            "weekLabel": "Tuần",
+            "daysOfWeek": [
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "CN"
+            ],
+            "monthNames": [
+                "Tháng 1",
+                "Tháng 2",
+                "Tháng 3",
+                "Tháng 4",
+                "Tháng 5",
+                "Tháng 6",
+                "Tháng 7",
+                "Tháng 8",
+                "Tháng 9",
+                "Tháng 10",
+                "Tháng 11",
+                "Tháng 12"
+            ],
+            "firstDay": 0
+        },
+        "startDate": new Date().toLocaleDateString("vi-VN"),
+        "minDate": new Date().toLocaleDateString("vi-VN")
+    }, function(start, end, label) {
+        // console.log(start.toDate().isAfter(end.toDate));
+        // console.log(start.toDate().isAfter(end.toDate));
+        console.log(end);
+        console.log(start);
+        if(start.time>=end){
+                $(this).addClass('is-invalid');
+                $(this).removeClass('is-valid');
+                console.log("inval")
+        }
+        else {
+                $(this).removeClass('is-invalid');
+                $(this).addClass('is-valid');
+            }
+    });
+
+}));
 
 //Reload event
 $(document).ready(() => {
     $('#btn-reload').on("click", () => {
         reloadDataTable()
     })
+    
 })
 
 //Add
@@ -119,6 +183,7 @@ $(document).ready(() => {
             $('#add-ten').addClass('is-valid');
         }
     });
+
     //Core
     $('#form-add').submit(function (event) {
         event.preventDefault(); // Ngăn chặn submit mặc định của form
@@ -346,8 +411,6 @@ $(document).ready(() => {
             });
 
 
-
-
         }
 
     });
@@ -366,10 +429,10 @@ $(document).ready(function () {
 
         if (selectedStatus) {
             // Áp dụng bộ lọc theo cột Status
-            table.column(3).search('^' + selectedStatus + '$', true, false).draw();
+            table.column(5).search('^' + selectedStatus + '$', true, false).draw();
         } else {
             // Xóa bộ lọc nếu không có gì được chọn
-            table.column(3).search('').draw();
+            table.column(5).search('').draw();
         }
     });
 });
