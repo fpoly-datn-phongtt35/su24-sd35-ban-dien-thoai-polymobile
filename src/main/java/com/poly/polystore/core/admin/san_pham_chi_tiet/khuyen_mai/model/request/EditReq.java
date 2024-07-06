@@ -30,9 +30,9 @@ public class EditReq implements Serializable {
     private String ten;
     @Size(max = 255)
     private String link;
-    @DateTimeFormat(pattern = "dd-MM-YYYY hh:mm A")
+    @DateTimeFormat(pattern = "DD-MM-YYYY hh:mm:ss")
     private Date  thoiGianBatDau;
-    @DateTimeFormat(pattern = "dd-MM-YYYY hh:mm A")
+    @DateTimeFormat(pattern = "DD-MM-YYYY hh:mm:ss")
     private Date  thoiGianKetThuc;
     @NotNull
     private Boolean deleted;

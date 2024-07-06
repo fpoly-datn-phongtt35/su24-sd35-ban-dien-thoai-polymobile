@@ -86,11 +86,9 @@ function loadData() {
     }
     ;
 }
-
 const reloadDataTable = () => {
     $('#dataTable').DataTable().ajax.reload();
 }
-
 //config dataTable
 $(document).ready(loadData());
 $(document).ready((function () {
@@ -100,8 +98,9 @@ $(document).ready((function () {
         "showISOWeekNumbers": true,
         "timePicker": true,
         "autoApply": true,
+        "timePicker24Hour": true,
         "locale": {
-            "format": "DD/MM/YYYY hh:mm A",
+            "format": "DD/MM/YYYY hh:mm",
             "separator": " tới ",
             "applyLabel": "Chọn",
             "cancelLabel": "Hủy",
@@ -109,6 +108,7 @@ $(document).ready((function () {
             "toLabel": "Tới",
             "customRangeLabel": "Tùy chọn",
             "weekLabel": "Tuần",
+
             "daysOfWeek": [
                 "2",
                 "3",
@@ -137,19 +137,7 @@ $(document).ready((function () {
         "startDate": new Date().toLocaleDateString("vi-VN"),
         "minDate": new Date().toLocaleDateString("vi-VN")
     }, function(start, end, label) {
-        // console.log(start.toDate().isAfter(end.toDate));
-        // console.log(start.toDate().isAfter(end.toDate));
-        console.log(end);
-        console.log(start);
-        if(start.time>=end){
-                $(this).addClass('is-invalid');
-                $(this).removeClass('is-valid');
-                console.log("inval")
-        }
-        else {
-                $(this).removeClass('is-invalid');
-                $(this).addClass('is-valid');
-            }
+    //    TODO BEFORE SELECT
     });
 
 }));
@@ -184,6 +172,8 @@ $(document).ready(() => {
         }
     });
 
+
+
     //Core
     $('#form-add').submit(function (event) {
         event.preventDefault(); // Ngăn chặn submit mặc định của form
@@ -195,7 +185,9 @@ $(document).ready(() => {
         } else {
             let formData = {
                 ten: $('#add-ten').val(),
-                link: $('#add-link').val()
+                link: $('#add-link').val(),
+                thoiGianBatDau: $('#add-date').data('daterangepicker').startDate.format("DD-MM-YYYY hh:mm:ss"),
+                thoiGianKetThuc: $('#add-date').data('daterangepicker').endDate.format("DD-MM-YYYY hh:mm:ss")
             }
             // Nếu form hợp lệ, gửi dữ liệu form lên server
             $.ajax({
@@ -238,12 +230,17 @@ $(document).ready(() => {
             let id = rowData.id;
             let ten = rowData.ten;
             let link = rowData.link;
+            let thoiGianBatDau=rowData.thoiGianBatDau;
+            let thoiGianKetThuc=rowData.thoiGianKetThuc;
             let deleted = rowData.deleted;
 
             // Binding dữ liệu vào modal
             $('#edit-id').val(id);
             $('#edit-ten').val(ten);
             $('#edit-link').val(link);
+            $('#edit-date').data('daterangepicker').setStartDate(thoiGianBatDau);
+            $('#edit-date').data('daterangepicker').setEndDate(thoiGianKetThuc);
+
             $('#edit-deleted').html(`
                 <option value="false">Hoạt động</option>
                 <option ${deleted ? "selected" : ""}  value="true">Đã xóa</option>`)
@@ -287,7 +284,9 @@ $(document).ready(() => {
                 id: $('#edit-id').val(),
                 ten: $('#edit-ten').val(),
                 link: $('#edit-link').val(),
-                deleted: $('#edit-deleted').val()
+                deleted: $('#edit-deleted').val(),
+                thoiGianBatDau: $('#edit-date').data('daterangepicker').startDate.format("DD-MM-YYYY hh:mm:ss"),
+                thoiGianKetThuc: $('#edit-date').data('daterangepicker').endDate.format("DD-MM-YYYY hh:mm:ss")
             }
             // Nếu form hợp lệ, gửi dữ liệu form lên server
             $.ajax({

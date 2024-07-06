@@ -35,11 +35,11 @@ public class KhuyenMai {
     @Column(name = "LINK", nullable = false)
     private String link;
 
-    @DateTimeFormat(pattern = "dd-MM-YYYY hh:mm A")
+    @DateTimeFormat(pattern = "DD-MM-YYYY hh:mm:ss")
     @Column(name = "THOI_GIAN_BAT_DAU", nullable = false)
     private Date  thoiGianBatDau;
 
-    @DateTimeFormat(pattern = "dd-MM-YYYY hh:mm A")
+    @DateTimeFormat(pattern = "DD-MM-YYYY hh:mm:ss")
     @Column(name = "THOI_GIAN_KET_THUC", nullable = false)
     private Date  thoiGianKetThuc;
 
