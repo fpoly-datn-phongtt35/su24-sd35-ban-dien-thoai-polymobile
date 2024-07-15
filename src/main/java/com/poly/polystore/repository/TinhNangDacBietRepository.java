@@ -7,5 +7,5 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public interface TinhNangDacBietRepository extends JpaRepository<TinhNangDacBiet, Integer> {
-    Collection<TinhNangDacBiet> findAllByDeletedIsFalse();
+    Collection<TinhNangDacBiet> findAllByDeletedIsFalseOrderByIdDesc();
 }

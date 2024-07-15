@@ -98,7 +98,7 @@ $(document).ready(() => {
     })
 })
 
-//Add
+//Add gps
 $(document).ready(() => {
     let existingNames;
     //Event

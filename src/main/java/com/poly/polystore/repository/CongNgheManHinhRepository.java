@@ -7,5 +7,5 @@ import java.util.Arrays;
 import java.util.List;
 
 public interface CongNgheManHinhRepository extends JpaRepository<CongNgheManHinh, Integer> {
-    List<CongNgheManHinh> findAllByDeletedIsFalse();
+    List<CongNgheManHinh> findAllByDeletedIsFalseOrderByIdDesc();
 }

@@ -98,7 +98,7 @@ $(document).ready(() => {
     })
 })
 
-//Add
+//Add bluetooth
 $(document).ready(() => {
     let existingNames;
     //Event

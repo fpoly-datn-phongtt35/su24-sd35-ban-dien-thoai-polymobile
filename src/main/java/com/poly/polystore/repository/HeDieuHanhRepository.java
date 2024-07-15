@@ -7,5 +7,5 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public interface HeDieuHanhRepository extends JpaRepository<HeDieuHanh, Integer> {
-    Collection<HeDieuHanh> findAllByDeletedIsFalse();
+    Collection<HeDieuHanh> findAllByDeletedIsFalseOrderByIdDesc();
 }

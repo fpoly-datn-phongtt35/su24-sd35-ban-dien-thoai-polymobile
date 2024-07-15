@@ -7,5 +7,5 @@ import java.util.Arrays;
 import java.util.List;
 
 public interface BluetoothRepository extends JpaRepository<Bluetooth, Integer> {
-    List<Bluetooth> findAllByDeletedIsFalse();
+    List<Bluetooth> findAllByDeletedIsFalseOrderByIdDesc();
 }

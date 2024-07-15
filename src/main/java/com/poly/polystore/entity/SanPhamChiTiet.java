@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "SAN_PHAM_CHI_TIET")
-public class SanPhamChiTiet {
+public class SanPhamChiTiet implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
@@ -38,6 +39,15 @@ public class SanPhamChiTiet {
 //    )
 //    private DotGiamGia dotGiamGia;
 
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "SAN_PHAM_CHI_TIET_KHUYEN_MAI",
+            joinColumns = @JoinColumn(name = "SAN_PHAM_CHI_TIET_ID"),
+            inverseJoinColumns = @JoinColumn(name = "KHUYEN_MAI_ID")
+
+    )
+    private List<KhuyenMai> khuyenMai;
 
     @ManyToOne
     @JoinColumn(name = "MAU_SAC_ID")

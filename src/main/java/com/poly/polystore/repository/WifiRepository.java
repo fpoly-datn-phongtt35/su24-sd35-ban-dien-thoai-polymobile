@@ -7,5 +7,5 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public interface WifiRepository extends JpaRepository<Wifi, Integer> {
-    Collection<Wifi> findAllByDeletedIsFalse();
+    Collection<Wifi> findAllByDeletedIsFalseOrderByIdDesc();
 }

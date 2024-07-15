@@ -7,5 +7,5 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public interface MatKinhCamUngRepository extends JpaRepository<MatKinhCamUng, Integer> {
-    Collection<MatKinhCamUng> findAllByDeletedIsFalse();
+    Collection<MatKinhCamUng> findAllByDeletedIsFalseOrderByIdDesc();
 }

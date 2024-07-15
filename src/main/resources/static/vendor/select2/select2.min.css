@@ -52,6 +52,12 @@
     padding: 0
 }
 
+.select2-container .select2-selection--multiple .select2-selection__rendered {
+    display: inline;
+    list-style: none;
+    padding: 0
+}
+
 .select2-container .select2-selection--multiple .select2-selection__clear {
     background-color: transparent;
     border: none;
@@ -62,13 +68,11 @@
     box-sizing: border-box;
     border: none;
     font-size: 100%;
-    margin-top: 5px;
-    margin-left: 5px;
+    margin-left: 12px;
     padding: 0;
     max-width: 100%;
     resize: none;
-    height: 18px;
-    vertical-align: bottom;
+    height: 19px;
     font-family: sans-serif;
     overflow: hidden;
     word-break: keep-all
@@ -108,6 +112,13 @@
 
 .select2-results__option--selectable {
     color: #6e707e;
+    cursor: pointer
+}
+.select2-results__options[aria-multiselectable="true"] .select2-results__option--selectable::before {
+    content: "☐";
+    font-family: 'FontAwesome';
+    color: #757575;
+    padding-right: 8px;
     cursor: pointer
 }
 
@@ -179,7 +190,6 @@
 
 .select2-container--default .select2-selection--single {
     background-color: #fff;
-
     color: #6e707e;
     background-color: #fff;
     background-clip: padding-box;
@@ -187,6 +197,25 @@
     border-radius: .35rem;
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
+.is-valid ~ .select2-container--default .select2-selection--single{
+        background-color: #fff;
+        color: #6e707e;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #1cc88a;
+        border-radius: .35rem;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+.is-invalid ~ .select2-container--default .select2-selection--single{
+        background-color: #fff;
+        color: #6e707e;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #e74a3b;
+        border-radius: .35rem;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
 
 .select2-container--default .select2-selection--single .select2-selection__rendered {
     color: #6e707e;
@@ -251,6 +280,26 @@
     padding-right: 5px;
     position: relative
 }
+.is-valid ~ .select2-container--default .select2-selection--multiple {
+    background-color: white;
+    border: 1px solid #1cc88a;
+    border-radius: .35rem;
+    cursor: text;
+    padding-bottom: 6px;
+    padding-top: 7px;
+    padding-right: 5px;
+    position: relative
+}
+.is-invalid ~ .select2-container--default .select2-selection--multiple {
+    background-color: white;
+    border: 1px solid #e74a3b;
+    border-radius: .35rem;
+    cursor: text;
+    padding-bottom: 6px;
+    padding-top: 7px;
+    padding-right: 5px;
+    position: relative
+}
 
 .select2-container--default .select2-selection--multiple.select2-selection--clearable {
     padding-right: 25px
@@ -281,7 +330,24 @@
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
-    vertical-align: bottom;
+    vertical-align: top;
+    white-space: nowrap
+}
+.inline-selected ~ .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #656565;
+    color: #FFFFFF;
+    border: 1px solid #aaa;
+    display: block;
+    border-radius: 4px;
+    box-sizing: border-box;
+    width: fit-content;
+    margin-left: 5px;
+    padding: 0;
+    padding-left: 20px;
+    position: relative;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: top;
     white-space: nowrap
 }
 
@@ -344,6 +410,7 @@
     outline: 0;
     box-shadow: 0 0 0 .2rem rgba(78,115,223,.25)
 }
+
 
 .select2-container--default.select2-container--disabled .select2-selection--multiple {
     background-color: #eee;
@@ -426,6 +493,12 @@
     background-color: #ddd
 }
 
+.select2-results__options[aria-multiselectable="true"] .select2-results__option--selected::before {
+    content: "\f14a";
+    font-family: 'FontAwesome';
+    color: #757575;
+    padding-right: 8px;
+}
 .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
     background-color: #5897fb;
     color: white

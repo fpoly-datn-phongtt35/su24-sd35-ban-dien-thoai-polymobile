@@ -1,6 +1,7 @@
 package com.poly.polystore.core.admin.san_pham.controller;
 
 import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamDataTable;
+import com.poly.polystore.core.admin.san_pham.model.request.AddRequest;
 import com.poly.polystore.entity.SanPham;
 import com.poly.polystore.repository.SanPhamRepository;
 import jakarta.persistence.EntityManager;
@@ -13,14 +14,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Controller
@@ -38,6 +37,15 @@ public class SanPhamController {
     @GetMapping("/admin/san-pham/add")
     public String add(Model model) {
         return "/admin/san-pham/add";
+    }
+
+    @PostMapping("/api/v1/san-pham")
+    public ResponseEntity<?> addNew(Model model) {
+        var rp=new AddRequest();
+        Set<AddRequest.SanPhamChiTiet> sanPhamChiTietSet=new HashSet<>();
+        sanPhamChiTietSet.add(new AddRequest.SanPhamChiTiet());
+        rp.setSanPhamChiTiet(sanPhamChiTietSet);
+        return ResponseEntity.ok(rp);
     }
 
 
@@ -59,7 +67,7 @@ public class SanPhamController {
         return spdt;
     }
 
-    public Collection<SanPham> findAllByDeletedIsFalse() {
+    public Collection<SanPham> findAllByDeletedIsFalseOrderByIdDesc() {
         return null;
     }
 //

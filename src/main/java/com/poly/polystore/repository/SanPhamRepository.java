@@ -1,23 +1,15 @@
 package com.poly.polystore.repository;
 
 import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamDataTable;
-import com.poly.polystore.entity.Imei;
-import com.poly.polystore.entity.MauSac;
 import com.poly.polystore.entity.SanPham;
-import com.poly.polystore.entity.SanPhamChiTiet;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
+    List<SanPham> findAllByOrderByIdDesc();
+
     public enum TrangThai {
         Available, Unavailable, Discontinued, Pre_order
     }

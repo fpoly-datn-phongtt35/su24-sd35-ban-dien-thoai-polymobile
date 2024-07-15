@@ -98,7 +98,7 @@ $(document).ready(() => {
     })
 })
 
-//Add
+//Add cong nghe pin
 $(document).ready(() => {
     let existingNames;
     //Event

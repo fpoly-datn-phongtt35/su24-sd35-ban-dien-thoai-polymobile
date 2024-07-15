@@ -37,34 +37,42 @@ const showWarnigToast = (message) => {
     Toast.toast('show');
 }
 
-const clearForm = () => {
+const clearForm = (selector) => {
+    let formNeedClear=selector?selector:(document);
     console.log('Clear form')
-    if ($('.was-validated').length) {
-        // Nếu có, loại bỏ class '.was-validated' từ tất cả các phần tử
-        $('.was-validated').removeClass('was-validated');
-    }
-    if ($('.is-valid').length) {
-        // Nếu có, loại bỏ class '.is-valid' từ tất cả các phần tử
-        $('.is-valid').removeClass('is-valid');
-    }
-    if ($('.is-invalid').length) {
-        // Nếu có, loại bỏ class '.is-invalid' từ tất cả các phần tử
-        $('.is-invalid').removeClass('is-invalid');
-    }
-    if ($('input').length) {
-        // Nếu có, loại bỏ class 'input' từ tất cả các phần tử
-        $('input').val('');
-    }
+    // Clear input fields
+    $(formNeedClear).find('input[type="text"], input[type="password"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="date"], input[type="datetime-local"], input[type="month"], input[type="week"], input[type="time"]').val('');
+
+    // Uncheck all checkboxes and radio buttons
+    $(formNeedClear).find('input[type="checkbox"], input[type="radio"]').prop('checked', false);
+
+    // Clear textarea fields
+    $(formNeedClear).find('textarea').val('');
+
+    // Reset select fields to default option
+    $(formNeedClear).find('select').prop('selectedIndex', 0);
+
+
+    $(formNeedClear).find('.was-validated').removeClass('was-validated');
+
+
+    $(formNeedClear).find('.is-valid').removeClass('is-valid');
+
+
+    $(formNeedClear).find('.is-invalid').removeClass('is-invalid');
+
+
 }
+
 function dataToJson(event) {
     return new Promise((resolve, reject) => {
         const file = event.target.files[0];
         const reader = new FileReader();
 
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             try {
                 const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
+                const workbook = XLSX.read(data, {type: 'array'});
 
                 // Giả sử dữ liệu nằm trong sheet đầu tiên
                 const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
@@ -72,8 +80,8 @@ function dataToJson(event) {
 
                 resolve(jsonData)
                 console.log(jsonData)
-                event.target.files[0].value=""
-            }catch (e) {
+                event.target.files[0].value = ""
+            } catch (e) {
                 reject(e)
             }
         };
@@ -82,6 +90,7 @@ function dataToJson(event) {
         reader.readAsArrayBuffer(file);
     })
 }
+
 const showConfirm = (title, message) => {
     console.log("showConfirm");
 

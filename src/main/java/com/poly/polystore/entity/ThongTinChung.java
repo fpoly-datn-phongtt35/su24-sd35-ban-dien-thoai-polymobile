@@ -1,8 +1,10 @@
 package com.poly.polystore.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,4 +19,11 @@ public class ThongTinChung {
     private String chatLieu;
     @Column(name = "KICH_THUOC_KHOI_LUONG")
     private String kichThuocKhoiLuong;
+    @ManyToMany
+    @JoinTable(
+            name = "SAN_PHAM_TINH_NANG_DAC_BIET",
+            joinColumns = @JoinColumn(name = "SAN_PHAM_ID"),
+            inverseJoinColumns = @JoinColumn(name="TINH_NANG_DAC_BIET_ID")
+    )
+    private Set<TinhNangDacBiet> tinhNangDacBiet;
 }

@@ -16,6 +16,7 @@ import java.util.TreeSet;
 @NoArgsConstructor
 @Builder
 public class ResponseDataList {
+    List<DataList> sanPham;
     Set<String> ten;
     //Man hinh
     List<DataList> congNgheManHinh;
@@ -27,6 +28,7 @@ public class ResponseDataList {
     //Camera sau
     Set<String> doPhanGiaiCameraTruoc;
     List<DataList> tinhNangCamera;
+    Set<String> denFlash;
 
     //Camera truoc
     Set<String> doPhanGiaiCameraSau;
@@ -63,5 +65,6 @@ public class ResponseDataList {
     List<DataList> mauSac;
     List<DataList> khuyenMai;
     List<DataList> series;
+    Set<String> thoiGianBaoHanh;
 }
 

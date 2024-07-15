@@ -16,7 +16,7 @@ public class BackCamera {
     @Column(name = "DO_PHAN_GIAI_CAMERA_SAU")
     private String doPhanGiai;
     @Column(name = "DEN_FLASH_CAMERA_SAU")
-    private Boolean denFlash;
+    private String denFlash;
     @ManyToMany
     @JoinTable(
             name="CAMERA_SAU_TINH_NANG_CAMERA",

@@ -7,5 +7,5 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public interface GpsRepository extends JpaRepository<Gps, Integer> {
-    Collection<Gps> findAllByDeletedIsFalse();
+    Collection<Gps> findAllByDeletedIsFalseOrderByIdDesc();
 }

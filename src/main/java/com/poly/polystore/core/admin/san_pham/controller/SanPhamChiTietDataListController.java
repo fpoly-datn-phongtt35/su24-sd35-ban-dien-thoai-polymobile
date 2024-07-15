@@ -1,19 +1,17 @@
 package com.poly.polystore.core.admin.san_pham.controller;
 
 import com.poly.polystore.core.admin.san_pham.model.reponse.DataList;
+import com.poly.polystore.core.admin.san_pham.model.reponse.DataSourcesSelect2;
 import com.poly.polystore.core.admin.san_pham.model.reponse.ResponseDataList;
-import com.poly.polystore.entity.SanPham;
+import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamTemplate;
+import com.poly.polystore.entity.*;
 import com.poly.polystore.repository.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 
@@ -40,87 +38,161 @@ public class SanPhamChiTietDataListController {
     ModelMapper modelMapper;
     SanPhamRepository sanPhamRepository;
 
+    @GetMapping("/{id}")
+    public SanPhamTemplate getSanPhamTemplate(@PathVariable(name = "id") Integer id) {
+        var sp = sanPhamRepository.findById(id);
+        var sanPhamTemplate = sp
+                .map((element) -> modelMapper.map(element, SanPhamTemplate.class)).orElse(null);
+        sanPhamTemplate.setCameraSauTinhNangCameraIds(sp.get().getCameraTruoc()
+                .getTinhNangCameras()
+                .stream()
+                .map(TinhNangCamera::getId)
+                .collect(Collectors.toSet()));
+        sanPhamTemplate.setCameraTruocTinhNangCameraIds(sp.get().getCameraSau()
+                .getTinhNangCameras()
+                .stream()
+                .map(TinhNangCamera::getId)
+                .collect(Collectors.toSet()));
+        sanPhamTemplate.setKetNoiWifiIds(sp.get()
+                .getKetNoi()
+                .getWifi()
+                .stream()
+                .map(Wifi::getId)
+                .collect(Collectors.toSet()));
+        sanPhamTemplate.setKetNoiGpsIds(sp.get()
+                .getKetNoi()
+                .getGps()
+                .stream()
+                .map(Gps::getId)
+                .collect(Collectors.toSet()));
+        sanPhamTemplate.setKetNoiBluetoothIds(sp.get()
+                .getKetNoi()
+                .getBluetooth()
+                .stream()
+                .map(Bluetooth::getId)
+                .collect(Collectors.toSet()));
+        sanPhamTemplate.setPinVaSacCongNghePinIds(sp.get()
+                .getPinVaSac()
+                .getCongNghePin()
+                .stream()
+                .map(CongNghePin::getId)
+                .collect(Collectors.toSet()));
+        sanPhamTemplate.setKhuyenMaiIds(sp.get()
+                .getKhuyenMai()
+                .stream()
+                .map(KhuyenMai::getId)
+                .collect(Collectors.toList()));
+        sanPhamTemplate.setSanPhamChiTietRoms(sp.get()
+                .getSanPhamChiTiet()
+                .stream()
+                .map(SanPhamChiTiet::getRom)
+                .collect(Collectors.toSet())
+        );
+        sanPhamTemplate.setSanPhamChiTietMauSacIds(sp.get()
+                .getSanPhamChiTiet()
+                .stream()
+                .map(SanPhamChiTiet::getMauSac)
+                .map(MauSac::getId)
+                .collect(Collectors.toSet())
+        );
+        sanPhamTemplate.setThongTinChungTinhNangDacBietIds(sp.get()
+                .getThongTinChung()
+                .getTinhNangDacBiet()
+                .stream()
+                .map(tndb->tndb.getId())
+                .collect(Collectors.toSet())
+        );
+        sanPhamTemplate.setRam(sp.get().getRam());
+        sanPhamTemplate.setThoiGianBaoHanh(sp.get().getThoiGianBaoHanh());
+
+
+        return sanPhamTemplate;
+    }
 
     @GetMapping("")
     public ResponseDataList getAll() {
 
-        var lstMauSac = mauSacRepository.findAllByDeletedIsFalse()
+        var lstMauSac = mauSacRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
-        var lstCongNgheManHinh = congNgheManHinhRepository.findAllByDeletedIsFalse()
+        var lstCongNgheManHinh = congNgheManHinhRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
-        var lstBluetooth = bluetoothRepository.findAllByDeletedIsFalse()
+        var lstBluetooth = bluetoothRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
-        var lstCongNghePin = congNghePinRepository.findAllByDeletedIsFalse()
+        var lstCongNghePin = congNghePinRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
-        var lstCpu = cpuRepository.findAllByDeletedIsFalse()
+        var lstCpu = cpuRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
-        var lstGps = gpsRepository.findAllByDeletedIsFalse()
+        var lstGps = gpsRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
-        var lstMatKinhCamUng = matKinhCamUngRepository.findAllByDeletedIsFalse()
+        var lstMatKinhCamUng = matKinhCamUngRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
-        var lstSeries = seriesRepository.findAllByDeletedIsFalse()
+        var lstSeries = seriesRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
-        var lstTinhNangCamera = tinhNangCameraRepository.findAllByDeletedIsFalse()
+        var lstTinhNangCamera = tinhNangCameraRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
-        var lstTinhNangDacBiet = tinhNangDacBietRepository.findAllByDeletedIsFalse()
+        var lstTinhNangDacBiet = tinhNangDacBietRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
-        var lstWifi = wifiRepository.findAllByDeletedIsFalse()
+        var lstWifi = wifiRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
-        var lstKhuyenMai = khuyenMaiRepository.findAllByDeletedIsFalse()
+        var lstKhuyenMai = khuyenMaiRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
-        var lstHeDieuHanh = heDieuHanhRepository.findAllByDeletedIsFalse()
+        var lstHeDieuHanh = heDieuHanhRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
-
+        var lstSanPhamDataList = sanPhamRepository.findAllByOrderByIdDesc()
+                .stream()
+                .map(element -> new DataList(element.getId(), element.getTenSanPham()))
+                .collect(Collectors.toList());
         // Không phải thuộc tính chính
+        Set<String> lstTen = new ConcurrentSkipListSet<>();
+        Set<String> lstDoPhanGiai = new ConcurrentSkipListSet<>();
+        Set<String> lstManHinhRong = new ConcurrentSkipListSet<>();
+        Set<String> lstDoSangToiDa = new ConcurrentSkipListSet<>();
+        Set<String> lstDoPhanGiaiCameraTruoc = new ConcurrentSkipListSet<>();
+        Set<String> lstDoPhanGiaiCameraSau = new ConcurrentSkipListSet<>();
+        Set<String> lstRam = new ConcurrentSkipListSet<>();
+        Set<String> lstMangDiDong = new ConcurrentSkipListSet<>();
+        Set<String> lstSim = new ConcurrentSkipListSet<>();
+        Set<String> lstCongSac = new ConcurrentSkipListSet<>();
+        Set<String> lstJackTaiNghe = new ConcurrentSkipListSet<>();
+        Set<String> lstDungLuongPin = new ConcurrentSkipListSet<>();
+        Set<String> lstLoaiPin = new ConcurrentSkipListSet<>();
+        Set<String> lstHoTroSacToiDa = new ConcurrentSkipListSet<>();
+        Set<String> lstThietKe = new ConcurrentSkipListSet<>();
+        Set<String> lstChatLieu = new ConcurrentSkipListSet<>();
+        Set<String> lstKichThuocKhoiLuong = new ConcurrentSkipListSet<>();
+        Set<String> lstFlash = new ConcurrentSkipListSet<>();
+        Set<String> lstThoiGianBaoHanh = new ConcurrentSkipListSet<>();
 
-       Set<String> lstTen= new ConcurrentSkipListSet<>();
-       Set<String> lstDoPhanGiai= new ConcurrentSkipListSet<>();
-       Set<String> lstManHinhRong= new ConcurrentSkipListSet<>();
-       Set<String> lstDoSangToiDa= new ConcurrentSkipListSet<>();
-       Set<String> lstDoPhanGiaiCameraTruoc= new ConcurrentSkipListSet<>();
-       Set<String> lstDoPhanGiaiCameraSau= new ConcurrentSkipListSet<>();
-       Set<String> lstRam= new ConcurrentSkipListSet<>();
-       Set<String> lstMangDiDong= new ConcurrentSkipListSet<>();
-       Set<String> lstSim= new ConcurrentSkipListSet<>();
-       Set<String> lstCongSac= new ConcurrentSkipListSet<>();
-       Set<String> lstJackTaiNghe= new ConcurrentSkipListSet<>();
-       Set<String> lstDungLuongPin= new ConcurrentSkipListSet<>();
-       Set<String> lstLoaiPin= new ConcurrentSkipListSet<>();
-       Set<String> lstHoTroSacToiDa= new ConcurrentSkipListSet<>();
-        Set<String> lstThietKe= new ConcurrentSkipListSet<>();
-        Set<String> lstChatLieu= new ConcurrentSkipListSet<>();
-        Set<String> lstKichThuocKhoiLuong= new ConcurrentSkipListSet<>();
-
-//        var lstSanPham =sanPhamRepository.findAllByDeletedIsFalse();
-        var lstSanPham =sanPhamRepository.findAll();
+//        var lstSanPham =sanPhamRepository.findAllByDeletedIsFalseOrderByIdDesc();
+        var lstSanPham = sanPhamRepository.findAll();
         System.out.println(lstSanPham);
-        lstSanPham.parallelStream().forEach(sp->{
+        lstSanPham.parallelStream().forEach(sp -> {
             lstTen.add(sp.getTenSanPham());
             lstDoPhanGiai.add(sp.getManHinh().getDoPhanGiai());
             lstManHinhRong.add(sp.getManHinh().getManHinhRong());
@@ -135,56 +207,64 @@ public class SanPhamChiTietDataListController {
             lstDungLuongPin.add(sp.getPinVaSac().getDungLuongPin());
             lstLoaiPin.add(sp.getPinVaSac().getLoaiPin());
             lstHoTroSacToiDa.add(sp.getPinVaSac().getHoTroSacToiDa());
+            lstFlash.add(sp.getCameraSau().getDenFlash());
+            lstThietKe.add(sp.getThongTinChung().getThietKe());
+            lstChatLieu.add(sp.getThongTinChung().getChatLieu());
+            lstKichThuocKhoiLuong.add(sp.getThongTinChung().getKichThuocKhoiLuong());
+            lstThoiGianBaoHanh.add(sp.getThoiGianBaoHanh());
         });
 
-       var responseDataList= ResponseDataList.builder()
-        .ten(lstTen)
-        //Man hinh
-        .congNgheManHinh(lstCongNgheManHinh)
-        .doPhanGiai(lstDoPhanGiai)
-        .manHinhRong(lstManHinhRong)
-        .doSangToiDa(lstDoSangToiDa)
-        .matKinhCamUng(lstMatKinhCamUng)
+        var responseDataList = ResponseDataList.builder()
+                .sanPham(lstSanPhamDataList)
+                .ten(lstTen)
+                //Man hinh
+                .congNgheManHinh(lstCongNgheManHinh)
+                .doPhanGiai(lstDoPhanGiai)
+                .manHinhRong(lstManHinhRong)
+                .doSangToiDa(lstDoSangToiDa)
+                .matKinhCamUng(lstMatKinhCamUng)
 
-        //Camera sau
-        .doPhanGiaiCameraTruoc(lstDoPhanGiaiCameraTruoc)
-        .tinhNangCamera(lstTinhNangCamera)
+                //Camera sau
+                .doPhanGiaiCameraTruoc(lstDoPhanGiaiCameraTruoc)
+                .tinhNangCamera(lstTinhNangCamera)
+                .denFlash(lstFlash)
 
-        //Camera truoc
-        .doPhanGiaiCameraSau(lstDoPhanGiaiCameraSau)
+                //Camera truoc
+                .doPhanGiaiCameraSau(lstDoPhanGiaiCameraSau)
 
-        //HDH va CPU
-        .heDieuHanh(lstHeDieuHanh)
-        .cpu(lstCpu)
+                //HDH va CPU
+                .heDieuHanh(lstHeDieuHanh)
+                .cpu(lstCpu)
 
-        //Bo nho va Luu Tru
-        .ram(lstRam)
+                //Bo nho va Luu Tru
+                .ram(lstRam)
 
-        //Ket noi
-        .mangDiDong(lstMangDiDong)
-        .sim(lstSim)
-        .wifi(lstWifi)
-        .gps(lstGps)
-        .bluetooth(lstBluetooth)
-        .congSac(lstCongSac)
-        .jackTaiNghe(lstJackTaiNghe)
+                //Ket noi
+                .mangDiDong(lstMangDiDong)
+                .sim(lstSim)
+                .wifi(lstWifi)
+                .gps(lstGps)
+                .bluetooth(lstBluetooth)
+                .congSac(lstCongSac)
+                .jackTaiNghe(lstJackTaiNghe)
 
-        //Dung luong pin
-        .dungLuongPin(lstDungLuongPin)
-        .loaiPin(lstLoaiPin)
-        .hoTroSacToiDa(lstHoTroSacToiDa)
-        .congNghePin(lstCongNghePin)
+                //Dung luong pin
+                .dungLuongPin(lstDungLuongPin)
+                .loaiPin(lstLoaiPin)
+                .hoTroSacToiDa(lstHoTroSacToiDa)
+                .congNghePin(lstCongNghePin)
 
-        //Tien ich
-        .tinhNangDacBiet(lstTinhNangDacBiet)
+                //Tien ich
+                .tinhNangDacBiet(lstTinhNangDacBiet)
 
-        //Thong tin chung
-        .thietKe(lstThietKe)
-        .chatLieu(lstChatLieu)
-        .kichThuocKhoiLuong(lstKichThuocKhoiLuong)
-        .mauSac(lstMauSac)
-        .khuyenMai(lstKhuyenMai)
-        .series(lstSeries)
+                //Thong tin chung
+                .thietKe(lstThietKe)
+                .chatLieu(lstChatLieu)
+                .kichThuocKhoiLuong(lstKichThuocKhoiLuong)
+                .mauSac(lstMauSac)
+                .khuyenMai(lstKhuyenMai)
+                .series(lstSeries)
+                .thoiGianBaoHanh(lstThoiGianBaoHanh)
                 .build();
         return responseDataList;
 
@@ -192,103 +272,125 @@ public class SanPhamChiTietDataListController {
 
 
     @GetMapping("mau-sac")
-    public List<DataList> getMauSac() {
-        return mauSacRepository.findAllByDeletedIsFalse()
+    public DataSourcesSelect2 getMauSac() {
+        var dataList = mauSacRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
+        return new DataSourcesSelect2(dataList, new DataSourcesSelect2.Pagination(false));
 
     }
 
     @GetMapping("he-dieu-hanh")
-    public List<DataList> getHeDieuHanh() {
-        return heDieuHanhRepository.findAllByDeletedIsFalse()
+    public DataSourcesSelect2 getHeDieuHanh() {
+        var dataList = heDieuHanhRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
+        return new DataSourcesSelect2(dataList, new DataSourcesSelect2.Pagination(false));
 
     }
 
     @GetMapping("cong-nghe-man-hinh")
-    public List<DataList> getCongNgheManHinh() {
-        return congNgheManHinhRepository.findAllByDeletedIsFalse()
+    public DataSourcesSelect2 getCongNgheManHinh() {
+        var dataList = congNgheManHinhRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
+        return new DataSourcesSelect2(dataList, new DataSourcesSelect2.Pagination(false));
     }
 
     @GetMapping("bluetooth")
-    public List<DataList> getBluetooth() {
-        return bluetoothRepository.findAllByDeletedIsFalse()
+    public DataSourcesSelect2 getBluetooth() {
+        var dataList = bluetoothRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
+        return new DataSourcesSelect2(dataList, new DataSourcesSelect2.Pagination(false));
     }
 
     @GetMapping("cong-nghe-pin")
-    public List<DataList> getCongNghePin() {
-        return congNghePinRepository.findAllByDeletedIsFalse()
+    public DataSourcesSelect2 getCongNghePin() {
+        var dataList = congNghePinRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
+        return new DataSourcesSelect2(dataList, new DataSourcesSelect2.Pagination(false));
     }
 
     @GetMapping("cpu")
-    public List<DataList> getCPU() {
-        return cpuRepository.findAllByDeletedIsFalse()
+    public DataSourcesSelect2 getCPU() {
+        var dataList = cpuRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
+        return new DataSourcesSelect2(dataList, new DataSourcesSelect2.Pagination(false));
     }
 
     @GetMapping("gps")
-    public List<DataList> getGPS() {
-        return gpsRepository.findAllByDeletedIsFalse()
+    public DataSourcesSelect2 getGPS() {
+        var dataList = gpsRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
+        return new DataSourcesSelect2(dataList, new DataSourcesSelect2.Pagination(false));
     }
 
     @GetMapping("mat-kinh-cam-ung")
-    public List<DataList> getMatKinhCamUng() {
-        return matKinhCamUngRepository.findAllByDeletedIsFalse()
+    public DataSourcesSelect2 getMatKinhCamUng() {
+        var dataList = matKinhCamUngRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
+        return new DataSourcesSelect2(dataList, new DataSourcesSelect2.Pagination(false));
     }
 
     @GetMapping("series")
-    public List<DataList> getSeries() {
-        return seriesRepository.findAllByDeletedIsFalse()
+    public DataSourcesSelect2 getSeries() {
+        var dataList = seriesRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
+        return new DataSourcesSelect2(dataList, new DataSourcesSelect2.Pagination(false));
     }
 
     @GetMapping("tinh-nang-camera")
-    public List<DataList> getTinhNangCamera() {
-        return tinhNangCameraRepository.findAllByDeletedIsFalse()
+    public DataSourcesSelect2 getTinhNangCamera() {
+        var dataList = tinhNangCameraRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
+        return new DataSourcesSelect2(dataList, new DataSourcesSelect2.Pagination(false));
     }
 
     @GetMapping("tinh-nang-dac-biet")
-    public List<DataList> getTinhNagDacBiet() {
-        return tinhNangDacBietRepository.findAllByDeletedIsFalse()
+    public DataSourcesSelect2 getTinhNagDacBiet() {
+        var dataList = tinhNangDacBietRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
+        return new DataSourcesSelect2(dataList, new DataSourcesSelect2.Pagination(false));
     }
 
     @GetMapping("wifi")
-    public List<DataList> getWifi() {
-        return wifiRepository.findAllByDeletedIsFalse()
+    public DataSourcesSelect2 getWifi() {
+        var dataList = wifiRepository.findAllByDeletedIsFalseOrderByIdDesc()
                 .stream()
-                .map(element->new DataList(element.getId(),element.getTen()))
+                .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
+
+        return new DataSourcesSelect2(dataList, new DataSourcesSelect2.Pagination(false));
     }
 
+    @GetMapping("san-pham")
+    public DataSourcesSelect2 getSanPham() {
+        var dataList = sanPhamRepository.findAllByOrderByIdDesc()
+                .stream()
+                .map(element -> new DataList(element.getId(), element.getTenSanPham()))
+                .collect(Collectors.toList());
+
+        return new DataSourcesSelect2(dataList, new DataSourcesSelect2.Pagination(false));
+    }
 
 
 }
