@@ -64,7 +64,7 @@
                 </div>
             </div>
             <div>
-                <form class="container-fluid">
+                <form id="form-sp" class="container-fluid">
                     <div class="setup-content" id="step-1">
                         <!--                        Thông tin cơ bản-->
                         <fieldset class="row">
@@ -89,14 +89,14 @@
 
                             </div>
                             <div class="col-10 row m-0">
-                                <div class="form-group col-4">
+                                <div class="form-group col-3">
                                     <label for="sp-ten" class="form-label">Tên sản phẩm</label>
                                     <input type="text" class="form-control" id="sp-ten" required>
                                     <div class="invalid-feedback">
                                         Tên không hợp lệ hoặc đã tồn tại
                                     </div>
                                 </div>
-                                <div class="form-group col-4">
+                                <div class="form-group col-3">
                                     <label class="form-label">Series</label>
                                     <select class="form-control" id="sp-series" required>
                                         <option selected disabled value="">Chọn series</option>
@@ -108,7 +108,7 @@
                                         Vui lòng chọn series
                                     </div>
                                 </div>
-                                <div class="form-group col-4">
+                                <div class="form-group col-3">
                                     <label class="form-label">Dung lượng ram</label>
                                     <input class="form-control" list="dataList-ram" id="sp-ram"
                                            placeholder="Ram ..." required>
@@ -116,6 +116,22 @@
                                     </datalist>
                                     <div class="invalid-feedback">
                                         Vui lòng không để trống loại pin
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-3">
+                                    <label for="sp-rom" class="form-label">Trạng thái</label>
+                                    <select class="form-control w-100 sm" id="sp-trang-thai" required>
+                                        <option value="IN_STOCK">Có sẵn</option>
+                                        <option value="OUT_OF_STOCK">Hết hàng</option>
+                                        <option value="TEMPORARILY_OUT_OF_STOCK">Hết hàng tạm thời</option>
+                                        <option value="COMING_SOON">Sắp ra mắt</option>
+                                        <option value="DISCONTINUED">Không kinh doanh</option>
+
+                                    </select>
+
+                                    <div class="invalid-feedback">
+                                        Vui lòng chọn bộ nhớ
                                     </div>
                                 </div>
 

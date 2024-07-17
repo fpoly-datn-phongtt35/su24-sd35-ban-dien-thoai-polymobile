@@ -1,5 +1,6 @@
 package com.poly.polystore.entity;
 
+import com.poly.polystore.repository.SanPhamRepository;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
@@ -21,7 +22,7 @@ public class SanPhamChiTiet implements Serializable {
     @Column(name = "ID", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.PERSIST)
     @JoinColumn(name = "SAN_PHAM_ID")
     private SanPham sanPham;
     @OneToMany(
@@ -49,6 +50,14 @@ public class SanPhamChiTiet implements Serializable {
     )
     private List<KhuyenMai> khuyenMai;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "SAN_PHAM_CHI_TIET_ANH",
+            joinColumns = @JoinColumn(name = "SAN_PHAM_CHI_TIET_ID"),
+            inverseJoinColumns = @JoinColumn(name = "ANH_ID")
+    )
+    //Order by id ảnh nào đầu tiên thì là ảnh sản phẩm chi tiết chính
+    private List<Anh> anh;
     @ManyToOne
     @JoinColumn(name = "MAU_SAC_ID")
     private MauSac mauSac;
@@ -61,8 +70,18 @@ public class SanPhamChiTiet implements Serializable {
     @Column(name = "Gia_ban", precision = 18, scale = 2)
     private BigDecimal giaBan;
 
-    @Column(name = "Gia_von", precision = 18, scale = 2)
-    private BigDecimal giaVon;
+    @Column(name = "GIA_NHAP", precision = 18, scale = 2)
+    private BigDecimal giaNhap;
+
+
+//    IN_STOCK("Có sẵn"),
+//    OUT_OF_STOCK("Hết hàng"),
+//    TEMPORARILY_OUT_OF_STOCK("Hết hàng tạm thời"),
+//    COMING_SOON("Sắp ra mắt"),
+//    DISCONTINUED("Không kinh doanh");
+    @Enumerated(EnumType.STRING)
+    @Column(name="TRANG_THAI")
+    private SanPhamRepository.TrangThai trangThai;
 
     @Nationalized
     @Column(name = "STT")

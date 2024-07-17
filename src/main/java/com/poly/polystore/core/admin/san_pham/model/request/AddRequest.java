@@ -26,7 +26,6 @@ public class AddRequest implements Serializable {
     String manHinhDoSangToiDa;
     Integer manHinhMatKinhCamUngId;
     String cameraTruocDoPhanGiai;
-    Boolean cameraTruocDenFlash;
     Set<Integer> cameraTruocTinhNangCameraIds;
     String cameraSauDoPhanGiai;
     String cameraSauDenFlash;
@@ -36,7 +35,7 @@ public class AddRequest implements Serializable {
     String ketNoiMangDiDong;
     String ketNoiSim;
     Set<Integer> ketNoiWifiIds;
-    Set<Integer> ketNoiGpIds;
+    Set<Integer> ketNoiGpsIds;
     Set<Integer> ketNoiBluetoothIds;
     String ketNoiCongSac;
     String ketNoiJackTaiNghe;
@@ -53,6 +52,7 @@ public class AddRequest implements Serializable {
     String ram;
     String thoiGianBaoHanh;
     SanPhamRepository.TrangThai trangThai;
+    String moTa;
     Integer stt;
 
     /**
@@ -70,7 +70,7 @@ public class AddRequest implements Serializable {
         List<String> anh;
         List<Integer> khuyenMaiIds;
         BigDecimal giaBan;
-        BigDecimal giaVon;
+        BigDecimal giaNhap;
 
     }
 }

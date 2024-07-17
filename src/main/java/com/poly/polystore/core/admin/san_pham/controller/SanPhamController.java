@@ -2,7 +2,9 @@ package com.poly.polystore.core.admin.san_pham.controller;
 
 import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamDataTable;
 import com.poly.polystore.core.admin.san_pham.model.request.AddRequest;
-import com.poly.polystore.entity.SanPham;
+import com.poly.polystore.core.common.image.service.ImageService;
+import com.poly.polystore.entity.*;
+import com.poly.polystore.repository.AnhRepository;
 import com.poly.polystore.repository.SanPhamRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +18,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Controller
@@ -28,6 +32,8 @@ public class SanPhamController {
     private final ModelMapper modelMapper;
     private final SanPhamRepository sanPhamRepository;
     private final EntityManager entityManager;
+    private final ImageService imageService;
+    private final AnhRepository anhRepository;
 
     @GetMapping("/admin/san-pham")
     public String ui(Model model) {
@@ -39,13 +45,120 @@ public class SanPhamController {
         return "/admin/san-pham/add";
     }
 
-    @PostMapping("/api/v1/san-pham")
-    public ResponseEntity<?> addNew(Model model) {
-        var rp=new AddRequest();
-        Set<AddRequest.SanPhamChiTiet> sanPhamChiTietSet=new HashSet<>();
-        sanPhamChiTietSet.add(new AddRequest.SanPhamChiTiet());
-        rp.setSanPhamChiTiet(sanPhamChiTietSet);
-        return ResponseEntity.ok(rp);
+    @Transactional
+    @PutMapping("/api/v1/san-pham")
+    public ResponseEntity<?> addNew(@RequestBody AddRequest addRequest) {
+        var sp= modelMapper.map(addRequest, SanPham.class);
+
+        sp.getCameraTruoc().setTinhNangCameras(addRequest
+                .getCameraTruocTinhNangCameraIds()
+                .stream().map(id-> {
+                    var tinhNangCamera=new TinhNangCamera();
+                    tinhNangCamera.setId(id);
+                    return tinhNangCamera;
+                })
+                .collect(Collectors.toSet())
+        );
+
+        sp.getCameraSau().setTinhNangCameras(addRequest
+                .getCameraSauTinhNangCameraIds()
+                .stream().map(id-> {
+                    var tinhNangCamera=new TinhNangCamera();
+                    tinhNangCamera.setId(id);
+                    return tinhNangCamera;
+                })
+                .collect(Collectors.toSet())
+        );
+        sp.getKetNoi().setBluetooth(addRequest
+                .getKetNoiBluetoothIds()
+                .stream().map(id-> {
+                    var bluetooth=new Bluetooth();
+                    bluetooth.setId(id);
+                    return bluetooth;
+                })
+                .collect(Collectors.toSet())
+
+        );
+        sp.getKetNoi().setWifi(addRequest
+                .getKetNoiWifiIds()
+                .stream().map(id-> {
+                    var wifi=new Wifi();
+                    wifi.setId(id);
+                    return wifi;
+                })
+                .collect(Collectors.toSet())
+
+        );
+        sp.getKetNoi().setGps(addRequest
+                .getKetNoiGpsIds()
+                .stream().map(id-> {
+                    var gps=new Gps();
+                    gps.setId(id);
+                    return gps;
+                })
+                .collect(Collectors.toSet())
+
+        );
+        sp.getPinVaSac().setCongNghePin(addRequest
+                .getPinVaSacCongNghePinIds()
+                .stream().map(id-> {
+                    var congNghePin=new CongNghePin();
+                    congNghePin.setId(id);
+                    return congNghePin;
+                })
+                .collect(Collectors.toSet())
+
+        );
+        sp.getThongTinChung().setTinhNangDacBiet(addRequest
+                .getThongTinChungTinhNangDacBietIds()
+                .stream().map(id-> {
+                    var tinhNangDacBiet=new TinhNangDacBiet();
+                    tinhNangDacBiet.setId(id);
+                    return tinhNangDacBiet;
+                })
+                .collect(Collectors.toSet())
+
+        );
+
+        sp.getCameraSau().setDenFlash(addRequest.getCameraSauDenFlash());
+
+        //Đưa ảnh về container chính
+        var anhSanPhamAddRquest=new Anh();
+        anhSanPhamAddRquest.setName(addRequest.getAnhName());
+        anhSanPhamAddRquest.setUrl(imageService.moveImageToPermanent(addRequest.getAnhName()));
+        var anhSanPham = anhRepository.save(anhSanPhamAddRquest);
+
+        sp.setAnh(anhSanPham);
+
+
+        var lstSPCT=addRequest.getSanPhamChiTiet().stream().map(spctAddRequest->{
+            //Lưu ảnh trả về list Ảnh
+            var lstAnh= spctAddRequest.getAnh().stream().map(imageName->{
+                var newImage=new Anh();
+                newImage.setName(imageName);
+                newImage.setUrl(imageService.moveImageToPermanent(imageName));
+                return anhRepository.save(newImage);
+            }).collect(Collectors.toList());
+
+            //Chuyển lai list khuyến mãi
+            var lstKhuyenMai=spctAddRequest.getKhuyenMaiIds().stream().map(khuyenMaiId->{
+                var newKhuyenMai=new KhuyenMai();
+                newKhuyenMai.setId(khuyenMaiId);
+                return newKhuyenMai;
+            }).collect(Collectors.toList());
+
+            var spct=modelMapper.map(spctAddRequest, SanPhamChiTiet.class);
+            spct.setKhuyenMai(lstKhuyenMai);
+            spct.setAnh(lstAnh);
+            return spct;
+        }).collect(Collectors.toSet());
+
+
+        sp.setSanPhamChiTiet(lstSPCT);
+
+        var spResponse=sanPhamRepository.save(sp);
+
+        return ResponseEntity.ok(spResponse);
     }
 
 

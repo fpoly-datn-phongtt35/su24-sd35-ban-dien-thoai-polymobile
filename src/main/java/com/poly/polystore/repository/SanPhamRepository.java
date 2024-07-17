@@ -11,7 +11,20 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     List<SanPham> findAllByOrderByIdDesc();
 
     public enum TrangThai {
-        Available, Unavailable, Discontinued, Pre_order
+        IN_STOCK("Có sẵn"),
+        OUT_OF_STOCK("Hết hàng"),
+        TEMPORARILY_OUT_OF_STOCK("Hết hàng tạm thời"),
+        COMING_SOON("Sắp ra mắt"),
+        DISCONTINUED("Không kinh doanh");
+        private final String displayName;
+
+        TrangThai(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
     @Query(nativeQuery = true,name = "findAllSanPhamDataTable")
     public List<SanPhamDataTable> findAllSanPhamDataTable();

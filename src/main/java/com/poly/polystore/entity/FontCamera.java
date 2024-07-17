@@ -15,8 +15,7 @@ import java.util.Set;
 public class FontCamera {
     @Column(name = "DO_PHAN_GIAI_CAMERA_TRUOC")
     private String doPhanGiai;
-    @Column(name = "DEN_FLASH_CAMERA_TRUOC")
-    private Boolean denFlash;
+
     @ManyToMany
     @JoinTable(
             name="CAMERA_TRUOC_TINH_NANG_CAMERA",

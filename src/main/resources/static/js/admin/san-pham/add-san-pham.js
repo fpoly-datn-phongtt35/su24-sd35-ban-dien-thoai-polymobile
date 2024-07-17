@@ -1593,7 +1593,7 @@ $(document).ready(() => {
                         <td style="text-align: center;vertical-align: middle">${mauSac.text}<span class="d-none">${mauSac.id}</span></td>
                         <td style="text-align: center;vertical-align: middle">
                             <div>
-                                <input type="file" id="img-${mauSac.id}" ms-id="${mauSac.id}" class="form-control-file d-none" accept=".png, .jpg, .jpeg" multiple required>
+                                <input type="file" id="img-${mauSac.id}" ms-id="${mauSac.id}" class="form-control-file d-none" accept=".png, .jpg, .jpeg" multiple>
                                 <label for="img-${mauSac.id}" class="btn btn-primary">Chọn ảnh</label>
                             </div>
                         </td>
@@ -1869,8 +1869,8 @@ $(document).ready(() => {
             })
             danhSachSanPhamChiTiet.forEach(e=>{
                 columnSP+=`
-                    <tr>
-                       <td style="font-size: 14px" rom-id="${e.rom}" ms-id="${e.idMauSac}" >${tenSP} ${e.rom} ${e.tenMauSac}</td>
+                    <tr rom-id="${e.rom}" ms-id="${e.idMauSac}">
+                       <td style="font-size: 14px"  >${tenSP} ${e.rom} ${e.tenMauSac}</td>
                     </tr>
                         `
             })
@@ -2002,133 +2002,187 @@ $(document).ready(() => {
 
 // Final submit
 $(document).ready(function () {
-    $('#btn-finish').on('click',function (){
-        let sp={
-            "id": null,
-            "anhName": "",
-            "tenSanPham": "",
-            "manHinhCongNgheManHinhId": "",
-            "manHinhDoPhanGiai": "",
-            "manHinhManHinhRong": "",
-            "manHinhDoSangToiDa": "",
-            "manHinhMatKinhCamUngId": "",
-            "cameraTruocDoPhanGiai": "",
-            "cameraTruocDenFlash": "",
-            "cameraTruocTinhNangCameraIds": "",
-            "cameraSauDoPhanGiai": "",
-            "cameraSauDenFlash": "",
-            "cameraSauTinhNangCameraIds": "",
-            "heDieuHanhVaCpuHeDieuHanhId": "",
-            "heDieuHanhVaCpuCpuId": "",
-            "ketNoiMangDiDong": "",
-            "ketNoiSim": "",
-            "ketNoiWifiIds": "",
-            "ketNoiGpIds": "",
-            "ketNoiBluetoothIds": "",
-            "ketNoiCongSac": "",
-            "ketNoiJackTaiNghe": "",
-            "pinVaSacDungLuongPin": "",
-            "pinVaSacLoaiPin": "",
-            "pinVaSacHoTroSacToiDa": "",
-            "pinVaSacCongNghePinIds": "",
-            "thongTinChungThietKe": "",
-            "thongTinChungChatLieu": "",
-            "thongTinChungKichThuocKhoiLuong": "",
-            "thongTinChungTinhNangDacBietIds": "",
-            "khuyenMaiIds": "",
-            "seriesId": "",
-            "sanPhamChiTiet": [
-                {
-                    "id": "",
-                    "mauSacId": "",
-                    "rom": "",
-                    "giaBan": "",
-                    "giaVon": ""
-                }
-            ],
-            "ram": "",
-            "thoiGianBaoHanh": "",
-            "trangThai": "",
-            "stt": ""
+    $('#form-sp').on('submit',function (event){
+        event.preventDefault(); // Ngăn chặn submit mặc định của form
+        const form = $(this);
+        if (!form[0].checkValidity()) {
+            // Nếu form không hợp lệ, hiển thị các lỗi validation từ Bootstrap
+            event.stopPropagation();
+            form.addClass('was-validated');
         }
-        sp.anhName=$('#sp-img').val();
-        sp.tenSanPham=$('#sp-ten').val();
+            else {
 
-        sp.manHinhCongNgheManHinhId=$('#sp-cong-nghe-man-hinh').val();
-        sp.manHinhDoPhanGiai=$('#sp-doPhanGiai').val();
-        sp.manHinhManHinhRong=$('#sp-manHinhRong').val();
-        sp.manHinhDoSangToiDa=$('#sp-doSangToiDa').val();
-        sp.manHinhMatKinhCamUngId=$('#sp-matKinhCamUng').val();
+            let sp = {
+                "id": null,
+                "anhName": "",
+                "tenSanPham": "",
+                "manHinhCongNgheManHinhId": "",
+                "manHinhDoPhanGiai": "",
+                "manHinhManHinhRong": "",
+                "manHinhDoSangToiDa": "",
+                "manHinhMatKinhCamUngId": "",
+                "cameraTruocDoPhanGiai": "",
+                "cameraTruocTinhNangCameraIds": "",
+                "cameraSauDoPhanGiai": "",
+                "cameraSauDenFlash": "",
+                "cameraSauTinhNangCameraIds": "",
+                "heDieuHanhVaCpuHeDieuHanhId": "",
+                "heDieuHanhVaCpuCpuId": "",
+                "ketNoiMangDiDong": "",
+                "ketNoiSim": "",
+                "ketNoiWifiIds": "",
+                "ketNoiGpsIds": "",
+                "ketNoiBluetoothIds": "",
+                "ketNoiCongSac": "",
+                "ketNoiJackTaiNghe": "",
+                "pinVaSacDungLuongPin": "",
+                "pinVaSacLoaiPin": "",
+                "pinVaSacHoTroSacToiDa": "",
+                "pinVaSacCongNghePinIds": "",
+                "thongTinChungThietKe": "",
+                "thongTinChungChatLieu": "",
+                "thongTinChungKichThuocKhoiLuong": "",
+                "thongTinChungTinhNangDacBietIds": "",
+                "khuyenMaiIds": "",
+                "seriesId": "",
+                "sanPhamChiTiet": [
+                    {
+                        "id": "",
+                        "mauSacId": "",
+                        "rom": "",
+                        "giaBan": "",
+                        "giaVon": ""
+                    }
+                ],
+                "ram": "",
+                "thoiGianBaoHanh": "",
+                "trangThai": "",
+                "moTa": "",
+                "stt": ""
+            }
+            sp.anhName = $('#sp-img').val();
+            sp.tenSanPham = $('#sp-ten').val();
+            sp.trangThai=$('#sp-trang-thai').val();
 
-        sp.cameraTruocDoPhanGiai=$('#sp-cameraTruoc-doPhanGiai').val();
-        sp.cameraTruocTinhNangCameraIds=$('#sp-tinhNangCameraTruoc').val();
+            sp.manHinhCongNgheManHinhId = $('#sp-cong-nghe-man-hinh').val();
+            sp.manHinhDoPhanGiai = $('#sp-doPhanGiai').val();
+            sp.manHinhManHinhRong = $('#sp-manHinhRong').val();
+            sp.manHinhDoSangToiDa = $('#sp-doSangToiDa').val();
+            sp.manHinhMatKinhCamUngId = $('#sp-matKinhCamUng').val();
 
-        sp.cameraSauDoPhanGiai=$('#sp-cameraSau-doPhanGiai').val();
-        sp.cameraSauDenFlash=$('#sp-cameraSau-denFlash').val();
-        sp.cameraSauTinhNangCameraIds=$('#sp-tinhNangCameraSau').val();
+            sp.cameraTruocDoPhanGiai = $('#sp-cameraTruoc-doPhanGiai').val();
+            sp.cameraTruocTinhNangCameraIds = $('#sp-tinhNangCameraTruoc').val();
 
-        sp.heDieuHanhVaCpuHeDieuHanhId=$('#sp-heDieuHanh').val();
-        sp.heDieuHanhVaCpuCpuId=$('#sp-cpu').val();
+            sp.cameraSauDoPhanGiai = $('#sp-cameraSau-doPhanGiai').val();
+            sp.cameraSauDenFlash = $('#sp-cameraSau-denFlash').val();
+            sp.cameraSauTinhNangCameraIds = $('#sp-tinhNangCameraSau').val();
 
-        sp.ketNoiMangDiDong=$('#sp-ketNoi-mangDiDong').val();
-        sp.ketNoiSim=$('#sp-ketNoi-sim').val();
-        sp.ketNoiWifiIds=$('#sp-ketNoi-wifi').val();
-        sp.ketNoiGpIds=$('#sp-ketNoi-gps').val();
-        sp.ketNoiBluetoothIds=$('#sp-ketNoi-bluetooth').val();
-        sp.ketNoiCongSac=$('#sp-ketNoi-sac').val();
-        sp.ketNoiJackTaiNghe=$('#sp-ketNoi-taiNghe').val();
+            sp.heDieuHanhVaCpuHeDieuHanhId = $('#sp-heDieuHanh').val();
+            sp.heDieuHanhVaCpuCpuId = $('#sp-cpu').val();
 
-        sp.pinVaSacDungLuongPin=$('#sp-pin-dungLuong').val();
-        sp.pinVaSacLoaiPin=$('#sp-pin-loaiPin').val();
-        sp.pinVaSacHoTroSacToiDa=$('#sp-pin-sacToiDa').val();
-        sp.pinVaSacCongNghePinIds=$('#sp-pin-congNghePin').val();
+            sp.ketNoiMangDiDong = $('#sp-ketNoi-mangDiDong').val();
+            sp.ketNoiSim = $('#sp-ketNoi-sim').val();
+            sp.ketNoiWifiIds = $('#sp-ketNoi-wifi').val();
+            sp.ketNoiGpsIds = $('#sp-ketNoi-gps').val();
+            sp.ketNoiBluetoothIds = $('#sp-ketNoi-bluetooth').val();
+            sp.ketNoiCongSac = $('#sp-ketNoi-sac').val();
+            sp.ketNoiJackTaiNghe = $('#sp-ketNoi-taiNghe').val();
 
-        sp.thongTinChungThietKe=$('#sp-ttc-thietKe').val();
-        sp.thongTinChungChatLieu=$('#sp-ttc-chatLieu').val();
-        sp.thongTinChungKichThuocKhoiLuong=$('#sp-ttc-kichThuocKhoiLuong').val();
-        sp.thoiGianBaoHanh=$('#sp-ttc-thoiGianBaoHanh').val();
-        sp.thongTinChungTinhNangDacBietIds=$('#sp-ttc-tinhNangDacBiet').val();
-        sp.seriesId=$('#sp-series').val();
+            sp.pinVaSacDungLuongPin = $('#sp-pin-dungLuong').val();
+            sp.pinVaSacLoaiPin = $('#sp-pin-loaiPin').val();
+            sp.pinVaSacHoTroSacToiDa = $('#sp-pin-sacToiDa').val();
+            sp.pinVaSacCongNghePinIds = $('#sp-pin-congNghePin').val();
+
+            sp.thongTinChungThietKe = $('#sp-ttc-thietKe').val();
+            sp.thongTinChungChatLieu = $('#sp-ttc-chatLieu').val();
+            sp.thongTinChungKichThuocKhoiLuong = $('#sp-ttc-kichThuocKhoiLuong').val();
+            sp.thoiGianBaoHanh = $('#sp-ttc-thoiGianBaoHanh').val();
+            sp.thongTinChungTinhNangDacBietIds = $('#sp-ttc-tinhNangDacBiet').val();
+            sp.seriesId = $('#sp-series').val();
 
 
-        sp.ram=$('#sp-ram').val();
-        sp.thoiGianBaoHanh=$('#sp-ttc-thoiGianBaoHanh').val();
+            sp.ram = $('#sp-ram').val();
+            sp.thoiGianBaoHanh = $('#sp-ttc-thoiGianBaoHanh').val();
 
-        //Danh lấy danh sách ảnh theo màu sắc
-        let danhSachAnhTheoMauSac= new Map();
-        $('#ms-img').find('tbody input[type="file"]').each((index,inputFile)=>{
-            let lstImgName=[]
-            $(inputFile).closest('tr').find('img').each((i,img)=>{
-                if($(img).parent().hasClass("bg-gray-400"))
-                    lstImgName.unshift($(img).attr('alt'));
-                else
-                    lstImgName.push($(img).attr('alt'));
-            })
-            danhSachAnhTheoMauSac.set(
-                $(inputFile).attr('ms-id'),
-                lstImgName
+            //Danh lấy danh sách ảnh theo màu sắc
+            let danhSachAnhTheoMauSac = new Map();
+            $('#ms-img').find('tbody input[type="file"]').each((index, inputFile) => {
+                    let lstImgName = []
+                    $(inputFile).closest('tr').find('img').each((i, img) => {
+                        if ($(img).parent().hasClass("bg-gray-400"))
+                            lstImgName.unshift($(img).attr('alt'));
+                        else
+                            lstImgName.push($(img).attr('alt'));
+                    })
+                    danhSachAnhTheoMauSac.set(
+                        parseInt($(inputFile).attr('ms-id')),
+                        lstImgName
+                    )
+
+                    $(inputFile).attr('ms-id')
+                }
             )
 
-            $(inputFile).attr('ms-id')}
-        )
+            let sanPhamChiTiet;
 
-        let sanPhamChiTiet;
-        $('#gia-nhap-gia-ban').find('input').each((index,inputFile)=>{})
+            let danhSachSanPhamChiTiet = [];
+            let tbodyTblKhuyenMaiApDung = $('#tbl-khuyen-mai-ap-dung tbody').first();
+
+            $('#danhSachSanPhamChiTiet').find('.san-pham-chi-tiet').each(function () {
+                let msId = parseInt($(this).find('input[type="text"]').first().attr('ms-id')),
+                    rom = $(this).closest('table').first().attr('rom-id'),
+                    giaNhap = $(this).find('input[type="text"]').first().val().replace(/\D/g, ""),
+                    giaBan = $(this).find('input[type="text"]').last().val().replace(/\D/g, ""),
+                    khuyenMai = [];
+                tbodyTblKhuyenMaiApDung.find(`tr[ms-id='${msId}'][rom-id='${rom}']`).find('input:checked').each((index, inputChecked) => {
+                    khuyenMai.push($(inputChecked).attr('km-id'));
+                })
+                let imgName = $(this).find
+
+                danhSachSanPhamChiTiet.push({
+                    mauSacId: msId,
+                    rom: rom,
+                    giaNhap: giaNhap,
+                    giaBan: giaBan,
+                    khuyenMaiIds: khuyenMai,
+                    anh: danhSachAnhTheoMauSac.get(msId)
+                })
+
+            })
+
+            sp.sanPhamChiTiet = danhSachSanPhamChiTiet
+
+            sp.moTa = tinymce.get('sp-mo-ta').getContent()
 
 
+            console.log(sp)
 
-        sp.sanPhamChiTiet=danhSachAnhTheoMauSac
-
-        //     $('.ms-img').find('img')[0].value;
-        // {
-        //     mauSacId: "",
-        //         rom: "",
-        //
-        //     giaBan: "",
-        //     giaVon: ""
-        // }
-       console.log(sp)
+            // Nếu form hợp lệ, gửi dữ liệu form lên server
+            $.ajax({
+                url: "/api/v1/san-pham",
+                method: 'PUT', // Phương thức HTTP
+                data: JSON.stringify(sp),
+                contentType: 'application/json',
+                success: function (response) {
+                    Toast.fire({
+                        icon: "success",
+                        title: "Thêm mới thành công"
+                    })
+                    console.log(response);
+                },
+                error: function (xhr, status, error) {
+                    Toast.fire({
+                        icon: "error",
+                        title: "Thêm mới thất bại"
+                    });
+                    console.log(response);
+                    console.error(xhr.responseText);
+                }
+            });
+        }
     })
+
+
 })
 
 

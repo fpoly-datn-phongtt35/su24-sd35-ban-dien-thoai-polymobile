@@ -152,7 +152,9 @@ public class SanPham {
 
     @OneToMany(
             fetch = FetchType.LAZY,
-            mappedBy = "sanPham"
+            mappedBy = "sanPham",
+            cascade =  CascadeType.ALL,
+            orphanRemoval = true
     )
     private Set<SanPhamChiTiet> sanPhamChiTiet;
 
@@ -166,6 +168,10 @@ public class SanPham {
     @Enumerated(EnumType.STRING)
     @Column(name="TRANG_THAI")
     private SanPhamRepository.TrangThai trangThai;
+
+    @Nationalized
+    @Column(name = "MO_TA")
+    private String moTa;
 
     @Nationalized
     @Column(name = "STT")
