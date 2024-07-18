@@ -4744,7 +4744,7 @@ S2.define('select2/i18n/en',[],function () {
       return message;
     },
     noResults: function () {
-      return 'No results found';
+      return 'Không có kết quả';
     },
     searching: function () {
       return 'Searching…';

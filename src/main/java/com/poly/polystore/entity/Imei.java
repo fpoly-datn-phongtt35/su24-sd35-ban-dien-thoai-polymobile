@@ -12,13 +12,21 @@ import org.hibernate.annotations.Nationalized;
 @Entity
 @Table(name = "IMEI")
 public class Imei {
+    public enum TrangThai{
+        TRONG_KHO,DA_BAN
+    }
     @Id
     @Nationalized
-    @Column(name = "IMEI", nullable = false, length = 50)
+    @Column(name = "IMEI", nullable = false)
     private String imei;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_San_Pham_Chi_Tiet")
-    private SanPhamChiTiet idSanPhamChiTiet;
+    @JoinColumn(name = "SAN_PHAM_CHI_TIET_ID")
+    private SanPhamChiTiet sanPhamChiTiet;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "")
+    private TrangThai trangThai;
+
 
 }

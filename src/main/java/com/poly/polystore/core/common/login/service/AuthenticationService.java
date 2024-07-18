@@ -1,10 +1,12 @@
 package com.poly.polystore.core.common.login.service;
 
 
-import com.poly.polystore.core.admin.ma_giam_gia.dto.req.SignUpRequest;
-import com.poly.polystore.core.admin.ma_giam_gia.dto.resp.JwtAuthenticationResponse;
+import com.poly.polystore.core.common.login.model.request.SignUpRequest;
+import com.poly.polystore.core.common.login.model.response.JwtAuthenticationResponse;
 import com.poly.polystore.entity.TaiKhoan;
 import com.poly.polystore.repository.TaiKhoanRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -44,6 +46,7 @@ public class AuthenticationService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid phone number or password."));
 
         var jwt = jwtService.generateToken(taiKhoan);
+
         return JwtAuthenticationResponse.builder().token(jwt).build();
 
     }

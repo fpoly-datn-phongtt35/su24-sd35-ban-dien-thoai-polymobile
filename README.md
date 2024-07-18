@@ -75,7 +75,7 @@
     │   ├── CameraRepository.java
     │   ├── CongNgheSacRepository.java
     │   └── etc...java
-    └── utils
+    └── exportExcel
         └── Utils.java
 
 ### Cấu trúc resources
@@ -121,7 +121,7 @@
         │       ├── create.html            
         │       ├── list.html
         │       └── ....html
-        └── utils
+        └── exportExcel
             ├── authentication.html
             └── ....html
 

@@ -1,9 +1,8 @@
 package com.poly.polystore.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Nationalized;
@@ -17,18 +16,17 @@ import org.hibernate.annotations.Nationalized;
 @Table(name = "SERIES")
 public class Series {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
-    @Column(name = "Ma_series", length = 20)
-    private String maSeries;
-
+    @Size(max = 255)
+    @NotNull
     @Nationalized
-    @Column(name = "TEN")
+    @Column(name = "TEN", nullable = false)
     private String ten;
-
     @ColumnDefault("0")
-    @Column(name = "Deleted")
+    @Column(name = "DELETED")
     private Boolean deleted;
 
 }

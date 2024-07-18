@@ -5,8 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 public interface NhanVienRepository extends JpaRepository<NhanVien, Integer> {
-    @Query(value = "Select nv from NhanVien nv where nv.idTaiKhoan is not null and nv.idTaiKhoan.email = :email")
+    @Query(value = "Select nv from NhanVien nv where nv.idTaiKhoan.email = :email")
     NhanVien findByEmail(String email);
-    @Query(value = "Select nv from NhanVien nv where nv.idTaiKhoan is not null and nv.idTaiKhoan.tenDangNhap = :tendangnhap")
+    @Query(value = "Select nv from NhanVien nv where nv.idTaiKhoan.tenDangNhap = :tendangnhap")
     NhanVien findByTenDangNhap(String tendangnhap);
 }

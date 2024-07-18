@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -19,11 +22,12 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 
+    private static final Logger log = LoggerFactory.getLogger(JwtService.class);
     @Value("${jwt.secret}")
     String jwtSecretKey;
 
     @Value("${jwt.expiration}")
-    Long jwtExpirationMs;
+    Long jwtExpiration;
 
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -38,7 +42,7 @@ public class JwtService {
         return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) throws ExpiredJwtException {
         final Claims claims = extractAllClaims(token);
         return claimsResolvers.apply(claims);
     }
@@ -49,20 +53,28 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration * 1000))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    public boolean isTokenExpired(String token) {
+        try {
+            var result = extractExpiration(token).before(new Date());
+            return result;
+        } catch (ExpiredJwtException e) {
+            System.err.println("Lỗi");
+            log.error("Token đã hết hạn");
+            return true;
+
+        }
     }
 
-    private Date extractExpiration(String token) {
+    private Date extractExpiration(String token) throws ExpiredJwtException {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    private Claims extractAllClaims(String token) {
+    private Claims extractAllClaims(String token) throws ExpiredJwtException {
         return Jwts
                 .parser()
                 .setSigningKey(getSigningKey())

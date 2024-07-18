@@ -1,7 +1,10 @@
 package com.poly.polystore.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Nationalized;
 
 @AllArgsConstructor
@@ -10,22 +13,26 @@ import org.hibernate.annotations.Nationalized;
 @Setter
 @ToString
 @Entity
-@Table(name = "Mau_Sac")
+@Table(name = "MAU_SAC")
 public class MauSac {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
+    @Size(max = 255)
+    @NotNull
     @Nationalized
-    @Column(name = "Ma", nullable = false, length = 10)
-    private String ma;
-
-    @Nationalized
-    @Column(name = "Ten", nullable = false, length = 50)
+    @Column(name = "TEN", nullable = false)
     private String ten;
 
-    @Column(name = "TrangThai", nullable = false)
-    private Boolean trangThai;
+    @Size(max = 10)
+    @Nationalized
+    @Column(name = "MA", length = 10)
+    private String ma;
+
+    @ColumnDefault("0")
+    @Column(name = "DELETED")
+    private Boolean deleted;
 
 }
