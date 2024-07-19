@@ -1584,6 +1584,7 @@ $(document).ready(() => {
             let fieldsetContainer = '';
             let dataRow = '';
             let imageRow = '';
+            let statusRow = '';
             let count = 1;
 
             //Tạo dòng  giá nhập giá bán input cho từng màu sắc và hình ảnh của chúng
@@ -1616,9 +1617,18 @@ $(document).ready(() => {
                 <td>${mauSac.text}<span class="d-none ms-id">${mauSac.id}</span></td>
                 <td><input ms-id="${mauSac.id}" class="form-control form-control-sm giaNhap-input" type="text" placeholder="Giá nhập" aria-label=".form-control-sm example" required></td>
                 <td><input ms-id="${mauSac.id}" class="form-control form-control-sm giaBan-input" type="text" placeholder="Giá bán" aria-label=".form-control-sm example" required></td>
+                <td><select class="form-control w-100 sm" id="sp-trang-thai" required>
+                                        <option value="IN_STOCK">Có sẵn</option>
+                                        <option value="OUT_OF_STOCK">Hết hàng</option>
+                                        <option value="TEMPORARILY_OUT_OF_STOCK">Hết hàng tạm thời</option>
+                                        <option value="COMING_SOON">Sắp ra mắt</option>
+                                        <option value="DISCONTINUED">Không kinh doanh</option>
+                                    </select></td>
+                
                 <td><button type="button" class="btn btn-danger btn-sm  delete-spct">Xóa</button></td>
             </tr>
             `
+
             })
 
             //Tạo card input cho từng phiên bản rom
@@ -1658,6 +1668,7 @@ $(document).ready(() => {
                                             <th>Màu sắc</th>
                                             <th>Giá nhập</th>
                                             <th>Giá bán</th>
+                                            <th>Trạng thái</th>
                                             <th>Thao tác</th>
 
                                         </tr>
@@ -1672,6 +1683,41 @@ $(document).ready(() => {
             `
 
             })
+
+
+            let tenSanPham=$('#sp-ten').val();
+            let statusContainer=`
+                <div class="card shadow m-2 w-100 ">
+                    <div class="card-header py-3">
+                        <div class="row">
+                            <h1 class="h3 text-gray-800 col-4">Trạng thái sản phẩm</h1>
+                            <!-- Additional controls -->
+                            
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-data" id="sp-spct-status"">
+                                <thead>
+                                <tr>
+                                    <th>Tên phiên bản</th>
+                                    <th>Màu sắc</th>
+                                    <th>Giá nhập</th>
+                                    <th>Giá bán</th>
+                                    <th>Thao tác</th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    ${dataRow}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>  
+            `
+
+
 
             fieldsetContainer=`<div id="danhSachSanPhamChiTiet">${fieldsetContainer}</div>>`
 
@@ -2133,16 +2179,17 @@ $(document).ready(function () {
                     rom = $(this).closest('table').first().attr('rom-id'),
                     giaNhap = $(this).find('input[type="text"]').first().val().replace(/\D/g, ""),
                     giaBan = $(this).find('input[type="text"]').last().val().replace(/\D/g, ""),
+                    trangThai=$(this).find('select').val(),
                     khuyenMai = [];
                 tbodyTblKhuyenMaiApDung.find(`tr[ms-id='${msId}'][rom-id='${rom}']`).find('input:checked').each((index, inputChecked) => {
                     khuyenMai.push($(inputChecked).attr('km-id'));
                 })
-                let imgName = $(this).find
 
                 danhSachSanPhamChiTiet.push({
                     mauSacId: msId,
                     rom: rom,
                     giaNhap: giaNhap,
+                    trangThai: trangThai,
                     giaBan: giaBan,
                     khuyenMaiIds: khuyenMai,
                     anh: danhSachAnhTheoMauSac.get(msId)

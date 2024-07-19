@@ -8,7 +8,13 @@
 
 const apiURL = "/api/v1/san-pham";
 let _existingNames;
-
+const TrangThai=new Map([
+    ['IN_STOCK',"Còn hàng"],
+    ['OUT_OF_STOCK',"Hết hàng"],
+    ['TEMPORARILY_OUT_OF_STOCK',"Hết hàng tạm thời"],
+    ['COMING_SOON',"Sắp ra mắt"],
+    ['DISCONTINUED',"Không kinh doanh"]
+])
 var lstSeries, lstMauSac;
 // fill data to select option
 
@@ -21,7 +27,7 @@ function loadFilter() {
     $.ajax({
             url: "/api/v1/admin/data-list-add-san-pham/mau-sac",
             success: function (response) {
-                lstMauSac = response;
+                lstMauSac = response.results;
                 $('#filter-mau-sac').select2({
                     data: lstMauSac.map(ms => {
                         return {id: ms.text, text: ms.text}
@@ -36,7 +42,7 @@ function loadFilter() {
     $.ajax({
             url: "/api/v1/admin/data-list-add-san-pham/series",
             success: function (response) {
-                lstSeries = response;
+                lstSeries = response.results;
                 $('#filter-series').select2({
                     data: lstSeries.map(s => {
                         return {id: s.text, text: s.text}
@@ -151,7 +157,11 @@ function loadData() {
             {"data": "danhSachRom", "name": "danhSachRom"},
             {"data": "soLuong", "name": "soLuong"},
             {"data": "thoiGianBaoHanh", "name": "thoiGianBaoHanh"},
-            {"data": "trangThai", "name": "trangThai"},
+            {"data": "trangThai", "name": "trangThai",
+                "render": function (data) {
+                    return TrangThai.get(data)
+                }
+            },
             {
                 "data": "id",
                 "render": function (data, type, row) {
@@ -160,7 +170,7 @@ function loadData() {
                     else
                         return '<div class="d-flex justify-content-end"><button type="button" class="btn btn-sm btn-primary mr-3 btn-edit">Chỉnh sửa</button><button type="button" class="btn btn-sm btn-danger btn-delete">Xóa</button></div>';
 
-                },
+                }
             }
 
 

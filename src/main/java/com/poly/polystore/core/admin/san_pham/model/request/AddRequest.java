@@ -69,6 +69,7 @@ public class AddRequest implements Serializable {
         String rom;
         List<String> anh;
         List<Integer> khuyenMaiIds;
+        SanPhamRepository.TrangThai trangThai;
         BigDecimal giaBan;
         BigDecimal giaNhap;
 

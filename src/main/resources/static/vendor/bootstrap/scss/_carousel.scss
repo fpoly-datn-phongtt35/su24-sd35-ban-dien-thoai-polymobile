@@ -97,7 +97,7 @@
   width: $carousel-control-width;
   color: $carousel-control-color;
   text-align: center;
-  opacity: $carousel-control-opacity;
+  opacity: 0;
   @include transition($carousel-control-transition);
 
   // Hover/focus state
@@ -105,7 +105,7 @@
     color: $carousel-control-color;
     text-decoration: none;
     outline: 0;
-    opacity: $carousel-control-hover-opacity;
+    opacity: 0;
   }
 }
 .carousel-control-prev {

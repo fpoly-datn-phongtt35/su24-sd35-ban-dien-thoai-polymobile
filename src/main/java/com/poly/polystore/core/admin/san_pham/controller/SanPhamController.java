@@ -150,14 +150,13 @@ public class SanPhamController {
             var spct=modelMapper.map(spctAddRequest, SanPhamChiTiet.class);
             spct.setKhuyenMai(lstKhuyenMai);
             spct.setAnh(lstAnh);
+            spct.setSanPham(sp);
             return spct;
         }).collect(Collectors.toSet());
 
 
         sp.setSanPhamChiTiet(lstSPCT);
-
         var spResponse=sanPhamRepository.save(sp);
-
         return ResponseEntity.ok(spResponse);
     }
 

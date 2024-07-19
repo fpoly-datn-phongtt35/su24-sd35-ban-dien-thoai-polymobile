@@ -2,12 +2,15 @@ package com.poly.polystore.repository;
 
 import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamDataTable;
 import com.poly.polystore.entity.SanPham;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.*;
 
-public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
+public interface SanPhamRepository extends JpaRepository<SanPham, Integer>, JpaSpecificationExecutor<SanPham> {
     List<SanPham> findAllByOrderByIdDesc();
 
     public enum TrangThai {
