@@ -21,7 +21,6 @@ public class GetDataFromCookie {
     private final JwtService jwtService;
     private final TaiKhoanRepository taiKhoanRepository;
     private final SanPhamChiTietRepository sanPhamChiTietRepository;
-    private final GetDataFromCookie getDataFromCookie;
     public TaiKhoan getTaiKhoan(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String token = null;

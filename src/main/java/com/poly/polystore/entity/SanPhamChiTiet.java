@@ -93,4 +93,6 @@ public class SanPhamChiTiet implements Serializable {
     @JoinColumn(name = "DOT_GIAM_GIA_ID")
     private PhieuGiamGia dotGiamGia;
 
+    @Transient
+    private BigDecimal giaKhuyenMai;
 }
