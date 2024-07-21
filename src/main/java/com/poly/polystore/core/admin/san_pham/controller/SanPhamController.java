@@ -1,7 +1,10 @@
 package com.poly.polystore.core.admin.san_pham.controller;
 
 import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamDataTable;
+import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamDto;
+import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamTemplate;
 import com.poly.polystore.core.admin.san_pham.model.request.AddRequest;
+import com.poly.polystore.core.admin.san_pham.model.request.SanPhamEditRequest;
 import com.poly.polystore.core.common.image.service.ImageService;
 import com.poly.polystore.entity.*;
 import com.poly.polystore.repository.AnhRepository;
@@ -11,11 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,8 +42,87 @@ public class SanPhamController {
     public String add(Model model) {
         return "/admin/san-pham/add";
     }
+    @GetMapping("/admin/san-pham/{id}")
+    public String edit(Model model,@PathVariable(name = "id") SanPham sp) {
+        model.addAttribute("moTa",sp.getMoTa());
+
+        return "/admin/san-pham/edit-san-pham";
+    }
+
+    @ResponseBody
+    @GetMapping("/api/v1/admin/san-pham/{id}")
+    public ResponseEntity<?> getSanPhamEdit(@PathVariable(name = "id") SanPham sp) {
+        var spEditResp = modelMapper.map(sp, SanPhamDto.class);
+        spEditResp.setCameraSauTinhNangCameraIds(sp.getCameraTruoc()
+                .getTinhNangCameras()
+                .stream()
+                .map(TinhNangCamera::getId)
+                .collect(Collectors.toSet()));
+        spEditResp.setCameraTruocTinhNangCameraIds(sp.getCameraSau()
+                .getTinhNangCameras()
+                .stream()
+                .map(TinhNangCamera::getId)
+                .collect(Collectors.toSet()));
+        spEditResp.setKetNoiWifiIds(sp
+                .getKetNoi()
+                .getWifi()
+                .stream()
+                .map(Wifi::getId)
+                .collect(Collectors.toSet()));
+        spEditResp.setKetNoiGpsIds(sp
+                .getKetNoi()
+                .getGps()
+                .stream()
+                .map(Gps::getId)
+                .collect(Collectors.toSet()));
+        spEditResp.setKetNoiBluetoothIds(sp
+                .getKetNoi()
+                .getBluetooth()
+                .stream()
+                .map(Bluetooth::getId)
+                .collect(Collectors.toSet()));
+        spEditResp.setPinVaSacCongNghePinIds(sp
+                .getPinVaSac()
+                .getCongNghePin()
+                .stream()
+                .map(CongNghePin::getId)
+                .collect(Collectors.toSet()));
+        spEditResp.setKhuyenMaiIds(sp
+                .getKhuyenMai()
+                .stream()
+                .map(KhuyenMai::getId)
+                .collect(Collectors.toList()));
+        spEditResp.setSanPhamChiTietRoms(sp
+                .getSanPhamChiTiet()
+                .stream()
+                .map(SanPhamChiTiet::getRom)
+                .collect(Collectors.toSet())
+        );
+        spEditResp.setSanPhamChiTietMauSacIds(sp
+                .getSanPhamChiTiet()
+                .stream()
+                .map(SanPhamChiTiet::getMauSac)
+                .map(MauSac::getId)
+                .collect(Collectors.toSet())
+        );
+        spEditResp.setThongTinChungTinhNangDacBietIds(sp
+                .getThongTinChung()
+                .getTinhNangDacBiet()
+                .stream()
+                .map(tndb->tndb.getId())
+                .collect(Collectors.toSet())
+        );
+        spEditResp.setRam(sp.getRam());
+        spEditResp.setThoiGianBaoHanh(sp.getThoiGianBaoHanh());
+
+
+
+
+        return ResponseEntity.ok(spEditResp);
+    }
 
     @Transactional
+    @ResponseBody
     @PutMapping("/api/v1/san-pham")
     public ResponseEntity<?> addNew(@RequestBody AddRequest addRequest) {
         var sp= modelMapper.map(addRequest, SanPham.class);
@@ -160,6 +237,125 @@ public class SanPhamController {
         return ResponseEntity.ok(spResponse);
     }
 
+    @Transactional
+    @ResponseBody
+    @PostMapping("/api/v1/san-pham/{id}")
+    public ResponseEntity<?> edit(@RequestBody AddRequest addRequest,@PathVariable(name="id") SanPham sp) {
+        var spe= modelMapper.map(sp, SanPhamEditRequest.class);
+//
+//        sp.getCameraTruoc().setTinhNangCameras(addRequest
+//                .getCameraTruocTinhNangCameraIds()
+//                .stream().map(id-> {
+//                    var tinhNangCamera=new TinhNangCamera();
+//                    tinhNangCamera.setId(id);
+//                    return tinhNangCamera;
+//                })
+//                .collect(Collectors.toSet())
+//        );
+//
+//        sp.getCameraSau().setTinhNangCameras(addRequest
+//                .getCameraSauTinhNangCameraIds()
+//                .stream().map(id-> {
+//                    var tinhNangCamera=new TinhNangCamera();
+//                    tinhNangCamera.setId(id);
+//                    return tinhNangCamera;
+//                })
+//                .collect(Collectors.toSet())
+//        );
+//        sp.getKetNoi().setBluetooth(addRequest
+//                .getKetNoiBluetoothIds()
+//                .stream().map(id-> {
+//                    var bluetooth=new Bluetooth();
+//                    bluetooth.setId(id);
+//                    return bluetooth;
+//                })
+//                .collect(Collectors.toSet())
+//
+//        );
+//        sp.getKetNoi().setWifi(addRequest
+//                .getKetNoiWifiIds()
+//                .stream().map(id-> {
+//                    var wifi=new Wifi();
+//                    wifi.setId(id);
+//                    return wifi;
+//                })
+//                .collect(Collectors.toSet())
+//
+//        );
+//        sp.getKetNoi().setGps(addRequest
+//                .getKetNoiGpsIds()
+//                .stream().map(id-> {
+//                    var gps=new Gps();
+//                    gps.setId(id);
+//                    return gps;
+//                })
+//                .collect(Collectors.toSet())
+//
+//        );
+//        sp.getPinVaSac().setCongNghePin(addRequest
+//                .getPinVaSacCongNghePinIds()
+//                .stream().map(id-> {
+//                    var congNghePin=new CongNghePin();
+//                    congNghePin.setId(id);
+//                    return congNghePin;
+//                })
+//                .collect(Collectors.toSet())
+//
+//        );
+//        sp.getThongTinChung().setTinhNangDacBiet(addRequest
+//                .getThongTinChungTinhNangDacBietIds()
+//                .stream().map(id-> {
+//                    var tinhNangDacBiet=new TinhNangDacBiet();
+//                    tinhNangDacBiet.setId(id);
+//                    return tinhNangDacBiet;
+//                })
+//                .collect(Collectors.toSet())
+//
+//        );
+//
+//        sp.getCameraSau().setDenFlash(addRequest.getCameraSauDenFlash());
+//
+//        //Đưa ảnh về container chính
+//        var anhSanPhamAddRquest=new Anh();
+//        anhSanPhamAddRquest.setName(addRequest.getAnhName());
+//        anhSanPhamAddRquest.setUrl(imageService.moveImageToPermanent(addRequest.getAnhName()));
+//        var anhSanPham = anhRepository.save(anhSanPhamAddRquest);
+//
+//        sp.setAnh(anhSanPham);
+//
+//
+//        var lstSPCT=addRequest.getSanPhamChiTiet().stream().map(spctAddRequest->{
+//            //Lưu ảnh trả về list Ảnh
+//            var lstAnh= spctAddRequest.getAnh().stream().map(imageName->{
+//                var newImage=new Anh();
+//                newImage.setName(imageName);
+//                newImage.setUrl(imageService.moveImageToPermanent(imageName));
+//                return anhRepository.save(newImage);
+//            }).collect(Collectors.toList());
+//
+//            //Chuyển lai list khuyến mãi
+//            var lstKhuyenMai=spctAddRequest.getKhuyenMaiIds().stream().map(khuyenMaiId->{
+//                var newKhuyenMai=new KhuyenMai();
+//                newKhuyenMai.setId(khuyenMaiId);
+//                return newKhuyenMai;
+//            }).collect(Collectors.toList());
+//
+//            var spct=modelMapper.map(spctAddRequest, SanPhamChiTiet.class);
+//            spct.setKhuyenMai(lstKhuyenMai);
+//            spct.setAnh(lstAnh);
+//            spct.setSanPham(sp);
+//            return spct;
+//        }).collect(Collectors.toSet());
+//
+//
+//        sp.setSanPhamChiTiet(lstSPCT);
+//        var spResponse=sanPhamRepository.save(sp);
+        return ResponseEntity.ok(spe);
+    }
+
+    private void optimizeField(Object source, Object target) {
+        if(target==null) {}
+    }
 
 
     @ResponseBody
