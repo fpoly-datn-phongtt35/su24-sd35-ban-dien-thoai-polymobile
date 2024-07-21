@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/admin/layout-dashboard/layout.html"
+>
+<head>
+    <!--    Custom link-->
+    <th:block layout:fragment="head_link">
+        <link href="/vendor/select2/select2.min.css" rel="stylesheet">
+        <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+        <script src="/vendor/sweetalert2/sweetalert2.min.js"></script>
+        <link href="/css/admin/san-pham/san-pham-add.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/css/ion.rangeSlider.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+        <script src="https://cdn.tiny.cloud/1/4ogf01p4hflwub9p3xmhz9huutzjkt0ozayzp33ypp7ps7he/tinymce/7/tinymce.min.js"
+                referrerpolicy="origin"></script>
+
+
+
+    </th:block>
+
+
+</head>
+
+<!-- Custom styles for this page -->
+
+<body layout:fragment="content">
+
+
+<div class="row">
+    <!--    Table-->
+
+
+    <div class="card shadow my-0 mx-3 w-100 ">
+        <div class="card-header pb-0">
+            <!--            <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>-->
+
+            <div class="row">
+                <!-- Additional controls -->
+                <div class="stepwizard">
+                    <div class="stepwizard-row setup-panel">
+                        <div class="stepwizard-step">
+                            <a href="#step-1" type="button" class="btn btn-primary btn-circle">1</a>
+                            <p>Thông tin cơ bản</p>
+                        </div>
+                        <div class="stepwizard-step">
+                            <a href="#step-2" type="button" class="btn btn-default btn-circle" disabled="disabled">2</a>
+                            <p>Sản phẩm chi tiết</p>
+                        </div>
+                        <div class="stepwizard-step">
+                            <a href="#step-3" type="button" class="btn btn-default btn-circle" disabled="disabled">3</a>
+                            <p>Step 3</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body" style="position: relative">
+            <!-- Spinner và Overlay HTML -->
+            <div id="overlay" style="display:none; position: relative">
+                <div class="spinner-border text-primary" style="position: fixed; top:350px" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+            <div>
+                <form id="form-sp" class="container-fluid">
+                    <div class="setup-content" id="step-1">
+                        <!--                        Thông tin cơ bản-->
+                        <fieldset class="row">
+                            <div class="col-2">
+                                <div class="avatar-upload">
+                                    <div class="avatar-edit">
+                                        <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg"/>
+                                        <input type='text' id="sp-img" name="img" class="form-control d-none" required/>
+
+                                        <label for="imageUpload"></label>
+                                        <div class="invalid-feedback"
+                                             style="position: absolute; top: 50px;left: -100px;width: fit-content">
+                                            Vui lòng chọn ảnh sản phẩm
+                                        </div>
+                                    </div>
+                                    <div class="avatar-preview">
+                                        <div id="imagePreview"
+                                             style="background-image: url(https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg);">
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-10 row m-0">
+                                <div class="form-group col-3">
+                                    <label for="sp-ten" class="form-label">Tên sản phẩm</label>
+                                    <input type="text" class="form-control" id="sp-ten" required>
+                                    <div class="invalid-feedback">
+                                        Tên không hợp lệ hoặc đã tồn tại
+                                    </div>
+                                </div>
+                                <div class="form-group col-3">
+                                    <label class="form-label">Series</label>
+                                    <select class="form-control" id="sp-series" required>
+                                        <option selected disabled value="">Chọn series</option>
+                                    </select>
+                                    <a class="position-absolute" id="btn-add-series" style="right: 25px;top: 40px"><i
+                                            class="fa fa-plus"
+                                            aria-hidden="true"></i></a>
+                                    <div class="invalid-feedback">
+                                        Vui lòng chọn series
+                                    </div>
+                                </div>
+                                <div class="form-group col-3">
+                                    <label class="form-label">Dung lượng ram</label>
+                                    <input class="form-control" list="dataList-ram" id="sp-ram"
+                                           placeholder="Ram ..." required>
+                                    <datalist id="dataList-ram">
+                                    </datalist>
+                                    <div class="invalid-feedback">
+                                        Vui lòng không để trống loại pin
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-3">
+                                    <label for="sp-rom" class="form-label">Trạng thái</label>
+                                    <select class="form-control w-100 sm" id="sp-trang-thai" required>
+                                        <option value="IN_STOCK">Có sẵn</option>
+                                        <option value="OUT_OF_STOCK">Hết hàng</option>
+                                        <option value="TEMPORARILY_OUT_OF_STOCK">Hết hàng tạm thời</option>
+                                        <option value="COMING_SOON">Sắp ra mắt</option>
+                                        <option value="DISCONTINUED">Không kinh doanh</option>
+
+                                    </select>
+
+                                    <div class="invalid-feedback">
+                                        Vui lòng chọn bộ nhớ
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-6">
+                                    <label for="sp-rom" class="form-label">Bộ nhớ</label>
+                                    <select class="form-control w-100 sm" id="sp-rom" multiple="multiple"
+                                            placeholder="0k"
+                                            required>
+                                        <option value="32GB">32 GB</option>
+                                        <option value="64GB">64 GB</option>
+                                        <option value="128GB">128 GB</option>
+                                        <option value="256GB">256 GB</option>
+                                        <option value="512GB">512 GB</option>
+                                        <option value="1024GB">1 TB</option>
+                                        <option value="2048GB">2 TB</option>
+                                        <option value="3072GB">3 TB</option>
+                                    </select>
+
+                                    <div class="invalid-feedback">
+                                        Vui lòng chọn bộ nhớ
+                                    </div>
+                                </div>
+                                <div class="form-group col-6">
+                                    <label for="sp-mau-sac" class="form-label">Màu sắc</label>
+                                    <select class="form-control w-100" id="sp-mau-sac" multiple="multiple" required>
+                                        <option></option>
+                                    </select>
+
+                                    <a class="position-absolute" id="btn-add-mau-sac" style="right: 25px;top: 40px"><i
+                                            class="fa fa-plus"
+                                            aria-hidden="true"></i></a>
+                                    <div class="invalid-feedback">
+                                        Vui lòng chọn màu sắc
+                                    </div>
+
+                                </div>
+                            </div>
+                        </fieldset>
+
+
+                        <!--                        Màn hình-->
+                        <fieldset class="row mt-4">
+                            <legend>Màn hình</legend>
+                            <div class="form-group col-4">
+                                <label class="form-label">Công nghệ màn hình</label>
+                                <select class="form-control w-100" id="sp-cong-nghe-man-hinh" required>
+                                    <option selected disabled value="">Chọn công nghệ màn hình</option>
+                                </select>
+                                <a class="position-absolute" id="btn-add-cong-nghe-man-hinh"
+                                   style="right: 25px;top: 40px"><i class="fa fa-plus"
+                                                                    aria-hidden="true"></i></a>
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống công nghệ màn hình
+                                </div>
+                            </div>
+                            <div class="form-group col-4">
+                                <label for="sp-doPhanGiai" class="form-label">Độ phân giải</label>
+                                <input class="form-control" list="dataList-doPhanGiai" id="sp-doPhanGiai"
+                                       placeholder="Độ phân giải..." required>
+                                <datalist id="dataList-doPhanGiai">
+                                </datalist>
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống độ phân giải
+                                </div>
+                            </div>
+
+                            <div class="form-group col-4">
+                                <label for="sp-manHinhRong" class="form-label">Màn hình rộng</label>
+                                <input class="form-control" list="dataList-manHinhRong" id="sp-manHinhRong"
+                                       placeholder="Màn hình rộng..." required>
+                                <datalist id="dataList-manHinhRong">
+                                </datalist>
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống độ rộng màn hình
+                                </div>
+                            </div>
+
+                            <div class="form-group col-4">
+                                <label for="sp-doSangToiDa" class="form-label">Độ sáng tối đa</label>
+                                <input class="form-control" list="dataList-doSangToiDa" id="sp-doSangToiDa"
+                                       placeholder="Độ sáng tối đa..." required>
+                                <datalist id="dataList-doSangToiDa">
+                                </datalist>
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống độ sáng tối đa
+                                </div>
+                            </div>
+
+                            <div class="form-group col-8">
+                                <label class="form-label">Mặt kính cảm ứng</label>
+                                <select class="form-control" id="sp-matKinhCamUng" required>
+                                    <option selected disabled value="">Chọn mặt kính cảm ứng</option>
+                                </select>
+                                <a class="position-absolute" id="btn-add-mat-kinh-cam-ung"
+                                   style="right: 25px;top: 40px"><i class="fa fa-plus"
+                                                                    aria-hidden="true"></i></a>
+                                <div class="invalid-feedback">
+                                    Vui lòng chọn loại mặt kính cảm ứng
+                                </div>
+
+                            </div>
+
+                        </fieldset>
+                        <!--                        Camera sau-->
+                        <fieldset class="row mt-4">
+                            <legend>Camera sau</legend>
+
+                            <div class="col-4 row m-0 p-0">
+                                <div class="form-group col-12">
+                                    <label for="sp-cameraSau-doPhanGiai" class="form-label">Độ phân giải</label>
+                                    <input class="form-control " list="dataList-doPhanGiaiCameraSau"
+                                           id="sp-cameraSau-doPhanGiai"
+                                           placeholder="Độ phân giải..." required>
+                                    <datalist id="dataList-doPhanGiaiCameraSau">
+                                    </datalist>
+                                    <div class="invalid-feedback">
+                                        Vui lòng không để trống độ phân giải cameara sau
+                                    </div>
+                                </div>
+                                <div class="form-group col-12">
+                                    <label for="sp-cameraSau-denFlash" class="form-label">Đèn flash</label>
+                                    <input class="form-control" list="dataList-denFlashCameraSau"
+                                           id="sp-cameraSau-denFlash"
+                                           placeholder="Đèn flash..." required>
+                                    <datalist id="dataList-denFlashCameraSau">
+                                    </datalist>
+                                    <div class="invalid-feedback">
+                                        Vui lòng không để trống đèn flash
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group col-8">
+                                <label for="sp-tinhNangCameraSau" class="form-label">Tính năng</label>
+                                <select class="form-control inline-selected" id="sp-tinhNangCameraSau"
+                                        multiple="multiple" required>
+                                    <option></option>
+                                </select>
+
+                                <a class="position-absolute" id="btn-add-tinh-nang-camera-sau"
+                                   style="right: 25px;top: 40px"><i class="fa fa-plus"
+                                                                    aria-hidden="true"></i></a>
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống tính năng camera sau
+                                </div>
+
+                            </div>
+
+                        </fieldset>
+                        <!--                        Camera trước-->
+                        <fieldset class="row mt-4">
+                            <legend>Camera trước</legend>
+                            <div class="form-group col-4">
+                                <label for="sp-cameraTruoc-doPhanGiai" class="form-label">Độ phân giải</label>
+                                <input class="form-control" list="dataList-doPhanGiaiCameraTruoc"
+                                       id="sp-cameraTruoc-doPhanGiai"
+                                       placeholder="Độ phân giải..." required>
+                                <datalist id="dataList-doPhanGiaiCameraTruoc">
+                                </datalist>
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống độ phân giải cameara trước
+                                </div>
+                            </div>
+                            <div class="form-group col-8 ">
+                                <label for="sp-tinhNangCameraTruoc" class="form-label">Tính năng</label>
+                                <select class="form-control inline-selected" id="sp-tinhNangCameraTruoc"
+                                        multiple="multiple" required>
+                                    <option></option>
+
+                                </select>
+
+                                <a class="position-absolute" id="btn-add-tinh-nang-camera-truoc"
+                                   style="right: 25px;top: 40px"><i class="fa fa-plus"
+                                                                    aria-hidden="true"></i></a>
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống tính năng camera trước
+                                </div>
+
+                            </div>
+                        </fieldset>
+                        <!--                        Hệ điều hành cpu-->
+                        <fieldset class="row mt-4">
+                            <legend>Hệ điều hành và cpu</legend>
+                            <div class="form-group col-6">
+                                <label class="form-label">Hệ điều hành</label>
+                                <select class="form-control" id="sp-heDieuHanh" required>
+                                    <option selected disabled value="">Chọn hệ điều hành</option>
+                                </select>
+                                <a class="position-absolute" id="btn-add-he-dieu-hanh" style="right: 25px;top: 40px"><i
+                                        class="fa fa-plus"
+                                        aria-hidden="true"></i></a>
+                                <div class="invalid-feedback">
+                                    Vui lòng chọn hệ điều hành
+                                </div>
+                            </div>
+                            <div class="form-group col-6">
+                                <label class="form-label">CPU</label>
+                                <select class="form-control" id="sp-cpu" required>
+                                    <option selected disabled value="">Chọn CPU</option>
+                                </select>
+                                <a class="position-absolute" id="btn-add-cpu" style="right: 25px;top: 40px"><i
+                                        class="fa fa-plus"
+                                        aria-hidden="true"></i></a>
+                                <div class="invalid-feedback">
+                                    Vui lòng chọn cpu
+                                </div>
+                            </div>
+
+                        </fieldset>
+
+                        <!--                        Kết nối-->
+                        <fieldset class="row mt-4">
+                            <legend>Kết nối</legend>
+
+                            <div class="form-group col-6">
+                                <label class="form-label">Mạng di động</label>
+                                <input class="form-control" list="dataList-mangDiDong" id="sp-ketNoi-mangDiDong"
+                                       placeholder="Mạng di động..." required>
+                                <datalist id="dataList-mangDiDong">
+                                </datalist>
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống mạng di động
+                                </div>
+                            </div>
+
+                            <div class="form-group col-6">
+                                <label class="form-label">Sim</label>
+                                <input class="form-control" list="dataList-sim" id="sp-ketNoi-sim"
+                                       placeholder="Mạng di động..." required>
+                                <datalist id="dataList-sim">
+                                </datalist>
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống sim
+                                </div>
+                            </div>
+
+                            <div class="form-group col-6">
+                                <label class="form-label">Wifi</label>
+                                <select class="form-control" id="sp-ketNoi-wifi" multiple="multiple" required>
+                                    <option></option>
+
+                                </select>
+                                <a class="position-absolute" id="btn-add-wifi" style="right: 25px;top: 40px"><i
+                                        class="fa fa-plus"
+                                        aria-hidden="true"></i></a>
+                                <div class="invalid-feedback">
+                                    Vui lòng chọn wifi
+                                </div>
+                            </div>
+
+                            <div class="form-group col-6">
+                                <label class="form-label">GPS</label>
+                                <select class="form-control" id="sp-ketNoi-gps" multiple="multiple" required>
+                                    <option></option>
+
+                                </select>
+                                <a class="position-absolute" id="btn-add-gps" style="right: 25px;top: 40px"><i
+                                        class="fa fa-plus"
+                                        aria-hidden="true"></i></a>
+                                <div class="invalid-feedback">
+                                    Vui lòng chọn gps
+                                </div>
+                            </div>
+
+                            <div class="form-group col-4">
+                                <label class="form-label">Bluetooth</label>
+                                <select class="form-control" id="sp-ketNoi-bluetooth" multiple="multiple" required>
+                                    <option></option>
+                                </select>
+                                <a class="position-absolute" id="btn-add-bluetooth" style="right: 25px;top: 40px"><i
+                                        class="fa fa-plus"
+                                        aria-hidden="true"></i></a>
+                                <div class="invalid-feedback">
+                                    Vui lòng chọn bluetooth
+                                </div>
+                            </div>
+
+                            <div class="form-group col-4">
+                                <label class="form-label">Cổng kết nối/Sạc</label>
+                                <input class="form-control" list="dataList-sac" id="sp-ketNoi-sac"
+                                       placeholder="Cổng kết nối/Sạc..." required>
+                                <datalist id="dataList-sac">
+                                </datalist>
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống kết nối/Sạc
+                                </div>
+                            </div>
+
+                            <div class="form-group col-4">
+                                <label class="form-label">Tai nghe</label>
+                                <input class="form-control" list="dataList-taiNghe" id="sp-ketNoi-taiNghe"
+                                       placeholder="Tai nghe..." required>
+                                <datalist id="dataList-taiNghe">
+                                </datalist>
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống kết nối tai nghe
+                                </div>
+                            </div>
+
+                        </fieldset>
+                        <!--                        Pin và sạc-->
+                        <fieldset class="row mt-4">
+                            <legend>Pin và sạc</legend>
+
+                            <div class="form-group col-4">
+                                <label class="form-label">Dung lượng pin</label>
+                                <input class="form-control" list="dataList-pin-dungLuong" id="sp-pin-dungLuong"
+                                       placeholder="Dung lượng pin..." required>
+                                <datalist id="dataList-pin-dungLuong">
+                                </datalist>
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống dung lượng pin
+                                </div>
+                            </div>
+
+
+                            <div class="form-group col-4">
+                                <label class="form-label">Hỗ trợ sạc tối đa</label>
+                                <input class="form-control" list="dataList-pin-sacToiDa" id="sp-pin-sacToiDa"
+                                       placeholder="Hỗ trợ sạc tối đa..." required>
+                                <datalist id="dataList-pin-sacToiDa">
+                                </datalist>
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống hỗ trợ sạc tối đa
+                                </div>
+                            </div>
+
+                            <div class="form-group col-4">
+                                <label class="form-label">Loại pin</label>
+                                <input class="form-control" list="dataList-pin-loaiPin" id="sp-pin-loaiPin"
+                                       placeholder="Hỗ trợ sạc tối đa..." required>
+                                <datalist id="dataList-pin-loaiPin">
+                                    <option>Li-ion</option>
+                                </datalist>
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống loại pin
+                                </div>
+                            </div>
+
+                            <div class="form-group col-12">
+                                <label class="form-label">Công nghệ pin</label>
+                                <select class="form-control" id="sp-pin-congNghePin" multiple="multiple" required>
+                                    <option></option>
+                                </select>
+                                <a class="position-absolute" id="btn-add-cong-nghe-pin" style="right: 25px;top: 40px"><i
+                                        class="fa fa-plus"
+                                        aria-hidden="true"></i></a>
+                                <div class="invalid-feedback">
+                                    Vui lòng chọn công nghệ pin
+                                </div>
+                            </div>
+
+
+                        </fieldset>
+
+
+                        <!--                        Thông tin chung-->
+                        <fieldset class="row mt-4">
+                            <legend>Thông tin chung</legend>
+                            <div class="form-group col-6">
+                                <label class="form-label">Thiết kế</label>
+                                <input class="form-control" list="dataList-ttc-thietKe" id="sp-ttc-thietKe"
+                                       placeholder="Thiết kế..." required>
+                                <datalist id="dataList-ttc-thietKe">
+                                </datalist>
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống thiết kế
+                                </div>
+                            </div>
+
+
+                            <div class="form-group col-6">
+                                <label class="form-label">Chất liệu</label>
+                                <input class="form-control" list="dataList-ttc-chatLieu" id="sp-ttc-chatLieu"
+                                       placeholder="Chất liệu..." required>
+                                <datalist id="dataList-ttc-chatLieu">
+                                </datalist>
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống chất liệu
+                                </div>
+                            </div>
+
+                            <div class="form-group col-6">
+                                <label class="form-label">Kích thước, khối lượng</label>
+                                <input class="form-control" list="dataList-ttc-kichThuocKhoiLuong"
+                                       id="sp-ttc-kichThuocKhoiLuong"
+                                       placeholder="Kích thước, khối lượng..." required>
+                                <datalist id="dataList-ttc-kichThuocKhoiLuong">
+                                </datalist>
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống kích thước khối lượng
+                                </div>
+                            </div>
+
+                            <div class="form-group col-6">
+                                <label class="form-label">Thời gian bảo hành</label>
+                                <input class="form-control" list="dataList-ttc-thoiGianBaoHanh"
+                                       id="sp-ttc-thoiGianBaoHanh"
+                                       placeholder="Thời gian bảo hành..." required>
+                                <datalist id="dataList-ttc-thoiGianBaoHanh">
+                                </datalist>
+                                <div class="invalid-feedback">
+                                    Vui lòng không để trống thời gian bảo hành
+                                </div>
+                            </div>
+
+                            <div class="form-group col-12">
+                                <label class="form-label">Tính năng đặc biệt</label>
+                                <select class="form-control" id="sp-ttc-tinhNangDacBiet" multiple="multiple" required>
+                                    <option></option>
+                                </select>
+                                <a class="position-absolute" id="btn-add-tinh-nang-dac-biet"
+                                   style="right: 25px;top: 40px"><i class="fa fa-plus"
+                                                                    aria-hidden="true"></i></a>
+                                <div class="invalid-feedback">
+                                    Vui lòng chọn tính năng đặc biệt
+                                </div>
+                            </div>
+
+
+                        </fieldset>
+
+
+                        <!--                            <div class="form-group col-4">-->
+                        <!--                                <label for="input-text" class="form-label">Mô tả sản phẩm</label>-->
+                        <!--                                <div class="custom-file">-->
+                        <!--                                    <input type="file" class="custom-file-input" accept="image/*" id="customFile">-->
+                        <!--                                    <label class="custom-file-label" for="customFile">Choose file</label>-->
+                        <!--                                </div>-->
+                        <!--                                <div class="invalid-feedback">-->
+                        <!--                                    Vui lòng không để trống tên sản phẩm-->
+                        <!--                                </div>-->
+                        <!--                            </div>-->
+
+
+                        <button class="btn btn-primary nextBtn btn-lg pull-right" type="button">Next</button>
+
+                    </div>
+                    <div class="setup-content d-none" id="step-2">
+                        <div id="step-2-content"></div>
+                        <button class="btn btn-primary nextBtn btn-lg" type="button">Next</button>
+                    </div>
+                    <div class="row setup-content d-none" id="step-3">
+<!--                     Khuyến mại-->
+                        <div class="card shadow m-2 w-100 ">
+                            <div class="card-header py-3">
+                                <div class="row" style="align-items: center">
+
+                                        <h3 class="text-gray-800 col-6">Khuyến mại áp dụng</h3>
+
+
+
+                                    <div class="form-group col-6">
+                                        <select class="form-control" style="width: 93%" id="sp-khuyen-mai" multiple="multiple">
+                                            <option></option>
+                                        </select>
+                                        <a class="position-absolute" id="btn-add-khuyen-mai" style="right: 25px;top: 10px"><i
+                                                class="fa fa-plus"
+                                                aria-hidden="true"></i></a>
+                                        <div class="invalid-feedback">
+                                            Vui lòng chọn khuyến mại
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="card-body">
+
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-data" id="tbl-danh-sach-khuyen-mai">
+                                        <thead>
+                                        <tr>
+                                            <th style="width: fit-content">Mã khuyến mại</th>
+                                            <th>Tên khuyến mại</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="table-responsive mt-3">
+                                    <table class="table table-bordered table-data" id="tbl-khuyen-mai-ap-dung">
+                                        <thead>
+                                        <tr>
+                                            <th style="width: fit-content">Sản phẩm</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="step-3-content">
+                        </div>
+
+                        <div class="card shadow m-2 w-100 ">
+                            <div class="card-header py-3">
+                                <div class="row" style="align-items: center">
+                                    <h3 class="text-gray-800 col-6">Mô tả sản phẩm</h3>
+                                </div>
+                            </div>
+                            <div class="card-body">
+
+
+                                    <textarea id="sp-mo-ta">
+                                        <p style="text-align: center;">&nbsp;<img class=" lazyloaded" title="iPhone 15 Pro Max 256GB Tổng Quan" src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-210923-113413.jpg" alt="iPhone 15 Pro Max 256GB Tổng Quan" width="1000" height="592" data-src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-210923-113413.jpg"><img class=" lazyloaded" title="iPhone 15 Pro Max 256GB Th&ocirc;ng Số Kỹ Thuật V&agrave; T&iacute;nh Năng" src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-210923-113413-1.jpg" alt="iPhone 15 Pro Max 256GB Th&ocirc;ng Số Kỹ Thuật V&agrave; T&iacute;nh Năng" width="1000" height="1952" data-src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-210923-113413-1.jpg"><img class=" lazyloaded" title="iPhone 15 Pro Max 256GB So S&aacute;nh" src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-051023-102933.jpg" alt="iPhone 15 Pro Max 256GB So S&aacute;nh" width="1000" data-src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-051023-102933.jpg"><img class=" lazyloaded" title="iPhone 15 Pro Max 256GB Chuyển Đổi" src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-210923-113414-1.jpg" alt="iPhone 15 Pro Max 256GB Chuyển Đổi" width="1000" data-src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-210923-113414-1.jpg"><img class=" lazyloaded" title="iPhone 15 Pro Max 256GB Phụ Kiện" src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-271123-053904.jpg" alt="iPhone 15 Pro Max 256GB Phụ Kiện" width="1000" data-src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-271123-053904.jpg">&nbsp;</p>
+
+                                    </textarea>
+
+
+                            </div>
+                        </div>
+
+                        <button class="btn btn-success btn-lg pull-right" type="submit" id="btn-finish">Finish!</button>
+                    </div>
+
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+
+<!--add modal tinh nang dac biet-->
+<div class="modal fade" id="modal-add-tinh-nang-dac-biet" tabindex="-1" role="dialog"
+     aria-labelledby="modal-add-tinh-nang-dac-bietLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-add-tinh-nang-dac-bietLabel">Thêm mới</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form id="form-add-tinh-nang-dac-biet" class="needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="add-tinh-nang-dac-biet-ten">Tên công nghệ:</label>
+                        <input type="text" class="form-control " id="add-tinh-nang-dac-biet-ten"
+                               placeholder="Tên tính năng đặc biệt" required>
+                        <div class="invalid-feedback">Tên đã tồn tại hoặc không hợp lệ</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-tinh-nang-dac-biet-link">Đường dẫn chi tiết:</label>
+                        <input type="text" class="form-control" id="add-tinh-nang-dac-biet-link"
+                               placeholder="Đường dẫn chi tiết"
+                               pattern="^$|^((https?:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?$">
+                        <div class="invalid-feedback">Đường dẫn không hợp lệ</div>
+                    </div>
+                    <div class="form-group justify-content-end ">
+                        <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Hủy</button>
+
+                        <button type="submit" class="btn btn-primary">Xác nhận</button>
+                    </div>
+
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<!--add modal cong nghe pin-->
+<div class="modal fade" id="modal-add-cong-nghe-pin" tabindex="-1" role="dialog"
+     aria-labelledby="modal-add-cong-nghe-pinLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-add-cong-nghe-pinLabel">Thêm mới</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form id="form-add-cong-nghe-pin" class="needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="add-cong-nghe-pin-ten">Tên công nghệ:</label>
+                        <input type="text" class="form-control " id="add-cong-nghe-pin-ten"
+                               placeholder="Tên công nghệ màn hình" required>
+                        <div class="invalid-feedback">Tên đã tồn tại hoặc không hợp lệ</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-cong-nghe-pin-link">Đường dẫn chi tiết:</label>
+                        <input type="text" class="form-control" id="add-cong-nghe-pin-link"
+                               placeholder="Đường dẫn chi tiết"
+                               pattern="^$|^((https?:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?$">
+                        <div class="invalid-feedback">Đường dẫn không hợp lệ</div>
+                    </div>
+                    <div class="form-group justify-content-end ">
+                        <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Hủy</button>
+
+                        <button type="submit" class="btn btn-primary">Xác nhận</button>
+                    </div>
+
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<!--add modal bluetooth-->
+<div class="modal fade" id="modal-add-bluetooth" tabindex="-1" role="dialog" aria-labelledby="modal-addLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-add-bluetoothLabel">Thêm mới</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form id="form-add-bluetooth" class="needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="add-bluetooth-ten">Tên Bluetooth:</label>
+                        <input type="text" class="form-control " id="add-bluetooth-ten" placeholder="Tên Bluetooth"
+                               required>
+                        <div class="invalid-feedback">Tên đã tồn tại hoặc không hợp lệ</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-bluetooth-link">Đường dẫn chi tiết:</label>
+                        <input type="text" class="form-control" id="add-bluetooth-link" placeholder="Đường dẫn chi tiết"
+                               pattern="^$|^((https?:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?$">
+                        <div class="invalid-feedback">Đường dẫn không hợp lệ</div>
+                    </div>
+                    <div class="form-group justify-content-end ">
+                        <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Hủy</button>
+
+                        <button type="submit" class="btn btn-primary">Xác nhận</button>
+                    </div>
+
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<!--add modal gps-->
+<div class="modal fade" id="modal-add-gps" tabindex="-1" role="dialog" aria-labelledby="modal-add-gpsLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-add-gpsLabel">Thêm mới</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form id="form-add-gps" class="needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="add-gps-ten">Tên GPS:</label>
+                        <input type="text" class="form-control " id="add-gps-ten" placeholder="Tên GPS" required>
+                        <div class="invalid-feedback">Tên đã tồn tại hoặc không hợp lệ</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-gps-link">Đường dẫn chi tiết:</label>
+                        <input type="text" class="form-control" id="add-gps-link" placeholder="Đường dẫn chi tiết"
+                               pattern="^$|^((https?:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?$">
+                        <div class="invalid-feedback">Đường dẫn không hợp lệ</div>
+                    </div>
+                    <div class="form-group justify-content-end ">
+                        <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Hủy</button>
+
+                        <button type="submit" class="btn btn-primary">Xác nhận</button>
+                    </div>
+
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<!--add modal wifi-->
+<div class="modal fade" id="modal-add-wifi" tabindex="-1" role="dialog" aria-labelledby="modal-addLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm mới</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form id="form-add-wifi" class="needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="add-wifi-ten">Tên Wifi:</label>
+                        <input type="text" class="form-control " id="add-wifi-ten" placeholder="Tên Wifi" required>
+                        <div class="invalid-feedback">Tên đã tồn tại hoặc không hợp lệ</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-wifi-link">Đường dẫn chi tiết:</label>
+                        <input type="text" class="form-control" id="add-wifi-link" placeholder="Đường dẫn chi tiết"
+                               pattern="^$|^((https?:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?$">
+                        <div class="invalid-feedback">Đường dẫn không hợp lệ</div>
+                    </div>
+                    <div class="form-group justify-content-end ">
+                        <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Hủy</button>
+
+                        <button type="submit" class="btn btn-primary">Xác nhận</button>
+                    </div>
+
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<!--add modal cpu-->
+<div class="modal fade" id="modal-add-cpu" tabindex="-1" role="dialog" aria-labelledby="modal-addLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="">Thêm mới</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form id="form-add-cpu" class="needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="add-cpu-ten">Tên cpu:</label>
+                        <input type="text" class="form-control " id="add-cpu-ten" placeholder="Tên cpu" required>
+                        <div class="invalid-feedback">Tên đã tồn tại hoặc không hợp lệ</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-cpu-gpu">Tên gpu:</label>
+                        <input type="text" class="form-control " id="add-cpu-gpu" placeholder="Tên gpu" required>
+                        <div class="invalid-feedback">Tên đã tồn tại hoặc không hợp lệ</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-cpu-link">Đường dẫn chi tiết:</label>
+                        <input type="text" class="form-control" id="add-cpu-link" placeholder="Đường dẫn chi tiết"
+                               pattern="^$|^((https?:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?$">
+                        <div class="invalid-feedback">Đường dẫn không hợp lệ</div>
+                    </div>
+                    <div class="form-group justify-content-end ">
+                        <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Hủy</button>
+
+                        <button type="submit" class="btn btn-primary">Xác nhận</button>
+                    </div>
+
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<!--add modal he dieu hanh-->
+<div class="modal fade" id="modal-add-he-dieu-hanh" tabindex="-1" role="dialog"
+     aria-labelledby="modal-add-he-dieu-hanhLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-add-he-dieu-hanhLabel">Thêm mới</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form id="form-add-he-dieu-hanh" class="needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="add-he-dieu-hanh-ten">Tên hệ điều hành:</label>
+                        <input type="text" class="form-control " id="add-he-dieu-hanh-ten"
+                               placeholder="Tên hệ điều hành" required>
+                        <div class="invalid-feedback">Tên đã tồn tại hoặc không hợp lệ</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-he-dieu-hanh-link">Đường dẫn chi tiết:</label>
+                        <input type="text" class="form-control" id="add-he-dieu-hanh-link"
+                               placeholder="Đường dẫn chi tiết"
+                               pattern="^$|^((https?:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?$">
+                        <div class="invalid-feedback">Đường dẫn không hợp lệ</div>
+                    </div>
+                    <div class="form-group justify-content-end ">
+                        <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Hủy</button>
+
+                        <button type="submit" class="btn btn-primary">Xác nhận</button>
+                    </div>
+
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<!--add modal series-->
+<div class="modal fade" id="modal-series" tabindex="-1" role="dialog" aria-labelledby="modal-addLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-addLabel">Thêm mới</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form id="form-series-add" class="needs-validation" novalidate>
+                    <div class="form-group">
+                        <label>Tên series:</label>
+                        <input type="text" class="form-control " id="add-series-ten" placeholder="Tên series" required>
+                        <div class="invalid-feedback">Tên đã tồn tại hoặc không hợp lệ</div>
+                    </div>
+                    <div class="form-group justify-content-end ">
+                        <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Hủy</button>
+
+                        <button type="submit" class="btn btn-primary">Xác nhận</button>
+                    </div>
+
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<!--add modal khuyen mai-->
+<div class="modal fade" id="modal-add-khuyen-mai" tabindex="-1" role="dialog" aria-labelledby="modal-add-khuyen-maiLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-add-khuyen-maiLabel">Thêm mới</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form id="form-add-khuyen-mai" class="needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="add-khuyen-mai-ten">Tên khuyến mãi:</label>
+                        <input type="text" class="form-control " id="add-khuyen-mai-ten" placeholder="Tên khuyến mãi" required>
+                        <div class="invalid-feedback">Tên đã tồn tại hoặc không hợp lệ</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="">Thời gian:</label>
+
+                        <input type="text"  name="datetimes"  class="form-control" id="add-khuyen-mai-date" placeholder="Thời gian áp dụng" required>
+                        <div class="invalid-feedback">Vui lòng chọn thời gian áp dụng</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-khuyen-mai-link">Đường dẫn chi tiết:</label>
+                        <input type="text" class="form-control" id="add-khuyen-mai-link" placeholder="Đường dẫn chi tiết" pattern="^$|^((https?:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?$">
+                        <div class="invalid-feedback">Đường dẫn không hợp lệ</div>
+                    </div>
+                    <div class="form-group justify-content-end ">
+                        <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Hủy</button>
+
+                        <button type="submit" class="btn btn-primary">Xác nhận</button>
+                    </div>
+
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<!--add modal mau sac-->
+<div class="modal fade" id="modal-add-mau-sac" tabindex="-1" role="dialog" aria-labelledby="modal-add-mau-sacLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-add-mau-sacLabel">Thêm mới</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form id="form-add-mau-sac" class="needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="add-mau-sac-ten">Tên màu sắc:</label>
+                        <input type="text" class="form-control " id="add-mau-sac-ten" placeholder="Tên màu sắc"
+                               required>
+                        <div class="invalid-feedback">Tên đã tồn tại hoặc không hợp lệ</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-mau-sac-ma">Mã màu chi tiết:</label>
+                        <div class="w-100 justify-content-between d-flex">
+                            <input type="text" value="#000000" class="form-control w-75 mr-3" id="add-mau-sac-ma"
+                                   placeholder="Mã màu chi tiết" pattern="#[0-9A-Fa-f]{6}" required>
+                            <input type="color" class="form-control w-25" id="add-mau-sac-code">
+                        </div>
+                    </div>
+                    <div class="form-group justify-content-end ">
+                        <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Hủy</button>
+
+                        <button type="submit" class="btn btn-primary">Xác nhận</button>
+                    </div>
+
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+<!--add modal cong nghe man hinh-->
+<div class="modal fade" id="modal-add-cong-nghe-man-hinh" tabindex="-1" role="dialog"
+     aria-labelledby="modal-add-cong-nghe-man-hinhLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-add-cong-nghe-man-hinhLabel">Thêm mới</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form id="form-add-cong-nghe-man-hinh" class="needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="add-cong-nghe-man-hinh-ten">Tên công nghệ:</label>
+                        <input type="text" class="form-control " id="add-cong-nghe-man-hinh-ten"
+                               placeholder="Tên công nghệ màn hình" required>
+                        <div class="invalid-feedback">Tên đã tồn tại hoặc không hợp lệ</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-cong-nghe-man-hinh-link">Đường dẫn chi tiết:</label>
+                        <input type="text" class="form-control" id="add-cong-nghe-man-hinh-link"
+                               placeholder="Đường dẫn chi tiết"
+                               pattern="^$|^((https?:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?$">
+                        <div class="invalid-feedback">Đường dẫn không hợp lệ</div>
+                    </div>
+                    <div class="form-group justify-content-end ">
+                        <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Hủy</button>
+
+                        <button type="submit" class="btn btn-primary">Xác nhận</button>
+                    </div>
+
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<!--add modal mat kinh cam ung-->
+<div class="modal fade" id="modal-add-mat-kinh-cam-ung" tabindex="-1" role="dialog"
+     aria-labelledby="modal-add-mat-kinh-cam-ungLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-add-mat-kinh-cam-ungLabel">Thêm mới</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form id="form-add-mat-kinh-cam-ung" class="needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="add-mat-kinh-cam-ung-ten">Tên mặt kính cảm ứng:</label>
+                        <input type="text" class="form-control " id="add-mat-kinh-cam-ung-ten"
+                               placeholder="Tên mặt kính cảm ứng" required>
+                        <div class="invalid-feedback">Tên đã tồn tại hoặc không hợp lệ</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-mat-kinh-cam-ung-link">Đường dẫn chi tiết:</label>
+                        <input type="text" class="form-control" id="add-mat-kinh-cam-ung-link"
+                               placeholder="Đường dẫn chi tiết"
+                               pattern="^$|^((https?:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?$">
+                        <div class="invalid-feedback">Đường dẫn không hợp lệ</div>
+                    </div>
+                    <div class="form-group justify-content-end ">
+                        <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Hủy</button>
+
+                        <button type="submit" class="btn btn-primary">Xác nhận</button>
+                    </div>
+
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<!--add modal tinh nang camera-->
+<div class="modal fade" id="modal-add-tinh-nang-camera" tabindex="-1" role="dialog"
+     aria-labelledby="modal-add-tinh-nang-cameraLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-add-tinh-nang-cameraLabel">Thêm mới</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form id="form-add-tinh-nang-camera" class="needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="add-tinh-nang-camera-ten">Tên công nghệ:</label>
+                        <input type="text" class="form-control " id="add-tinh-nang-camera-ten"
+                               placeholder="Tên tính năng camera" required>
+                        <div class="invalid-feedback">Tên đã tồn tại hoặc không hợp lệ</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-tinh-nang-camera-link">Đường dẫn chi tiết:</label>
+                        <input type="text" class="form-control" id="add-tinh-nang-camera-link"
+                               placeholder="Đường dẫn chi tiết"
+                               pattern="^$|^((https?:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?$">
+                        <div class="invalid-feedback">Đường dẫn không hợp lệ</div>
+                    </div>
+                    <div class="form-group justify-content-end ">
+                        <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Hủy</button>
+
+                        <button type="submit" class="btn btn-primary">Xác nhận</button>
+                    </div>
+
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<!-- modal select template-->
+<div class="modal fade" id="modal-template" tabindex="-1" role="dialog" aria-labelledby="modal-templateLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-templateLabel">Bạn muốn thêm nhanh chóng</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form id="form-template" class="needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="selected-template">Chọn sản phẩm muốn copy</label><br>
+                        <select class="form-control" style="width: 100%" id="selected-template" required>
+                        </select>
+                    </div>
+                    <div class="form-group justify-content-end ">
+                        <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Hủy</button>
+
+                        <button type="submit" class="btn btn-primary">Xác nhận</button>
+                    </div>
+
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+</body>
+
+<th:block layout:fragment="bottom_link">
+
+    <!-- Page level plugins -->
+    <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="/vendor/select2/select2.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/js/ion.rangeSlider.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+    <script type="module" src="/js/admin/san-pham/add-san-pham.js"></script>
+
+
+</th:block>
+
