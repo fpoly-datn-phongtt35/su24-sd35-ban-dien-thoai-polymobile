@@ -1,6 +1,7 @@
-package com.poly.polystore.core.admin.san_pham.model.request;
+package com.poly.polystore.core.admin.san_pham.model.reponse;
 
 import com.poly.polystore.repository.SanPhamRepository;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.io.Serializable;
@@ -16,10 +17,11 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Builder
-public class AddRequest implements Serializable {
+public class SanPhamDto implements Serializable {
+
     Integer id;
-    String anhName;
     String tenSanPham;
+    String anhUrl;
     Integer manHinhCongNgheManHinhId;
     String manHinhDoPhanGiai;
     String manHinhManHinhRong;
@@ -46,14 +48,18 @@ public class AddRequest implements Serializable {
     String thongTinChungThietKe;
     String thongTinChungChatLieu;
     String thongTinChungKichThuocKhoiLuong;
-    Set<Integer> thongTinChungTinhNangDacBietIds;
+    List<Integer> khuyenMaiIds;
     Integer seriesId;
-    Set<SanPhamChiTiet> sanPhamChiTiet;
     String ram;
     String thoiGianBaoHanh;
     SanPhamRepository.TrangThai trangThai;
-    String moTa;
     Integer stt;
+    Set<Integer> sanPhamChiTietMauSacIds;
+    Set<Integer> thongTinChungTinhNangDacBietIds;
+    Set<String> sanPhamChiTietRoms;
+    Set<SanPhamChiTietDto> sanPhamChiTiet;
+
+
 
     /**
      * DTO for {@link com.poly.polystore.entity.SanPhamChiTiet}
@@ -63,15 +69,52 @@ public class AddRequest implements Serializable {
     @Setter
     @NoArgsConstructor
     @Builder
-    public static class SanPhamChiTiet implements Serializable {
+    public static class SanPhamChiTietDto implements Serializable {
         Integer id;
-        Integer mauSacId;
+        List<KhuyenMaiDto> khuyenMai;
+        List<AnhDto> anh;
+        MauSacDto mauSac;
         String rom;
-        List<String> anh;
-        List<Integer> khuyenMaiIds;
-        SanPhamRepository.TrangThai trangThai;
         BigDecimal giaBan;
         BigDecimal giaNhap;
+        SanPhamRepository.TrangThai trangThai;
+        Integer stt;
 
+        /**
+         * DTO for {@link com.poly.polystore.entity.KhuyenMai}
+         */
+        @AllArgsConstructor
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @Builder
+        public static class KhuyenMaiDto implements Serializable {
+            Integer id;
+        }
+
+        /**
+         * DTO for {@link com.poly.polystore.entity.Anh}
+         */
+        @AllArgsConstructor
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @Builder
+        public static class AnhDto implements Serializable {
+            String name;
+            String url;
+        }
+
+        /**
+         * DTO for {@link com.poly.polystore.entity.MauSac}
+         */
+        @AllArgsConstructor
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @Builder
+        public static class MauSacDto implements Serializable {
+            Integer id;
+        }
     }
 }

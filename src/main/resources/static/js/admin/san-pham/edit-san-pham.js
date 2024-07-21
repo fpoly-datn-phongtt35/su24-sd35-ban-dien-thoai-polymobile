@@ -1,6 +1,6 @@
 var urlAPI = "/api/v1/admin/data-list-add-san-pham";
-
-
+var id = window.location.pathname.split('/').pop()
+var productEdit;
 var dataList = {
     sanPham: [],
     bluetooth: [],
@@ -115,8 +115,17 @@ $(document).ajaxStart(function () {
 }).ajaxStop(function () {
 
 });
-
-
+var mapKhuyenMai;
+$(document).ready(function () {
+    $.ajax({
+        url:'/api/v1/san-pham-chi-tiet/khuyen-mai',
+        success: function (response) {
+            mapKhuyenMai=new Map(response.map(rp=>[rp.id,rp]));
+        },
+        error: function (xhr, status, error) {
+        }
+    })
+})
 //fucn clone data
 const cloneData = new Promise(function (resolve, reject) {
     $.ajax({
@@ -132,7 +141,7 @@ const cloneData = new Promise(function (resolve, reject) {
 })
 
 //clone data load to select
-$(document).ready(function () {
+const loadSelect = new Promise(function (resolve, reject) {
     cloneData.then(function (data) {
         dataList = data;
         console.log(data.congNgheManHinh)
@@ -289,11 +298,6 @@ $(document).ready(function () {
             });
         }
 
-        // Ẩn overlay và hiện sugget
-        $("#overlay").hide();
-        window.setTimeout(() => {
-            $("#modal-template").modal('show');
-        }, 1000)
 
         $('#sp-rom,#sp-mau-sac,#sp-ten').on('change',function (){
             variantChangeFlagForStep2=true;
@@ -302,7 +306,46 @@ $(document).ready(function () {
 
 
 
+
+
     })
+        .then(function (data) {
+            resolve(data)
+        })
+        .catch(function (error){
+            reject(error)
+        })
+
+})
+
+const cloneProduct=new Promise(function(resolve, reject){
+
+
+    $.ajax({
+        url: "/api/v1/admin/san-pham/" + id,
+        contentType: 'application/json',
+        success: function (response) {
+            productEdit=response;
+            resolve(response);
+        },
+        error: function (xhr, status, error) {
+            reject(status)
+            console.error(xhr.responseText);
+        }
+    });
+})
+
+// load edit
+$(document).ready(function () {
+   Promise.all([loadSelect,cloneProduct])
+       .then((results) => {
+           fillData(productEdit);
+           $("#overlay").hide();
+       })
+       .catch((error) => {
+           console.error(error); // Nếu bất kỳ Promise nào bị từ chối, lỗi sẽ được xử lý ở đây
+       });
+
 
 })
 
@@ -1472,35 +1515,17 @@ $(document).ready(() => {
         } else {
             let id = $('#selected-template').val()
             // Nếu form hợp lệ, gửi dữ liệu form lên server
-            $.ajax({
-                url: "/api/v1/admin/data-list-add-san-pham/" + id,
-                contentType: 'application/json',
-                success: function (response) {
-                    $("#overlay").hide();
-                    Toast.fire({
-                        icon: "success",
-                        title: "Sao chép thành công"
-                    })
-                    fillData(response);
-                },
-                error: function (xhr, status, error) {
-                    Toast.fire({
-                        icon: "error",
-                        title: "Thêm mới thất bại"
-                    });
-                    reloadDataTable();
-                    console.log(response);
-                    console.error(xhr.responseText);
-                }
-            });
+
 
         }
     });
 })
 
 //Đẩy data lên form
+var roms;
+var mauSacIds;
 const fillData = (spTemp) => {
-    let dataTemp = {
+    productEdit = {
         id: "",
         tenSanPham: "",
         sanPhamChiTietMauSacIds: [],
@@ -1539,59 +1564,94 @@ const fillData = (spTemp) => {
         trangThai: "",
         stt: ""
     };
-    dataTemp = spTemp;
+    productEdit = spTemp;
 
-    console.log(dataTemp)
-    $('#sp-series').val(dataTemp.seriesId).trigger('change');
-    $('#sp-rom').val(dataTemp.sanPhamChiTietRoms).trigger('change');
-    $('#sp-ram').val(dataTemp.ram).trigger('change');
-    $('#sp-mau-sac').val(dataTemp.sanPhamChiTietMauSacIds).trigger('change');
-    $('#sp-cong-nghe-man-hinh').val(dataTemp.manHinhCongNgheManHinhId).trigger('change');
-    $('#sp-doPhanGiai').val(dataTemp.manHinhDoPhanGiai).trigger('change');
-    $('#sp-manHinhRong').val(dataTemp.manHinhManHinhRong).trigger('change');
-    $('#sp-doSangToiDa').val(dataTemp.manHinhDoSangToiDa).trigger('change');
-    $('#sp-matKinhCamUng').val(dataTemp.manHinhMatKinhCamUngId).trigger('change');
-    $('#sp-cameraSau-doPhanGiai').val(dataTemp.cameraSauDoPhanGiai).trigger('change');
-    $('#sp-tinhNangCameraSau').val(dataTemp.cameraSauTinhNangCameraIds).trigger('change');
-    $('#sp-cameraSau-denFlash').val(dataTemp.cameraSauDenFlash).trigger('change');
-    $('#sp-cameraTruoc-doPhanGiai').val(dataTemp.cameraTruocDoPhanGiai).trigger('change');
-    $('#sp-tinhNangCameraTruoc').val(dataTemp.cameraTruocTinhNangCameraIds).trigger('change');
-    $('#sp-heDieuHanh').val(dataTemp.heDieuHanhVaCpuHeDieuHanhId).trigger('change');
-    $('#sp-cpu').val(dataTemp.heDieuHanhVaCpuCpuId).trigger('change');
-    $('#sp-ketNoi-mangDiDong').val(dataTemp.ketNoiMangDiDong).trigger('change');
-    $('#sp-ketNoi-sim').val(dataTemp.ketNoiSim).trigger('change');
-    $('#sp-ketNoi-wifi').val(dataTemp.ketNoiWifiIds).trigger('change');
-    $('#sp-ketNoi-gps').val(dataTemp.ketNoiGpsIds).trigger('change');
-    $('#sp-ketNoi-bluetooth').val(dataTemp.ketNoiBluetoothIds).trigger('change');
-    $('#sp-ketNoi-sac').val(dataTemp.ketNoiCongSac).trigger('change');
-    $('#sp-ketNoi-taiNghe').val(dataTemp.ketNoiJackTaiNghe).trigger('change');
-    $('#sp-pin-dungLuong').val(dataTemp.pinVaSacDungLuongPin).trigger('change');
-    $('#sp-pin-loaiPin').val(dataTemp.pinVaSacLoaiPin).trigger('change');
-    $('#sp-pin-sacToiDa').val(dataTemp.pinVaSacHoTroSacToiDa).trigger('change');
-    $('#sp-pin-congNghePin').val(dataTemp.pinVaSacCongNghePinIds).trigger('change');
-    $('#sp-ttc-tinhNangDacBiet').val(dataTemp.thongTinChungTinhNangDacBietIds).trigger('change');
-    $('#sp-ttc-chatLieu').val(dataTemp.thongTinChungChatLieu).trigger('change');
-    $('#sp-ttc-kichThuocKhoiLuong').val(dataTemp.thongTinChungKichThuocKhoiLuong).trigger('change');
-    $('#sp-ttc-thoiGianBaoHanh').val(dataTemp.thoiGianBaoHanh).trigger('change');
-    $('#sp-ttc-thietKe').val(dataTemp.thongTinChungThietKe).trigger('change');
+    $('#sp-rom').on('select2:unselect',function (event){
+        let selectedIds= $(this).val();
+        if(!(productEdit.sanPhamChiTietRoms.every(defaultId=>selectedIds.includes(defaultId))) ){
+            $(this).val([...new Set([...productEdit.sanPhamChiTietRoms,...selectedIds])]).trigger("change")
+            Toast.fire({
+                icon: "warning",
+                title: "Bạn chỉ có thể thêm phiên bản mới"
+            })
+        }
+    })
+    $('#sp-mau-sac').on('select2:unselect',function (event){
+        let selectedIds= $(this).val();
+        if(!(productEdit.sanPhamChiTietMauSacIds.every(defaultId=>selectedIds.includes(defaultId))) ){
+            $(this).val([...new Set([...productEdit.sanPhamChiTietMauSacIds,...selectedIds])]).trigger("change")
+            Toast.fire({
+                icon: "warning",
+                title: "Bạn chỉ có thể thêm phiên bản mới"
+            })
+        }
+    })
+    //Default selected
+    roms=productEdit.sanPhamChiTietRoms;
+    mauSacIds=productEdit.sanPhamChiTietMauSacIds;
+
+    $('#imagePreview').css('background-image', 'url("' + productEdit.anhUrl + '")');
+    $('#imagePreview').hide();
+    $('#imagePreview').fadeIn(650);
+
+    console.log(productEdit)
+    $('#sp-series').val(productEdit.seriesId).trigger('change');
+    $('#sp-ten').val(productEdit.tenSanPham).trigger('change');
+    $('#sp-rom').val(productEdit.sanPhamChiTietRoms).trigger('change');
+    $('#sp-ram').val(productEdit.ram).trigger('change');
+    $('#sp-mau-sac').val(productEdit.sanPhamChiTietMauSacIds).trigger('change');
+    $('#sp-cong-nghe-man-hinh').val(productEdit.manHinhCongNgheManHinhId).trigger('change');
+    $('#sp-doPhanGiai').val(productEdit.manHinhDoPhanGiai).trigger('change');
+    $('#sp-manHinhRong').val(productEdit.manHinhManHinhRong).trigger('change');
+    $('#sp-doSangToiDa').val(productEdit.manHinhDoSangToiDa).trigger('change');
+    $('#sp-matKinhCamUng').val(productEdit.manHinhMatKinhCamUngId).trigger('change');
+    $('#sp-cameraSau-doPhanGiai').val(productEdit.cameraSauDoPhanGiai).trigger('change');
+    $('#sp-tinhNangCameraSau').val(productEdit.cameraSauTinhNangCameraIds).trigger('change');
+    $('#sp-cameraSau-denFlash').val(productEdit.cameraSauDenFlash).trigger('change');
+    $('#sp-cameraTruoc-doPhanGiai').val(productEdit.cameraTruocDoPhanGiai).trigger('change');
+    $('#sp-tinhNangCameraTruoc').val(productEdit.cameraTruocTinhNangCameraIds).trigger('change');
+    $('#sp-heDieuHanh').val(productEdit.heDieuHanhVaCpuHeDieuHanhId).trigger('change');
+    $('#sp-cpu').val(productEdit.heDieuHanhVaCpuCpuId).trigger('change');
+    $('#sp-ketNoi-mangDiDong').val(productEdit.ketNoiMangDiDong).trigger('change');
+    $('#sp-ketNoi-sim').val(productEdit.ketNoiSim).trigger('change');
+    $('#sp-ketNoi-wifi').val(productEdit.ketNoiWifiIds).trigger('change');
+    $('#sp-ketNoi-gps').val(productEdit.ketNoiGpsIds).trigger('change');
+    $('#sp-ketNoi-bluetooth').val(productEdit.ketNoiBluetoothIds).trigger('change');
+    $('#sp-ketNoi-sac').val(productEdit.ketNoiCongSac).trigger('change');
+    $('#sp-ketNoi-taiNghe').val(productEdit.ketNoiJackTaiNghe).trigger('change');
+    $('#sp-pin-dungLuong').val(productEdit.pinVaSacDungLuongPin).trigger('change');
+    $('#sp-pin-loaiPin').val(productEdit.pinVaSacLoaiPin).trigger('change');
+    $('#sp-pin-sacToiDa').val(productEdit.pinVaSacHoTroSacToiDa).trigger('change');
+    $('#sp-pin-congNghePin').val(productEdit.pinVaSacCongNghePinIds).trigger('change');
+    $('#sp-ttc-tinhNangDacBiet').val(productEdit.thongTinChungTinhNangDacBietIds).trigger('change');
+    $('#sp-ttc-chatLieu').val(productEdit.thongTinChungChatLieu).trigger('change');
+    $('#sp-ttc-kichThuocKhoiLuong').val(productEdit.thongTinChungKichThuocKhoiLuong).trigger('change');
+    $('#sp-ttc-thoiGianBaoHanh').val(productEdit.thoiGianBaoHanh).trigger('change');
+    $('#sp-ttc-thietKe').val(productEdit.thongTinChungThietKe).trigger('change');
+
+
+    $('#ms-img').find('tbody').html()
 
 }
 
 
 $(document).ready(() => {
     $("a[href='#step-2']").on("click", function () {
-        if(variantChangeFlagForStep2){
-            let fieldsetContainer = '';
-            let dataRow = '';
-            let imageRow = '';
-            let statusRow = '';
-            let count = 1;
 
-            //Tạo dòng  giá nhập giá bán input cho từng màu sắc và hình ảnh của chúng
-            $('#sp-mau-sac').select2('data').forEach(function (mauSac) {
-                imageRow += `
-                  <tr>
-                        <td style="text-align: center;vertical-align: middle">${mauSac.text}<span class="d-none">${mauSac.id}</span></td>
+
+
+        if(variantChangeFlagForStep2) {
+            {let fieldsetContainer = '';
+                let dataRow = '';
+                let imageRow = '';
+                let statusRow = '';
+                let count = 1;
+
+                //Tạo dòng  giá nhập giá bán input cho từng màu sắc và hình ảnh của chúng
+                $('#sp-mau-sac').select2('data').forEach(function (mauSac) {
+                    imageRow += `
+                  <tr ms-id="${mauSac.id}">
+                        <td style="text-align: center;vertical-align: middle">${mauSac.text}</td>
                         <td style="text-align: center;vertical-align: middle">
                             <div>
                                 <input type="file" id="img-${mauSac.id}" ms-id="${mauSac.id}" class="form-control-file d-none" accept=".png, .jpg, .jpeg" multiple>
@@ -1610,11 +1670,11 @@ $(document).ready(() => {
                   </tr>
             `
 
-                dataRow += `
-             <tr class="san-pham-chi-tiet">
+                    dataRow += `
+             <tr class="san-pham-chi-tiet" ms-id="${mauSac.id}">
                 <td><input type="checkbox"></td>
                 <td>${count++}</td>
-                <td>${mauSac.text}<span class="d-none ms-id">${mauSac.id}</span></td>
+                <td>${mauSac.text}</td>
                 <td><input ms-id="${mauSac.id}" class="form-control form-control-sm giaNhap-input" type="text" placeholder="Giá nhập" aria-label=".form-control-sm example" required></td>
                 <td><input ms-id="${mauSac.id}" class="form-control form-control-sm giaBan-input" type="text" placeholder="Giá bán" aria-label=".form-control-sm example" required></td>
                 <td><select class="form-control w-100 sm" id="sp-trang-thai" required>
@@ -1629,11 +1689,11 @@ $(document).ready(() => {
             </tr>
             `
 
-            })
+                })
 
-            //Tạo card input cho từng phiên bản rom
-            $('#sp-rom').val().forEach(elem => {
-                fieldsetContainer += `
+                //Tạo card input cho từng phiên bản rom
+                $('#sp-rom').val().forEach(elem => {
+                    fieldsetContainer += `
                     <div class="card shadow m-2 w-100 ">
                             <div class="card-header py-3">
                                 <div class="row">
@@ -1682,11 +1742,11 @@ $(document).ready(() => {
                         </div>
             `
 
-            })
+                })
 
 
-            let tenSanPham=$('#sp-ten').val();
-            let statusContainer=`
+                let tenSanPham = $('#sp-ten').val();
+                let statusContainer = `
                 <div class="card shadow m-2 w-100 ">
                     <div class="card-header py-3">
                         <div class="row">
@@ -1718,10 +1778,9 @@ $(document).ready(() => {
             `
 
 
+                fieldsetContainer = `<div id="danhSachSanPhamChiTiet">${fieldsetContainer}</div>>`
 
-            fieldsetContainer=`<div id="danhSachSanPhamChiTiet">${fieldsetContainer}</div>>`
-
-            let imageContainer = `
+                let imageContainer = `
             <div class="card shadow m-2 w-100 ">
                 <div class="card-header py-3">
                     <div class="row">
@@ -1749,139 +1808,139 @@ $(document).ready(() => {
             </div>
         `
 
-            $('#step-2-content').html(imageContainer + fieldsetContainer)
+                $('#step-2-content').html(imageContainer + fieldsetContainer)
 
-            //Link sự kiện select all
-            $('.table-data .checkAll').off();
-            $('.table-data .checkAll').on('click', function () {
-                let checked = $(this).prop('checked');
-                $(this).closest('table').find('tbody').first().find('input[type="checkbox"]').prop('checked', checked);
-            })
-            //Link sự kiện delete biến thể
-            $('.table-data .delete-spct').off();
-            $('.table-data .delete-spct').on('click', function () {
-                variantChangeFlagForStep3=true;
-                let tbody = $(this).closest('tbody');
-                $(this).closest('tr').remove()
-                //Đánh lại số thứ tự
-                tbody.find('td:nth-child(2)').each((i, e) => {
-                    $(e).text(i + 1);
+                //Link sự kiện select all
+                $('.table-data .checkAll').off();
+                $('.table-data .checkAll').on('click', function () {
+                    let checked = $(this).prop('checked');
+                    $(this).closest('table').find('tbody').first().find('input[type="checkbox"]').prop('checked', checked);
                 })
-            })
-            //Link sự kiện input giá bán, giá nhập
-            $('.giaBan-input,.giaNhap-input').off()
-            $('.giaBan-input,.giaNhap-input').on('blur', function () {
-                let value = $(this).val().replace(/[^0-9]/g, ''); // Loại bỏ tất cả ký tự không phải số
-                let formattedValue = numeral(value).format('0,0') + ' VND';
-                $(this).val(formattedValue.replace(/,/g, '.'));
-            })
-
-            $('.giaBan-input').on('input paste', function () {
-                if ($(this).closest('tr').find('input[type="checkbox"]').first().prop('checked') == true) {
+                //Link sự kiện delete biến thể
+                $('.table-data .delete-spct').off();
+                $('.table-data .delete-spct').on('click', function () {
+                    variantChangeFlagForStep3 = true;
+                    let tbody = $(this).closest('tbody');
+                    $(this).closest('tr').remove()
+                    //Đánh lại số thứ tự
+                    tbody.find('td:nth-child(2)').each((i, e) => {
+                        $(e).text(i + 1);
+                    })
+                })
+                //Link sự kiện input giá bán, giá nhập
+                $('.giaBan-input,.giaNhap-input').off()
+                $('.giaBan-input,.giaNhap-input').on('blur', function () {
                     let value = $(this).val().replace(/[^0-9]/g, ''); // Loại bỏ tất cả ký tự không phải số
                     let formattedValue = numeral(value).format('0,0') + ' VND';
-                    console.log('i')
-                    $(this).closest('tbody')
-                        .find('tr input[type="checkbox"]:checked')
-                        .closest('tr')
-                        .find('input:last')
-                        .not($(this))
-                        .val((formattedValue.replace(/,/g, '.')))
-                }
-            });
-            $('.giaNhap-input').on('input paste', function () {
-                if ($(this).closest('tr').find('input[type="checkbox"]').first().prop('checked') == true) {
-                    let value = $(this).val().replace(/[^0-9]/g, ''); // Loại bỏ tất cả ký tự không phải số
-                    let formattedValue = numeral(value).format('0,0') + ' VND';
-                    console.log('i')
-                    $(this).closest('tbody')
-                        .find('tr input[type="checkbox"]:checked')
-                        .closest('tr')
-                        .find('input[type="text"]:first')
-                        .not($(this))
-                        .val((formattedValue.replace(/,/g, '.')))
-                }
-            });
+                    $(this).val(formattedValue.replace(/,/g, '.'));
+                })
 
-            //Link sự kiện delete phiên bản
-            $('.btn-delete').off()
-            $('.btn-delete').on("click", function () {
-                let removeRom = $(this).closest('.card').find('table').prop('id');
-
-                Swal.fire({
-                    title: `Bạn chắc chắn muốn xóa phiên bản này?`,
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    cancelButtonText: "Hủy",
-                    confirmButtonText: "Xác nhận"
-                }).then((result) => {
-
-                    if (result.isConfirmed) {
-                        $(this).closest('.card').remove()
-                        let selectedRoms = $('#sp-rom').val();
-                        selectedRoms.splice(selectedRoms.indexOf(removeRom), 1);
-                        $('#sp-rom').val(selectedRoms).trigger('change')
-
-                        Toast.fire({
-                            icon: "success",
-                            title: "Xóa phiên bản thành công"
-                        })
-                        variantChangeFlagForStep3=true;
+                $('.giaBan-input').on('input paste', function () {
+                    if ($(this).closest('tr').find('input[type="checkbox"]').first().prop('checked') == true) {
+                        let value = $(this).val().replace(/[^0-9]/g, ''); // Loại bỏ tất cả ký tự không phải số
+                        let formattedValue = numeral(value).format('0,0') + ' VND';
+                        console.log('i')
+                        $(this).closest('tbody')
+                            .find('tr input[type="checkbox"]:checked')
+                            .closest('tr')
+                            .find('input:last')
+                            .not($(this))
+                            .val((formattedValue.replace(/,/g, '.')))
+                    }
+                });
+                $('.giaNhap-input').on('input paste', function () {
+                    if ($(this).closest('tr').find('input[type="checkbox"]').first().prop('checked') == true) {
+                        let value = $(this).val().replace(/[^0-9]/g, ''); // Loại bỏ tất cả ký tự không phải số
+                        let formattedValue = numeral(value).format('0,0') + ' VND';
+                        console.log('i')
+                        $(this).closest('tbody')
+                            .find('tr input[type="checkbox"]:checked')
+                            .closest('tr')
+                            .find('input[type="text"]:first')
+                            .not($(this))
+                            .val((formattedValue.replace(/,/g, '.')))
                     }
                 });
 
-            })
+                //Link sự kiện delete phiên bản
+                $('.btn-delete').off()
+                $('.btn-delete').on("click", function () {
+                    let removeRom = $(this).closest('.card').find('table').prop('id');
 
-            //Uload image
-            $('.ms-img input[type="file"]').on('change', function () {
-                let formData = new FormData();
-                let msId=$(this).prop("ms-id")
-                if(this.files.length<3){
-                    Toast.fire({
-                        icon: "error",
-                        title: "Vui lòng chọn tối thiểu 3 hình ảnh về sản phẩm"
-                    })
-                }else{
-                    for (let i = 0; i < this.files.length; i++) {
-                        formData.append("image",this.files[i]);
-                    }
-                    let uload=$(this).closest('tr')
-                    $.ajax({
-                        url: 'http://localhost:8080/image/upload-temp',  // Thay 'YOUR_API_ENDPOINT' bằng URL của API của bạn
-                        type: 'POST',
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function (response) {
-                            let imgResult="";
-                            response.forEach(img=>{
-                                imgResult+=`
+                    Swal.fire({
+                        title: `Bạn chắc chắn muốn xóa phiên bản này?`,
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        cancelButtonText: "Hủy",
+                        confirmButtonText: "Xác nhận"
+                    }).then((result) => {
+
+                        if (result.isConfirmed) {
+                            $(this).closest('.card').remove()
+                            let selectedRoms = $('#sp-rom').val();
+                            selectedRoms.splice(selectedRoms.indexOf(removeRom), 1);
+                            $('#sp-rom').val(selectedRoms).trigger('change')
+
+                            Toast.fire({
+                                icon: "success",
+                                title: "Xóa phiên bản thành công"
+                            })
+                            variantChangeFlagForStep3 = true;
+                        }
+                    });
+
+                })
+
+                //Uload image
+                $('.ms-img input[type="file"]').on('change', function () {
+                    let formData = new FormData();
+                    let msId = $(this).prop("ms-id")
+                    if (this.files.length < 3) {
+                        Toast.fire({
+                            icon: "error",
+                            title: "Vui lòng chọn tối thiểu 3 hình ảnh về sản phẩm"
+                        })
+                    } else {
+                        for (let i = 0; i < this.files.length; i++) {
+                            formData.append("image", this.files[i]);
+                        }
+                        let uload = $(this).closest('tr')
+                        $.ajax({
+                            url: 'http://localhost:8080/image/upload-temp',  // Thay 'YOUR_API_ENDPOINT' bằng URL của API của bạn
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (response) {
+                                let imgResult = "";
+                                response.forEach(img => {
+                                    imgResult += `
                                 <div class="image-container">
                                     <img src="${img.url}" alt="${img.name}" ms-id="${msId}">
                                     <div class="image-caption">${img.name}</div>
                                 </div>
                             `
-                            })
-                            uload.find(".d-flex").html(imgResult)
-                            uload.find("img").first().parent().addClass("bg-gray-400");
-                            uload.find("img").on("click",function (){
-                                $(this).closest('tr').find(".bg-gray-400").removeClass('bg-gray-400')
-                                $(this).parent().addClass("bg-gray-400");
-                            })
+                                })
+                                uload.find(".d-flex").html(imgResult)
+                                uload.find("img").first().parent().addClass("bg-gray-400");
+                                uload.find("img").on("click", function () {
+                                    $(this).closest('tr').find(".bg-gray-400").removeClass('bg-gray-400')
+                                    $(this).parent().addClass("bg-gray-400");
+                                })
 
-                            console.log('File uploaded successfully', response);
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            console.log('File upload failed', textStatus, errorThrown);
-                        }
-                    });
-                }
+                                console.log('File uploaded successfully', response);
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                console.log('File upload failed', textStatus, errorThrown);
+                            }
+                        });
+                    }
 
 
-            });
-
+                });}
+            fillDataToStep2();
 
 
         };
@@ -1889,8 +1948,53 @@ $(document).ready(() => {
     })
 })
 
+function fillDataToStep2(){
+    let imgsUrlByIdMs=new Map();
+
+    productEdit.sanPhamChiTiet.forEach(spct=>{
+        kmIds=new Set([...kmIds,...(spct.khuyenMai.map(km=>km.id))]);
+        imgsUrlByIdMs.set(spct.mauSac.id, spct.anh);
+        $(`table[rom-id="${spct.rom}"] tr[ms-id="${spct.mauSac.id}"] .giaNhap-input`).val(spct.giaNhap).trigger('blur')
+        $(`table[rom-id="${spct.rom}"] tr[ms-id="${spct.mauSac.id}"] .giaBan-input`).val(spct.giaBan).trigger('blur')
+        $(`table[rom-id="${spct.rom}"] tr[ms-id="${spct.mauSac.id}"] select`).val(spct.trangThai).trigger('blur')
+    })
+    let imgTable=$('#ms-img')
+    imgsUrlByIdMs.forEach((imgs, msId) => {
+        let imgResult = "";
+        imgs.forEach(img => {
+            imgResult += `
+                                <div class="image-container">
+                                    <img src="${img.url}" alt="${img.name}" ms-id="${msId}" uploaded="true">
+                                    <div class="image-caption">${img.name}</div>
+                                </div>
+                            `
+
+            imgTable.find(`tbody tr[ms-id="${msId}"] .d-flex`).html(imgResult);
+        })
+    })
+
+}
+function textDD_MM_YYYYtoDate(stringDate){
+    return new Date(stringDate.split('-').reverse().join('-'));
+}
 //Step 3
 var lstImg=[];
+
+function compareDate(stringStartDate, stringEndDate, booleanDeleted) {
+    let startDate=textDD_MM_YYYYtoDate(stringStartDate);
+    let endDate=textDD_MM_YYYYtoDate(stringEndDate);
+    if(booleanDeleted)
+        return 'Dừng triển khai'
+    else{
+        if(startDate>new Date())
+            return 'Sắp diễn ra'
+        if(startDate<new Date()&&endDate>new Date())
+            return 'Đang diễn ra'
+        if(startDate<new Date()&&endDate<new Date())
+            return 'Đã kết thúc'
+    }
+}
+
 $(document).ready(() => {
 
     $("a[href='#step-3']").on("click", function () {
@@ -1911,7 +2015,7 @@ $(document).ready(() => {
                     rom:$(this).closest('table').first().attr('rom-id'),
 
                 })
-                
+
             })
             danhSachSanPhamChiTiet.forEach(e=>{
                 columnSP+=`
@@ -1922,7 +2026,7 @@ $(document).ready(() => {
             })
             lstRoms.forEach(rom=>{
                 lstMauSacs.forEach(mauSac=>{
-                    
+
                 })
             })
 
@@ -1950,23 +2054,30 @@ $(document).ready(() => {
                 $('#sp-khuyen-mai').select2('data').forEach(km=>{
                     let ma=new Intl.NumberFormat( 'en-US', {  minimumIntegerDigits: 3, useGrouping: false }
                     ).format(count++)
+                    let kmRepo=mapKhuyenMai.get(parseInt(km.id));
+                    let trangThai=compareDate(kmRepo.thoiGianBatDau,kmRepo.thoiGianKetThuc,kmRepo.deleted);
                     dataLstKm+=`
                 <tr>
-                    <td km-id="${km.id}">KM${ma}</td>
+                    <td km-id="${km.id}"><a href="/admin/san-pham-chi-tiet/khuyen-mai" target="_blank">KM${ma}</a></td>
                     <td>${km.text}</td>
+                    <td>${kmRepo.thoiGianBatDau}</td>
+                    <td>${kmRepo.thoiGianKetThuc}</td>
+                    <td>${trangThai}</td>
                 </tr>
             `;
 
 
-                    tableApDung.find("thead tr").append(`
-                <th class="text-center" km-id="${km.id}">KM${ma}</th>>
-            `)
-                    tableApDung.find("tbody tr").append(`
-                <td class="text-center"><input type="checkbox" checked km-id="${km.id}" data-toggle="tooltip" data-placement="right" title="${km.text}"></td>>
-            `)
+            //         tableApDung.find("thead tr").append(`
+            //     <th class="text-center" km-id="${km.id}">KM${ma}</th>>
+            // `)
+            //         tableApDung.find("tbody tr").append(`
+            //     <td class="text-center"><input type="checkbox" km-id="${km.id}" data-toggle="tooltip" data-placement="right" title="${km.text}"></td>>
+            // `)
                 })
                 tableDanhSach.find("tbody").html(dataLstKm)
             }
+            $('#sp-khuyen-mai').val([...kmIds]).trigger('change');
+            fillDataToStep3();
         }
         variantChangeFlagForStep3=false;
     })
@@ -1988,27 +2099,32 @@ $(document).ready(() => {
         $('#sp-khuyen-mai').select2('data').forEach(km=>{
             let ma=new Intl.NumberFormat( 'en-US', {  minimumIntegerDigits: 3, useGrouping: false }
             ).format(count++)
+            let kmRepo=mapKhuyenMai.get(parseInt(km.id));
+            let trangThai=compareDate(kmRepo.thoiGianBatDau,kmRepo.thoiGianKetThuc,kmRepo.deleted);
             dataLstKm+=`
                 <tr>
                     <td km-id="${km.id}">KM${ma}</td>
                     <td>${km.text}</td>
+                    <td>${kmRepo.thoiGianBatDau}</td>
+                    <td>${kmRepo.thoiGianKetThuc}</td>
+                    <td>${trangThai}</td>
                 </tr>
             `;
-
 
             tableApDung.find("thead tr").append(`
                 <th class="text-center" km-id="${km.id}">KM${ma}</th>>
             `)
             tableApDung.find("tbody tr").append(`
-                <td class="text-center"><input type="checkbox" checked km-id="${km.id}" data-toggle="tooltip" data-placement="right" title="${km.text}"></td>>
+                <td class="text-center"><input type="checkbox" km-id="${km.id}" data-toggle="tooltip" data-placement="right" title="${km.text}"></td>>
             `)
         })
-        tableDanhSach.find("tbody").html(dataLstKm)
+        tableDanhSach.find("tbody").html(dataLstKm);
+
     })
 
     {
         tinymce.init({
-            selector: 'textarea',
+            selector: '#sp-mo-ta',
             min_height: 1200,
             plugins: 'anchor autolink link lists image code wordcount',
             toolbar: 'undo redo | blocks | bold italic strikethrough backcolor | link image | align bullist numlist | code ',
@@ -2045,7 +2161,34 @@ $(document).ready(() => {
 
 
 });
+var kmIds=new Set();
+function fillDataToStep3(){
 
+    let tableKm=$('#tbl-khuyen-mai-ap-dung');
+    productEdit.sanPhamChiTiet.forEach(spct=>{
+        let rowKm=tableKm.find(`tbody tr[rom-id="${spct.rom}"][ms-id="${spct.mauSac.id}"]`);
+        spct.khuyenMai.forEach(kmId=>{
+            rowKm.find(`input[km-id="${kmId.id}"]`).prop("checked","true");
+        })
+    })
+
+    $('#sp-khuyen-mai').on('change',function (){
+        // Check lại những áp dụng
+        {
+            let tableKm=$('#tbl-khuyen-mai-ap-dung');
+            productEdit.sanPhamChiTiet.forEach(spct=>{
+                let rowKm=tableKm.find(`tbody tr[rom-id="${spct.rom}"][ms-id="${spct.mauSac.id}"]`);
+                spct.khuyenMai.forEach(kmId=>{
+                    rowKm.find(`input[km-id="${kmId.id}"]`).prop("checked","true");
+                })
+            })
+        }
+    })
+
+
+
+
+}
 // Final submit
 $(document).ready(function () {
     $('#form-sp').on('submit',function (event){
@@ -2106,6 +2249,7 @@ $(document).ready(function () {
                 "moTa": "",
                 "stt": ""
             }
+            sp.tenSanPham = $('#sp-ten').val();
             sp.anhName = $('#sp-img').val();
             sp.tenSanPham = $('#sp-ten').val();
             sp.trangThai=$('#sp-trang-thai').val();

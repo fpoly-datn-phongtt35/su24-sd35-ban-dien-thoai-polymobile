@@ -1,5 +1,6 @@
 package com.poly.polystore.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.poly.polystore.repository.SanPhamRepository;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,7 +23,8 @@ public class SanPhamChiTiet implements Serializable {
     @Column(name = "ID", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.PERSIST)
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SAN_PHAM_ID")
     private SanPham sanPham;
     @OneToMany(
@@ -86,5 +88,9 @@ public class SanPhamChiTiet implements Serializable {
     @Nationalized
     @Column(name = "STT")
     private Integer stt;
+
+    @ManyToOne
+    @JoinColumn(name = "DOT_GIAM_GIA_ID")
+    private PhieuGiamGia dotGiamGia;
 
 }

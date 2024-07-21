@@ -72,8 +72,6 @@
                                 <div class="avatar-upload">
                                     <div class="avatar-edit">
                                         <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg"/>
-                                        <input type='text' id="sp-img" name="img" class="form-control d-none" required/>
-
                                         <label for="imageUpload"></label>
                                         <div class="invalid-feedback"
                                              style="position: absolute; top: 50px;left: -100px;width: fit-content">
@@ -572,7 +570,34 @@
 
                     </div>
                     <div class="setup-content d-none" id="step-2">
-                        <div id="step-2-content"></div>
+                        <div id="step-2-content">
+                            <div class="card shadow m-2 w-100 ">
+                                <div class="card-header py-3">
+                                    <div class="row">
+                                        <h1 class="h3 text-gray-800">Chọn tối thiểu 3 hình ảnh tương ứng với màu sắc, ảnh đầu tiên được chọn là ảnh chính</h1>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row ms-img">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-data" id="ms-img">
+                                                <thead>
+                                                <tr>
+                                                    <th>Màu sắc</th>
+                                                    <th>Tải lên</th>
+                                                    <th class="w-75">Chọn hình ảnh</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                         <button class="btn btn-primary nextBtn btn-lg" type="button">Next</button>
                     </div>
                     <div class="row setup-content d-none" id="step-3">
@@ -607,6 +632,9 @@
                                         <tr>
                                             <th style="width: fit-content">Mã khuyến mại</th>
                                             <th>Tên khuyến mại</th>
+                                            <th>Ngày bắt đầu</th>
+                                            <th>Ngày kết thúc</th>
+                                            <th>Trạng thái</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -640,7 +668,7 @@
                             <div class="card-body">
 
 
-                                    <textarea id="sp-mo-ta">
+                                    <textarea id="sp-mo-ta" th:utext="${moTa}">
                                         <p style="text-align: center;">&nbsp;<img class=" lazyloaded" title="iPhone 15 Pro Max 256GB Tổng Quan" src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-210923-113413.jpg" alt="iPhone 15 Pro Max 256GB Tổng Quan" width="1000" height="592" data-src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-210923-113413.jpg"><img class=" lazyloaded" title="iPhone 15 Pro Max 256GB Th&ocirc;ng Số Kỹ Thuật V&agrave; T&iacute;nh Năng" src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-210923-113413-1.jpg" alt="iPhone 15 Pro Max 256GB Th&ocirc;ng Số Kỹ Thuật V&agrave; T&iacute;nh Năng" width="1000" height="1952" data-src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-210923-113413-1.jpg"><img class=" lazyloaded" title="iPhone 15 Pro Max 256GB So S&aacute;nh" src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-051023-102933.jpg" alt="iPhone 15 Pro Max 256GB So S&aacute;nh" width="1000" data-src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-051023-102933.jpg"><img class=" lazyloaded" title="iPhone 15 Pro Max 256GB Chuyển Đổi" src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-210923-113414-1.jpg" alt="iPhone 15 Pro Max 256GB Chuyển Đổi" width="1000" data-src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-210923-113414-1.jpg"><img class=" lazyloaded" title="iPhone 15 Pro Max 256GB Phụ Kiện" src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-271123-053904.jpg" alt="iPhone 15 Pro Max 256GB Phụ Kiện" width="1000" data-src="https://cdn.tgdd.vn/Products/Images/42/305658/s16/iphone-15-pro-max-271123-053904.jpg">&nbsp;</p>
 
                                     </textarea>
@@ -1239,7 +1267,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
-    <script type="module" src="/js/admin/san-pham/add-san-pham.js"></script>
+    <script type="module" src="/js/admin/san-pham/edit-san-pham.js"></script>
 
 
 </th:block>
