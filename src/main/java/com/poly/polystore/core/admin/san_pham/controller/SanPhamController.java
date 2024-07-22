@@ -1,8 +1,7 @@
 package com.poly.polystore.core.admin.san_pham.controller;
 
 import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamDataTable;
-import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamDto;
-import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamTemplate;
+import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamEditResponse;
 import com.poly.polystore.core.admin.san_pham.model.request.AddRequest;
 import com.poly.polystore.core.admin.san_pham.model.request.SanPhamEditRequest;
 import com.poly.polystore.core.common.image.service.ImageService;
@@ -52,7 +51,7 @@ public class SanPhamController {
     @ResponseBody
     @GetMapping("/api/v1/admin/san-pham/{id}")
     public ResponseEntity<?> getSanPhamEdit(@PathVariable(name = "id") SanPham sp) {
-        var spEditResp = modelMapper.map(sp, SanPhamDto.class);
+        var spEditResp = modelMapper.map(sp, SanPhamEditResponse.class);
         spEditResp.setCameraSauTinhNangCameraIds(sp.getCameraTruoc()
                 .getTinhNangCameras()
                 .stream()
@@ -240,8 +239,10 @@ public class SanPhamController {
     @Transactional
     @ResponseBody
     @PostMapping("/api/v1/san-pham/{id}")
-    public ResponseEntity<?> edit(@RequestBody AddRequest addRequest,@PathVariable(name="id") SanPham sp) {
-        var spe= modelMapper.map(sp, SanPhamEditRequest.class);
+    public ResponseEntity<?> edit(@RequestBody SanPhamEditRequest editRequest,@PathVariable(name="id") SanPham sp) {
+        sp.setId(-1);
+        modelMapper.map(editRequest, sp);
+        return ResponseEntity.ok(sp);
 //
 //        sp.getCameraTruoc().setTinhNangCameras(addRequest
 //                .getCameraTruocTinhNangCameraIds()
@@ -350,7 +351,7 @@ public class SanPhamController {
 //
 //        sp.setSanPhamChiTiet(lstSPCT);
 //        var spResponse=sanPhamRepository.save(sp);
-        return ResponseEntity.ok(spe);
+
     }
 
     private void optimizeField(Object source, Object target) {

@@ -1,15 +1,10 @@
 package com.poly.polystore.core.admin.san_pham.model.reponse;
 
-import com.poly.polystore.core.client.models.response.SanPhamProductResponse;
 import com.poly.polystore.repository.SanPhamRepository;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -22,8 +17,11 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 public class SanPhamEditResponse implements Serializable {
+
     Integer id;
     String tenSanPham;
+    String anhUrl;
+    String anhId;
     Integer manHinhCongNgheManHinhId;
     String manHinhDoPhanGiai;
     String manHinhManHinhRong;
@@ -59,23 +57,29 @@ public class SanPhamEditResponse implements Serializable {
     Set<Integer> sanPhamChiTietMauSacIds;
     Set<Integer> thongTinChungTinhNangDacBietIds;
     Set<String> sanPhamChiTietRoms;
-    Set<SanPhamChiTiet> sanPhamChiTiet;
+    Set<SanPhamChiTietDto> sanPhamChiTiet;
 
 
+
+    /**
+     * DTO for {@link com.poly.polystore.entity.SanPhamChiTiet}
+     */
     @AllArgsConstructor
     @Getter
     @Setter
     @NoArgsConstructor
     @Builder
-    public static class SanPhamChiTiet implements Serializable {
+    public static class SanPhamChiTietDto implements Serializable {
         Integer id;
-        List<SanPhamChiTiet.KhuyenMai> khuyenMai;
-        List<SanPhamChiTiet.Anh> anh;
-        SanPhamChiTiet.MauSac mauSac;
+        List<KhuyenMaiDto> khuyenMai;
+        List<AnhDto> anh;
+        MauSacDto mauSac;
         String rom;
         BigDecimal giaBan;
+        BigDecimal giaNhap;
         SanPhamRepository.TrangThai trangThai;
-        PhieuGiamGia dotGiamGia;
+        Integer stt;
+
         /**
          * DTO for {@link com.poly.polystore.entity.KhuyenMai}
          */
@@ -84,16 +88,8 @@ public class SanPhamEditResponse implements Serializable {
         @Setter
         @NoArgsConstructor
         @Builder
-        public static class KhuyenMai implements Serializable {
-            @NotNull
-            @Size(max = 255)
-            String ten;
-            @NotNull
-            @Size(max = 255)
-            String link;
-            Date thoiGianBatDau;
-            Date thoiGianKetThuc;
-            Boolean deleted;
+        public static class KhuyenMaiDto implements Serializable {
+            Integer id;
         }
 
         /**
@@ -104,9 +100,10 @@ public class SanPhamEditResponse implements Serializable {
         @Setter
         @NoArgsConstructor
         @Builder
-        public static class Anh implements Serializable {
-            String url;
+        public static class AnhDto implements Serializable {
+            Integer id;
             String name;
+            String url;
         }
 
         /**
@@ -117,31 +114,8 @@ public class SanPhamEditResponse implements Serializable {
         @Setter
         @NoArgsConstructor
         @Builder
-        public static class MauSac implements Serializable {
-            String ten;
-            String ma;
+        public static class MauSacDto implements Serializable {
+            Integer id;
         }
-
-
     }
-    /**
-     * DTO for {@link com.poly.polystore.entity.PhieuGiamGia}
-     */
-    @AllArgsConstructor
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @Builder
-    public static class PhieuGiamGia implements Serializable {
-        String code;
-        BigDecimal giaTriGiam;
-        String donvi;
-        Instant thoiGianKetThuc;
-        Instant thoiGianBatDau;
-        Boolean deleted;
-    }
-
-
-
-
 }

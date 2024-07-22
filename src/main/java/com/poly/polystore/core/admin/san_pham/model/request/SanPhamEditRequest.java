@@ -53,6 +53,7 @@ public class SanPhamEditRequest implements Serializable {
     @Setter
     @NoArgsConstructor
     public static class AnhDto implements Serializable {
+        Integer id;
         String name;
     }
 
@@ -369,7 +370,7 @@ public class SanPhamEditRequest implements Serializable {
         @Setter
         @NoArgsConstructor
         public static class AnhDto implements Serializable {
-            @Size(max = 255)
+            Integer id;
             String name;
         }
 

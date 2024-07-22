@@ -35,8 +35,8 @@ var dataList = {
     tinhNangDacBiet: [],
     wifi: [],
 }
-var variantChangeFlagForStep2=true;
-var variantChangeFlagForStep3=true;
+var variantChangeFlagForStep2 = true;
+var variantChangeFlagForStep3 = true;
 //Init component
 $(document).ready(() => {
     //Image product upload
@@ -90,7 +90,7 @@ $(document).ready(() => {
     let initFlag = true;
     let exitstName;
     $("#sp-ten").on('input paste', function () {
-        variantChangeFlagForStep2=true;// Thay đổi biến thể
+        variantChangeFlagForStep2 = true;// Thay đổi biến thể
         if (initFlag) {
             initFlag = false;
             exitstName = dataList.ten.map(name => name.toLowerCase().trim().replace(/\s/g, ''));
@@ -118,9 +118,9 @@ $(document).ajaxStart(function () {
 var mapKhuyenMai;
 $(document).ready(function () {
     $.ajax({
-        url:'/api/v1/san-pham-chi-tiet/khuyen-mai',
+        url: '/api/v1/san-pham-chi-tiet/khuyen-mai',
         success: function (response) {
-            mapKhuyenMai=new Map(response.map(rp=>[rp.id,rp]));
+            mapKhuyenMai = new Map(response.map(rp => [rp.id, rp]));
         },
         error: function (xhr, status, error) {
         }
@@ -299,33 +299,30 @@ const loadSelect = new Promise(function (resolve, reject) {
         }
 
 
-        $('#sp-rom,#sp-mau-sac,#sp-ten').on('change',function (){
-            variantChangeFlagForStep2=true;
-            variantChangeFlagForStep3=true;
+        $('#sp-rom,#sp-mau-sac,#sp-ten').on('change', function () {
+            variantChangeFlagForStep2 = true;
+            variantChangeFlagForStep3 = true;
         })
-
-
-
 
 
     })
         .then(function (data) {
             resolve(data)
         })
-        .catch(function (error){
+        .catch(function (error) {
             reject(error)
         })
 
 })
 
-const cloneProduct=new Promise(function(resolve, reject){
+const cloneProduct = new Promise(function (resolve, reject) {
 
 
     $.ajax({
         url: "/api/v1/admin/san-pham/" + id,
         contentType: 'application/json',
         success: function (response) {
-            productEdit=response;
+            productEdit = response;
             resolve(response);
         },
         error: function (xhr, status, error) {
@@ -337,14 +334,14 @@ const cloneProduct=new Promise(function(resolve, reject){
 
 // load edit
 $(document).ready(function () {
-   Promise.all([loadSelect,cloneProduct])
-       .then((results) => {
-           fillData(productEdit);
-           $("#overlay").hide();
-       })
-       .catch((error) => {
-           console.error(error); // Nếu bất kỳ Promise nào bị từ chối, lỗi sẽ được xử lý ở đây
-       });
+    Promise.all([loadSelect, cloneProduct])
+        .then((results) => {
+            fillData(productEdit);
+            $("#overlay").hide();
+        })
+        .catch((error) => {
+            console.error(error); // Nếu bất kỳ Promise nào bị từ chối, lỗi sẽ được xử lý ở đây
+        });
 
 
 })
@@ -1428,7 +1425,7 @@ $(document).ready(function () {
             },
             "startDate": new Date().toLocaleDateString("vi-VN"),
             "minDate": new Date().toLocaleDateString("vi-VN")
-        }, function(start, end, label) {
+        }, function (start, end, label) {
             //    TODO BEFORE SELECT
         });
 
@@ -1566,20 +1563,20 @@ const fillData = (spTemp) => {
     };
     productEdit = spTemp;
 
-    $('#sp-rom').on('select2:unselect',function (event){
-        let selectedIds= $(this).val();
-        if(!(productEdit.sanPhamChiTietRoms.every(defaultId=>selectedIds.includes(defaultId))) ){
-            $(this).val([...new Set([...productEdit.sanPhamChiTietRoms,...selectedIds])]).trigger("change")
+    $('#sp-rom').on('select2:unselect', function (event) {
+        let selectedIds = $(this).val();
+        if (!(productEdit.sanPhamChiTietRoms.every(defaultId => selectedIds.includes(defaultId)))) {
+            $(this).val([...new Set([...productEdit.sanPhamChiTietRoms, ...selectedIds])]).trigger("change")
             Toast.fire({
                 icon: "warning",
                 title: "Bạn chỉ có thể thêm phiên bản mới"
             })
         }
     })
-    $('#sp-mau-sac').on('select2:unselect',function (event){
-        let selectedIds= $(this).val();
-        if(!(productEdit.sanPhamChiTietMauSacIds.every(defaultId=>selectedIds.includes(defaultId))) ){
-            $(this).val([...new Set([...productEdit.sanPhamChiTietMauSacIds,...selectedIds])]).trigger("change")
+    $('#sp-mau-sac').on('select2:unselect', function (event) {
+        let selectedIds = $(this).val();
+        if (!(productEdit.sanPhamChiTietMauSacIds.every(defaultId => selectedIds.includes(defaultId)))) {
+            $(this).val([...new Set([...productEdit.sanPhamChiTietMauSacIds, ...selectedIds])]).trigger("change")
             Toast.fire({
                 icon: "warning",
                 title: "Bạn chỉ có thể thêm phiên bản mới"
@@ -1587,8 +1584,8 @@ const fillData = (spTemp) => {
         }
     })
     //Default selected
-    roms=productEdit.sanPhamChiTietRoms;
-    mauSacIds=productEdit.sanPhamChiTietMauSacIds;
+    roms = productEdit.sanPhamChiTietRoms;
+    mauSacIds = productEdit.sanPhamChiTietMauSacIds;
 
     $('#imagePreview').css('background-image', 'url("' + productEdit.anhUrl + '")');
     $('#imagePreview').hide();
@@ -1639,9 +1636,9 @@ $(document).ready(() => {
     $("a[href='#step-2']").on("click", function () {
 
 
-
-        if(variantChangeFlagForStep2) {
-            {let fieldsetContainer = '';
+        if (variantChangeFlagForStep2) {
+            {
+                let fieldsetContainer = '';
                 let dataRow = '';
                 let imageRow = '';
                 let statusRow = '';
@@ -1939,32 +1936,36 @@ $(document).ready(() => {
                     }
 
 
-                });}
+                });
+            }
             fillDataToStep2();
 
 
-        };
-        variantChangeFlagForStep2=false;
+        }
+        ;
+        variantChangeFlagForStep2 = false;
     })
 })
 
-function fillDataToStep2(){
-    let imgsUrlByIdMs=new Map();
+function fillDataToStep2() {
+    let imgsUrlByIdMs = new Map();
 
-    productEdit.sanPhamChiTiet.forEach(spct=>{
-        kmIds=new Set([...kmIds,...(spct.khuyenMai.map(km=>km.id))]);
+    productEdit.sanPhamChiTiet.forEach(spct => {
+        kmIds = new Set([...kmIds, ...(spct.khuyenMai.map(km => km.id))]);
         imgsUrlByIdMs.set(spct.mauSac.id, spct.anh);
         $(`table[rom-id="${spct.rom}"] tr[ms-id="${spct.mauSac.id}"] .giaNhap-input`).val(spct.giaNhap).trigger('blur')
         $(`table[rom-id="${spct.rom}"] tr[ms-id="${spct.mauSac.id}"] .giaBan-input`).val(spct.giaBan).trigger('blur')
         $(`table[rom-id="${spct.rom}"] tr[ms-id="${spct.mauSac.id}"] select`).val(spct.trangThai).trigger('blur')
+        $(`table[rom-id="${spct.rom}"] tr[ms-id="${spct.mauSac.id}"]`).attr('spct-id', spct.id);
+
     })
-    let imgTable=$('#ms-img')
+    let imgTable = $('#ms-img')
     imgsUrlByIdMs.forEach((imgs, msId) => {
         let imgResult = "";
         imgs.forEach(img => {
             imgResult += `
                                 <div class="image-container">
-                                    <img src="${img.url}" alt="${img.name}" ms-id="${msId}" uploaded="true">
+                                    <img src="${img.url}" alt="${img.name}" ms-id="${msId}" img-id="${img.id}">
                                     <div class="image-caption">${img.name}</div>
                                 </div>
                             `
@@ -1974,23 +1975,25 @@ function fillDataToStep2(){
     })
 
 }
-function textDD_MM_YYYYtoDate(stringDate){
+
+function textDD_MM_YYYYtoDate(stringDate) {
     return new Date(stringDate.split('-').reverse().join('-'));
 }
+
 //Step 3
-var lstImg=[];
+var lstImg = [];
 
 function compareDate(stringStartDate, stringEndDate, booleanDeleted) {
-    let startDate=textDD_MM_YYYYtoDate(stringStartDate);
-    let endDate=textDD_MM_YYYYtoDate(stringEndDate);
-    if(booleanDeleted)
+    let startDate = textDD_MM_YYYYtoDate(stringStartDate);
+    let endDate = textDD_MM_YYYYtoDate(stringEndDate);
+    if (booleanDeleted)
         return 'Dừng triển khai'
-    else{
-        if(startDate>new Date())
+    else {
+        if (startDate > new Date())
             return 'Sắp diễn ra'
-        if(startDate<new Date()&&endDate>new Date())
+        if (startDate < new Date() && endDate > new Date())
             return 'Đang diễn ra'
-        if(startDate<new Date()&&endDate<new Date())
+        if (startDate < new Date() && endDate < new Date())
             return 'Đã kết thúc'
     }
 }
@@ -1998,34 +2001,34 @@ function compareDate(stringStartDate, stringEndDate, booleanDeleted) {
 $(document).ready(() => {
 
     $("a[href='#step-3']").on("click", function () {
-        if(variantChangeFlagForStep3){
+        if (variantChangeFlagForStep3) {
 
-            let lstRoms=$('#sp-rom').select2('data'),
-                lstMauSacs=$('#sp-mau-sac').select2('data'),
-                tenSP=$('#sp-ten').val();
+            let lstRoms = $('#sp-rom').select2('data'),
+                lstMauSacs = $('#sp-mau-sac').select2('data'),
+                tenSP = $('#sp-ten').val();
 
-            let columnSP='';
-            let tableSPKM=""
+            let columnSP = '';
+            let tableSPKM = ""
 
-            let danhSachSanPhamChiTiet=[];
+            let danhSachSanPhamChiTiet = [];
             $('#danhSachSanPhamChiTiet').find('.san-pham-chi-tiet').each(function () {
                 danhSachSanPhamChiTiet.push({
-                    idMauSac:$(this).find('input[type="text"]').first().attr('ms-id'),
-                    tenMauSac:$(this).children('td').eq(2).text(),
-                    rom:$(this).closest('table').first().attr('rom-id'),
+                    idMauSac: $(this).find('input[type="text"]').first().attr('ms-id'),
+                    tenMauSac: $(this).children('td').eq(2).text(),
+                    rom: $(this).closest('table').first().attr('rom-id'),
 
                 })
 
             })
-            danhSachSanPhamChiTiet.forEach(e=>{
-                columnSP+=`
+            danhSachSanPhamChiTiet.forEach(e => {
+                columnSP += `
                     <tr rom-id="${e.rom}" ms-id="${e.idMauSac}">
                        <td style="font-size: 14px"  >${tenSP} ${e.rom} ${e.tenMauSac}</td>
                     </tr>
                         `
             })
-            lstRoms.forEach(rom=>{
-                lstMauSacs.forEach(mauSac=>{
+            lstRoms.forEach(rom => {
+                lstMauSacs.forEach(mauSac => {
 
                 })
             })
@@ -2036,27 +2039,26 @@ $(document).ready(() => {
             )
 
 
-
-            tableSPKM=``
+            tableSPKM = ``
             {
-                let tableDanhSach=$('#tbl-danh-sach-khuyen-mai');
-                let tableApDung=$('#tbl-khuyen-mai-ap-dung');
+                let tableDanhSach = $('#tbl-danh-sach-khuyen-mai');
+                let tableApDung = $('#tbl-khuyen-mai-ap-dung');
 
-                let dataLstKm="";
-                let dataLstKhuyenMaiApDun="";
-                let count=1;
+                let dataLstKm = "";
+                let dataLstKhuyenMaiApDun = "";
+                let count = 1;
 
                 //Remove all if not 1st col
-                $('#tbl-khuyen-mai-ap-dung').find('tr').each((index,item)=>{
+                $('#tbl-khuyen-mai-ap-dung').find('tr').each((index, item) => {
                     $(item).find('td,th').not($(item).find('td,th').first()).remove()
                 })
 
-                $('#sp-khuyen-mai').select2('data').forEach(km=>{
-                    let ma=new Intl.NumberFormat( 'en-US', {  minimumIntegerDigits: 3, useGrouping: false }
+                $('#sp-khuyen-mai').select2('data').forEach(km => {
+                    let ma = new Intl.NumberFormat('en-US', {minimumIntegerDigits: 3, useGrouping: false}
                     ).format(count++)
-                    let kmRepo=mapKhuyenMai.get(parseInt(km.id));
-                    let trangThai=compareDate(kmRepo.thoiGianBatDau,kmRepo.thoiGianKetThuc,kmRepo.deleted);
-                    dataLstKm+=`
+                    let kmRepo = mapKhuyenMai.get(parseInt(km.id));
+                    let trangThai = compareDate(kmRepo.thoiGianBatDau, kmRepo.thoiGianKetThuc, kmRepo.deleted);
+                    dataLstKm += `
                 <tr>
                     <td km-id="${km.id}"><a href="/admin/san-pham-chi-tiet/khuyen-mai" target="_blank">KM${ma}</a></td>
                     <td>${km.text}</td>
@@ -2067,41 +2069,41 @@ $(document).ready(() => {
             `;
 
 
-            //         tableApDung.find("thead tr").append(`
-            //     <th class="text-center" km-id="${km.id}">KM${ma}</th>>
-            // `)
-            //         tableApDung.find("tbody tr").append(`
-            //     <td class="text-center"><input type="checkbox" km-id="${km.id}" data-toggle="tooltip" data-placement="right" title="${km.text}"></td>>
-            // `)
+                    //         tableApDung.find("thead tr").append(`
+                    //     <th class="text-center" km-id="${km.id}">KM${ma}</th>>
+                    // `)
+                    //         tableApDung.find("tbody tr").append(`
+                    //     <td class="text-center"><input type="checkbox" km-id="${km.id}" data-toggle="tooltip" data-placement="right" title="${km.text}"></td>>
+                    // `)
                 })
                 tableDanhSach.find("tbody").html(dataLstKm)
             }
             $('#sp-khuyen-mai').val([...kmIds]).trigger('change');
             fillDataToStep3();
         }
-        variantChangeFlagForStep3=false;
+        variantChangeFlagForStep3 = false;
     })
 
-    $('#sp-khuyen-mai').on('change',function (){
+    $('#sp-khuyen-mai').on('change', function () {
 
-        let tableDanhSach=$(this).closest('.card').find('table').first();
-        let tableApDung=$(this).closest('.card').find('table').last();
+        let tableDanhSach = $(this).closest('.card').find('table').first();
+        let tableApDung = $(this).closest('.card').find('table').last();
 
-        let dataLstKm="";
-        let dataLstKhuyenMaiApDun="";
-        let count=1;
+        let dataLstKm = "";
+        let dataLstKhuyenMaiApDun = "";
+        let count = 1;
 
         //Remove all if not 1st col
-        $('#tbl-khuyen-mai-ap-dung').find('tr').each((index,item)=>{
+        $('#tbl-khuyen-mai-ap-dung').find('tr').each((index, item) => {
             $(item).find('td,th').not($(item).find('td,th').first()).remove()
         })
 
-        $('#sp-khuyen-mai').select2('data').forEach(km=>{
-            let ma=new Intl.NumberFormat( 'en-US', {  minimumIntegerDigits: 3, useGrouping: false }
+        $('#sp-khuyen-mai').select2('data').forEach(km => {
+            let ma = new Intl.NumberFormat('en-US', {minimumIntegerDigits: 3, useGrouping: false}
             ).format(count++)
-            let kmRepo=mapKhuyenMai.get(parseInt(km.id));
-            let trangThai=compareDate(kmRepo.thoiGianBatDau,kmRepo.thoiGianKetThuc,kmRepo.deleted);
-            dataLstKm+=`
+            let kmRepo = mapKhuyenMai.get(parseInt(km.id));
+            let trangThai = compareDate(kmRepo.thoiGianBatDau, kmRepo.thoiGianKetThuc, kmRepo.deleted);
+            dataLstKm += `
                 <tr>
                     <td km-id="${km.id}">KM${ma}</td>
                     <td>${km.text}</td>
@@ -2139,7 +2141,7 @@ $(document).ready(() => {
                         data: formData,
                         processData: false,
                         contentType: false,
-                        success: function(response) {
+                        success: function (response) {
                             if (!response || typeof response[0].url !== 'string') {
                                 reject('Invalid JSON: ' + JSON.stringify(response));
                                 return;
@@ -2148,7 +2150,7 @@ $(document).ready(() => {
                             console.log('uload ss');
                             resolve(response[0].url);
                         },
-                        error: function(jqXHR, textStatus, errorThrown) {
+                        error: function (jqXHR, textStatus, errorThrown) {
                             reject('HTTP Error: ' + textStatus);
                         }
                     });
@@ -2159,136 +2161,230 @@ $(document).ready(() => {
     }
 
 
-
 });
-var kmIds=new Set();
-function fillDataToStep3(){
+var kmIds = new Set();
 
-    let tableKm=$('#tbl-khuyen-mai-ap-dung');
-    productEdit.sanPhamChiTiet.forEach(spct=>{
-        let rowKm=tableKm.find(`tbody tr[rom-id="${spct.rom}"][ms-id="${spct.mauSac.id}"]`);
-        spct.khuyenMai.forEach(kmId=>{
-            rowKm.find(`input[km-id="${kmId.id}"]`).prop("checked","true");
+function fillDataToStep3() {
+
+    let tableKm = $('#tbl-khuyen-mai-ap-dung');
+    productEdit.sanPhamChiTiet.forEach(spct => {
+        let rowKm = tableKm.find(`tbody tr[rom-id="${spct.rom}"][ms-id="${spct.mauSac.id}"]`);
+        spct.khuyenMai.forEach(kmId => {
+            rowKm.find(`input[km-id="${kmId.id}"]`).prop("checked", "true");
         })
     })
 
-    $('#sp-khuyen-mai').on('change',function (){
+    $('#sp-khuyen-mai').on('change', function () {
         // Check lại những áp dụng
         {
-            let tableKm=$('#tbl-khuyen-mai-ap-dung');
-            productEdit.sanPhamChiTiet.forEach(spct=>{
-                let rowKm=tableKm.find(`tbody tr[rom-id="${spct.rom}"][ms-id="${spct.mauSac.id}"]`);
-                spct.khuyenMai.forEach(kmId=>{
-                    rowKm.find(`input[km-id="${kmId.id}"]`).prop("checked","true");
+            let tableKm = $('#tbl-khuyen-mai-ap-dung');
+            productEdit.sanPhamChiTiet.forEach(spct => {
+                let rowKm = tableKm.find(`tbody tr[rom-id="${spct.rom}"][ms-id="${spct.mauSac.id}"]`);
+                spct.khuyenMai.forEach(kmId => {
+                    rowKm.find(`input[km-id="${kmId.id}"]`).prop("checked", "true");
                 })
             })
         }
     })
 
 
-
-
 }
+
 // Final submit
 $(document).ready(function () {
-    $('#form-sp').on('submit',function (event){
+    $('#form-sp').on('submit', function (event) {
         event.preventDefault(); // Ngăn chặn submit mặc định của form
         const form = $(this);
         if (!form[0].checkValidity()) {
             // Nếu form không hợp lệ, hiển thị các lỗi validation từ Bootstrap
             event.stopPropagation();
             form.addClass('was-validated');
-        }
-            else {
+        } else {
 
             let sp = {
-                "id": null,
-                "anhName": "",
+                "id": undefined,
+                "anh": {
+                    "name": ""
+                },
                 "tenSanPham": "",
-                "manHinhCongNgheManHinhId": "",
-                "manHinhDoPhanGiai": "",
-                "manHinhManHinhRong": "",
-                "manHinhDoSangToiDa": "",
-                "manHinhMatKinhCamUngId": "",
-                "cameraTruocDoPhanGiai": "",
-                "cameraTruocTinhNangCameraIds": "",
-                "cameraSauDoPhanGiai": "",
-                "cameraSauDenFlash": "",
-                "cameraSauTinhNangCameraIds": "",
-                "heDieuHanhVaCpuHeDieuHanhId": "",
-                "heDieuHanhVaCpuCpuId": "",
-                "ketNoiMangDiDong": "",
-                "ketNoiSim": "",
-                "ketNoiWifiIds": "",
-                "ketNoiGpsIds": "",
-                "ketNoiBluetoothIds": "",
-                "ketNoiCongSac": "",
-                "ketNoiJackTaiNghe": "",
-                "pinVaSacDungLuongPin": "",
-                "pinVaSacLoaiPin": "",
-                "pinVaSacHoTroSacToiDa": "",
-                "pinVaSacCongNghePinIds": "",
-                "thongTinChungThietKe": "",
-                "thongTinChungChatLieu": "",
-                "thongTinChungKichThuocKhoiLuong": "",
-                "thongTinChungTinhNangDacBietIds": "",
-                "khuyenMaiIds": "",
-                "seriesId": "",
+                "manHinh": {
+                    "congNgheManHinh": {
+                        "id": undefined
+                    },
+                    "doPhanGiai": "",
+                    "manHinhRong": "",
+                    "doSangToiDa": "",
+                    "matKinhCamUng": {
+                        "id": undefined
+                    }
+                },
+                "cameraTruoc": {
+                    "doPhanGiai": "",
+                    "tinhNangCameras": [
+                        {
+                            "id": undefined
+                        },
+                        {
+                            "id": undefined
+                        }
+                    ]
+                },
+                "cameraSau": {
+                    "doPhanGiai": "",
+                    "denFlash": "",
+                    "tinhNangCameras": [
+
+                        {
+                            "id": undefined
+                        },
+                        {
+                            "id": undefined
+                        }
+                    ]
+                },
+                "heDieuHanhVaCpu": {
+                    "heDieuHanh": {
+                        "id": undefined
+                    },
+                    "cpu": {
+                        "id": undefined
+                    }
+                },
+                "ketNoi": {
+                    "mangDiDong": "",
+                    "sim": "",
+                    "wifi": [
+                        {
+                            "id": undefined
+                        }
+                    ],
+                    "gps": [
+                        {
+                            "id": undefined
+                        }
+                    ],
+                    "bluetooth": [
+                        {
+                            "id": undefined
+                        }
+                    ],
+                    "congSac": "",
+                    "jackTaiNghe": ""
+                },
+                "pinVaSac": {
+                    "dungLuongPin": "",
+                    "loaiPin": "",
+                    "hoTroSacToiDa": "",
+                    "congNghePin": [
+                        {
+                            "id": undefined
+                        }
+                    ]
+                },
+                "thongTinChung": {
+                    "thietKe": "",
+                    "chatLieu": "",
+                    "kichThuocKhoiLuong": "",
+                    "tinhNangDacBiet": [
+                        {
+                            "id": undefined
+                        }
+                    ]
+                },
+                "khuyenMai": [
+
+                ],
+                "series": {
+                    "id": undefined
+                },
                 "sanPhamChiTiet": [
+
                     {
-                        "id": "",
-                        "mauSacId": "",
+                        "id": undefined,
+                        "khuyenMai": [
+                            {
+                                "id": undefined
+                            },
+                            {
+                                "id": undefined
+                            },
+                            {
+                                "id": undefined
+                            }
+                        ],
+                        "anh": [
+                            {
+                                "name": ""
+                            }
+                        ],
+                        "mauSac": {
+                            "id": undefined
+                        },
                         "rom": "",
-                        "giaBan": "",
-                        "giaVon": ""
+                        "giaBan": undefined,
+                        "giaNhap": undefined,
+                        "trangThai": ""
                     }
                 ],
                 "ram": "",
                 "thoiGianBaoHanh": "",
                 "trangThai": "",
-                "moTa": "",
-                "stt": ""
+                "moTa": ">"
             }
+
             sp.tenSanPham = $('#sp-ten').val();
-            sp.anhName = $('#sp-img').val();
-            sp.tenSanPham = $('#sp-ten').val();
-            sp.trangThai=$('#sp-trang-thai').val();
+            sp.anh.name = $('#sp-img').val();
+            sp.trangThai = $('#sp-trang-thai').val();
 
-            sp.manHinhCongNgheManHinhId = $('#sp-cong-nghe-man-hinh').val();
-            sp.manHinhDoPhanGiai = $('#sp-doPhanGiai').val();
-            sp.manHinhManHinhRong = $('#sp-manHinhRong').val();
-            sp.manHinhDoSangToiDa = $('#sp-doSangToiDa').val();
-            sp.manHinhMatKinhCamUngId = $('#sp-matKinhCamUng').val();
+            sp.manHinh.congNgheManHinh.id = $('#sp-cong-nghe-man-hinh').val();
+            sp.manHinh.doPhanGiai = $('#sp-doPhanGiai').val();
+            sp.manHinh.manHinhRong = $('#sp-manHinhRong').val();
+            sp.manHinh.doSangToiDa = $('#sp-doSangToiDa').val();
+            sp.manHinh.matKinhCamUng.id = $('#sp-matKinhCamUng').val();
 
-            sp.cameraTruocDoPhanGiai = $('#sp-cameraTruoc-doPhanGiai').val();
-            sp.cameraTruocTinhNangCameraIds = $('#sp-tinhNangCameraTruoc').val();
+            sp.cameraTruoc.doPhanGiai = $('#sp-cameraTruoc-doPhanGiai').val();
+            sp.cameraTruoc.tinhNangCameras = $('#sp-tinhNangCameraTruoc').val().map(e => {
+                return {id: e}
+            });
 
-            sp.cameraSauDoPhanGiai = $('#sp-cameraSau-doPhanGiai').val();
-            sp.cameraSauDenFlash = $('#sp-cameraSau-denFlash').val();
-            sp.cameraSauTinhNangCameraIds = $('#sp-tinhNangCameraSau').val();
+            sp.cameraSau.doPhanGiai = $('#sp-cameraSau-doPhanGiai').val();
+            sp.cameraSau.denFlash = $('#sp-cameraSau-denFlash').val();
+            sp.cameraSau.tinhNangCameras = $('#sp-tinhNangCameraSau').val().map(e => {
+                return {id: e}
+            });
 
-            sp.heDieuHanhVaCpuHeDieuHanhId = $('#sp-heDieuHanh').val();
-            sp.heDieuHanhVaCpuCpuId = $('#sp-cpu').val();
+            sp.heDieuHanhVaCpu.heDieuHanh.id = $('#sp-heDieuHanh').val();
+            sp.heDieuHanhVaCpu.cpu.id = $('#sp-cpu').val();
 
-            sp.ketNoiMangDiDong = $('#sp-ketNoi-mangDiDong').val();
-            sp.ketNoiSim = $('#sp-ketNoi-sim').val();
-            sp.ketNoiWifiIds = $('#sp-ketNoi-wifi').val();
-            sp.ketNoiGpsIds = $('#sp-ketNoi-gps').val();
-            sp.ketNoiBluetoothIds = $('#sp-ketNoi-bluetooth').val();
-            sp.ketNoiCongSac = $('#sp-ketNoi-sac').val();
-            sp.ketNoiJackTaiNghe = $('#sp-ketNoi-taiNghe').val();
+            sp.ketNoi.mangDiDong = $('#sp-ketNoi-mangDiDong').val();
+            sp.ketNoi.sim = $('#sp-ketNoi-sim').val();
+            sp.ketNoi.wifi = $('#sp-ketNoi-wifi').val().map(e => {
+                return {id: e}
+            });
+            sp.ketNoi.gps = $('#sp-ketNoi-gps').val().map(e => {
+                return {id: e}
+            });
+            sp.ketNoi.bluetooth = $('#sp-ketNoi-bluetooth').val().map(e => {
+                return {id: e}
+            });
+            sp.ketNoi.congSac = $('#sp-ketNoi-sac').val();
+            sp.ketNoi.jackTaiNghe = $('#sp-ketNoi-taiNghe').val();
 
-            sp.pinVaSacDungLuongPin = $('#sp-pin-dungLuong').val();
-            sp.pinVaSacLoaiPin = $('#sp-pin-loaiPin').val();
-            sp.pinVaSacHoTroSacToiDa = $('#sp-pin-sacToiDa').val();
-            sp.pinVaSacCongNghePinIds = $('#sp-pin-congNghePin').val();
+            sp.pinVaSac.dungLuongPin = $('#sp-pin-dungLuong').val();
+            sp.pinVaSac.loaiPin = $('#sp-pin-loaiPin').val();
+            sp.pinVaSac.hoTroSacToiDa = $('#sp-pin-sacToiDa').val();
+            sp.pinVaSac.congNghePin = $('#sp-pin-congNghePin').val().map(e => {
+                return {id: e}
+            });
 
-            sp.thongTinChungThietKe = $('#sp-ttc-thietKe').val();
-            sp.thongTinChungChatLieu = $('#sp-ttc-chatLieu').val();
-            sp.thongTinChungKichThuocKhoiLuong = $('#sp-ttc-kichThuocKhoiLuong').val();
+            sp.thongTinChung.thietKe = $('#sp-ttc-thietKe').val();
+            sp.thongTinChung.chatLieu = $('#sp-ttc-chatLieu').val();
+            sp.thongTinChung.kichThuocKhoiLuong = $('#sp-ttc-kichThuocKhoiLuong').val();
             sp.thoiGianBaoHanh = $('#sp-ttc-thoiGianBaoHanh').val();
-            sp.thongTinChungTinhNangDacBietIds = $('#sp-ttc-tinhNangDacBiet').val();
-            sp.seriesId = $('#sp-series').val();
+            sp.thongTinChung.tinhNangDacBiet = $('#sp-ttc-tinhNangDacBiet').val().map(e => {
+                return {id: e}
+            });
+            sp.series.id = $('#sp-series').val();
 
 
             sp.ram = $('#sp-ram').val();
@@ -2320,29 +2416,32 @@ $(document).ready(function () {
 
             $('#danhSachSanPhamChiTiet').find('.san-pham-chi-tiet').each(function () {
                 let msId = parseInt($(this).find('input[type="text"]').first().attr('ms-id')),
+                    id = $(this).attr('spct-id'),
                     rom = $(this).closest('table').first().attr('rom-id'),
                     giaNhap = $(this).find('input[type="text"]').first().val().replace(/\D/g, ""),
                     giaBan = $(this).find('input[type="text"]').last().val().replace(/\D/g, ""),
-                    trangThai=$(this).find('select').val(),
+                    trangThai = $(this).find('select').val(),
                     khuyenMai = [];
                 tbodyTblKhuyenMaiApDung.find(`tr[ms-id='${msId}'][rom-id='${rom}']`).find('input:checked').each((index, inputChecked) => {
                     khuyenMai.push($(inputChecked).attr('km-id'));
                 })
+                khuyenMai.map(km=>{return {id:km}})
 
                 danhSachSanPhamChiTiet.push({
-                    mauSacId: msId,
+                    id: id,
+                    mauSac: {id: msId},
                     rom: rom,
                     giaNhap: giaNhap,
                     trangThai: trangThai,
                     giaBan: giaBan,
-                    khuyenMaiIds: khuyenMai,
+                    khuyenMai: khuyenMai,
                     anh: danhSachAnhTheoMauSac.get(msId)
                 })
 
             })
 
             sp.sanPhamChiTiet = danhSachSanPhamChiTiet
-
+            sp.id=id;
             sp.moTa = tinymce.get('sp-mo-ta').getContent()
 
 
@@ -2350,23 +2449,23 @@ $(document).ready(function () {
 
             // Nếu form hợp lệ, gửi dữ liệu form lên server
             $.ajax({
-                url: "/api/v1/san-pham",
-                method: 'PUT', // Phương thức HTTP
+                url: "/api/v1/san-pham/"+id,
+                method: 'POST', // Phương thức HTTP
                 data: JSON.stringify(sp),
                 contentType: 'application/json',
                 success: function (response) {
                     Toast.fire({
                         icon: "success",
-                        title: "Thêm mới thành công"
+                        title: "Chỉnh sửa thành công"
                     })
                     console.log(response);
                 },
                 error: function (xhr, status, error) {
                     Toast.fire({
                         icon: "error",
-                        title: "Thêm mới thất bại"
+                        title: "Chỉnh sửa thất bại thất bại"
                     });
-                    console.log(response);
+                    console.log(status);
                     console.error(xhr.responseText);
                 }
             });
