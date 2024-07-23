@@ -55,6 +55,7 @@ public class SanPhamEditRequest implements Serializable {
     public static class AnhDto implements Serializable {
         Integer id;
         String name;
+        String url;
     }
 
     /**

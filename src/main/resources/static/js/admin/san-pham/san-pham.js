@@ -166,9 +166,9 @@ function loadData() {
                 "data": "id",
                 "render": function (data, type, row) {
                     if (data)
-                        return '<div class="d-flex justify-content-end"><button type="button" class="btn btn-sm btn-primary mr-3 btn-edit">Chỉnh sửa</button><button type="button" class="btn btn-sm btn-danger btn-revert">Khôi phục</button></div>';
+                        return `<div class="d-flex justify-content-end"><a type="button" href="/admin/san-pham/${data}" class="btn btn-sm btn-primary mr-3 btn-edit">Chỉnh sửa</a><button type="button" class="btn btn-sm btn-danger btn-revert">Chỉnh sửa</button></div>`;
                     else
-                        return '<div class="d-flex justify-content-end"><button type="button" class="btn btn-sm btn-primary mr-3 btn-edit">Chỉnh sửa</button><button type="button" class="btn btn-sm btn-danger btn-delete">Xóa</button></div>';
+                        return '<div class="d-flex justify-content-end"><button type="button" class="btn btn-sm btn-primary mr-3 btn-edit">Xóa</button><button type="button" class="btn btn-sm btn-danger btn-delete">Xóa</button></div>';
 
                 }
             }

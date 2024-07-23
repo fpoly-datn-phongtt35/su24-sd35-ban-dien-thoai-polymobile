@@ -72,6 +72,9 @@ $(document).ready(() => {
             success: function (response) {
                 $('#sp-img').val(response[0].name);
                 $('#imagePreview').css('background-image', 'url(' + response[0].url + ')');
+                $('#imagePreview').attr('img-id',"");
+                $('#imagePreview').attr('img-name',response[0].name);
+                $('#imagePreview').attr('img-url','');
                 $('#imagePreview').hide();
                 $('#imagePreview').fadeIn(650);
                 console.log('File uploaded successfully', response);
@@ -1588,6 +1591,10 @@ const fillData = (spTemp) => {
     mauSacIds = productEdit.sanPhamChiTietMauSacIds;
 
     $('#imagePreview').css('background-image', 'url("' + productEdit.anhUrl + '")');
+    $('#imagePreview').attr('img-id',productEdit.anhId);
+    $('#imagePreview').attr('img-url',productEdit.anhUrl);
+    $('#imagePreview').attr('img-name',productEdit.anhName);
+
     $('#imagePreview').hide();
     $('#imagePreview').fadeIn(650);
 
@@ -1921,6 +1928,7 @@ $(document).ready(() => {
                             `
                                 })
                                 uload.find(".d-flex").html(imgResult)
+                                uload.find(".d-flex").attr('uploaded','false')
                                 uload.find("img").first().parent().addClass("bg-gray-400");
                                 uload.find("img").on("click", function () {
                                     $(this).closest('tr').find(".bg-gray-400").removeClass('bg-gray-400')
@@ -1962,16 +1970,24 @@ function fillDataToStep2() {
     let imgTable = $('#ms-img')
     imgsUrlByIdMs.forEach((imgs, msId) => {
         let imgResult = "";
+        let firstFlag=true;
         imgs.forEach(img => {
+
             imgResult += `
-                                <div class="image-container">
-                                    <img src="${img.url}" alt="${img.name}" ms-id="${msId}" img-id="${img.id}">
+                                <div class="image-container ${firstFlag?'bg-gray-400':''}">
+                                    <img src="${img.url}" ms-id="${msId}" img-id="${img.id}">
                                     <div class="image-caption">${img.name}</div>
                                 </div>
                             `
-
+            firstFlag=false;
             imgTable.find(`tbody tr[ms-id="${msId}"] .d-flex`).html(imgResult);
+            imgTable.find(`tbody tr[ms-id="${msId}"] .d-flex`).attr('uploaded','true');
+
         })
+    })
+    imgTable.find("img").on("click", function () {
+        $(this).closest('tr').find(".bg-gray-400").removeClass('bg-gray-400')
+        $(this).parent().addClass("bg-gray-400");
     })
 
 }
@@ -2204,7 +2220,9 @@ $(document).ready(function () {
             let sp = {
                 "id": undefined,
                 "anh": {
-                    "name": ""
+                    "name": "",
+                    "id": undefined,
+                    "url": undefined
                 },
                 "tenSanPham": "",
                 "manHinh": {
@@ -2333,7 +2351,7 @@ $(document).ready(function () {
             }
 
             sp.tenSanPham = $('#sp-ten').val();
-            sp.anh.name = $('#sp-img').val();
+            sp.anh = {id: $('#imagePreview').attr('img-id'),name: $('#imagePreview').attr('img-name'),url: $('#imagePreview').attr('img-url')};
             sp.trangThai = $('#sp-trang-thai').val();
 
             sp.manHinh.congNgheManHinh.id = $('#sp-cong-nghe-man-hinh').val();
@@ -2393,19 +2411,33 @@ $(document).ready(function () {
             //Danh lấy danh sách ảnh theo màu sắc
             let danhSachAnhTheoMauSac = new Map();
             $('#ms-img').find('tbody input[type="file"]').each((index, inputFile) => {
-                    let lstImgName = []
-                    $(inputFile).closest('tr').find('img').each((i, img) => {
-                        if ($(img).parent().hasClass("bg-gray-400"))
-                            lstImgName.unshift($(img).attr('alt'));
-                        else
-                            lstImgName.push($(img).attr('alt'));
-                    })
-                    danhSachAnhTheoMauSac.set(
-                        parseInt($(inputFile).attr('ms-id')),
-                        lstImgName
-                    )
 
-                    $(inputFile).attr('ms-id')
+                    // check nếu đã upload
+                        let lstImgName = []
+                        $(inputFile).closest('tr').find('img').each((i, img) => {
+                            if ($(img).parent().hasClass("bg-gray-400"))
+                                lstImgName.unshift({id:$(img).attr('img-id'),name:$(img).attr('alt')});
+                            else
+                                lstImgName.push({id:$(img).attr('img-id'),name:$(img).attr('alt')});
+                        })
+                        //Swap id
+                        let firstId= Math.min(...lstImgName.map(img=>img.id)).toString();
+                        let swapId=lstImgName[0].id;
+                        lstImgName.forEach(img=>{
+                            if(img.id==firstId)
+                                img.id=swapId
+                        })
+                lstImgName[0].id=firstId;
+
+
+
+                        danhSachAnhTheoMauSac.set(
+                            parseInt($(inputFile).attr('ms-id')),
+                            lstImgName
+                        )
+
+
+
                 }
             )
 

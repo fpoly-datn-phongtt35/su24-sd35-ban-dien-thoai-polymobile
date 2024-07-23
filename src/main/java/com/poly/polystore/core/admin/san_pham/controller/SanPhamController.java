@@ -9,6 +9,7 @@ import com.poly.polystore.entity.*;
 import com.poly.polystore.repository.AnhRepository;
 import com.poly.polystore.repository.SanPhamRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -25,10 +26,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Controller
 public class SanPhamController {
+    @PersistenceContext
+    private EntityManager entityManager;
     private static final Logger log = LoggerFactory.getLogger(SanPhamController.class);
     private final ModelMapper modelMapper;
     private final SanPhamRepository sanPhamRepository;
-    private final EntityManager entityManager;
     private final ImageService imageService;
     private final AnhRepository anhRepository;
 
@@ -41,9 +43,10 @@ public class SanPhamController {
     public String add(Model model) {
         return "/admin/san-pham/add";
     }
+
     @GetMapping("/admin/san-pham/{id}")
-    public String edit(Model model,@PathVariable(name = "id") SanPham sp) {
-        model.addAttribute("moTa",sp.getMoTa());
+    public String edit(Model model, @PathVariable(name = "id") SanPham sp) {
+        model.addAttribute("moTa", sp.getMoTa());
 
         return "/admin/san-pham/edit-san-pham";
     }
@@ -108,13 +111,11 @@ public class SanPhamController {
                 .getThongTinChung()
                 .getTinhNangDacBiet()
                 .stream()
-                .map(tndb->tndb.getId())
+                .map(tndb -> tndb.getId())
                 .collect(Collectors.toSet())
         );
         spEditResp.setRam(sp.getRam());
         spEditResp.setThoiGianBaoHanh(sp.getThoiGianBaoHanh());
-
-
 
 
         return ResponseEntity.ok(spEditResp);
@@ -124,12 +125,12 @@ public class SanPhamController {
     @ResponseBody
     @PutMapping("/api/v1/san-pham")
     public ResponseEntity<?> addNew(@RequestBody AddRequest addRequest) {
-        var sp= modelMapper.map(addRequest, SanPham.class);
+        var sp = modelMapper.map(addRequest, SanPham.class);
 
         sp.getCameraTruoc().setTinhNangCameras(addRequest
                 .getCameraTruocTinhNangCameraIds()
-                .stream().map(id-> {
-                    var tinhNangCamera=new TinhNangCamera();
+                .stream().map(id -> {
+                    var tinhNangCamera = new TinhNangCamera();
                     tinhNangCamera.setId(id);
                     return tinhNangCamera;
                 })
@@ -138,8 +139,8 @@ public class SanPhamController {
 
         sp.getCameraSau().setTinhNangCameras(addRequest
                 .getCameraSauTinhNangCameraIds()
-                .stream().map(id-> {
-                    var tinhNangCamera=new TinhNangCamera();
+                .stream().map(id -> {
+                    var tinhNangCamera = new TinhNangCamera();
                     tinhNangCamera.setId(id);
                     return tinhNangCamera;
                 })
@@ -147,8 +148,8 @@ public class SanPhamController {
         );
         sp.getKetNoi().setBluetooth(addRequest
                 .getKetNoiBluetoothIds()
-                .stream().map(id-> {
-                    var bluetooth=new Bluetooth();
+                .stream().map(id -> {
+                    var bluetooth = new Bluetooth();
                     bluetooth.setId(id);
                     return bluetooth;
                 })
@@ -157,8 +158,8 @@ public class SanPhamController {
         );
         sp.getKetNoi().setWifi(addRequest
                 .getKetNoiWifiIds()
-                .stream().map(id-> {
-                    var wifi=new Wifi();
+                .stream().map(id -> {
+                    var wifi = new Wifi();
                     wifi.setId(id);
                     return wifi;
                 })
@@ -167,8 +168,8 @@ public class SanPhamController {
         );
         sp.getKetNoi().setGps(addRequest
                 .getKetNoiGpsIds()
-                .stream().map(id-> {
-                    var gps=new Gps();
+                .stream().map(id -> {
+                    var gps = new Gps();
                     gps.setId(id);
                     return gps;
                 })
@@ -177,8 +178,8 @@ public class SanPhamController {
         );
         sp.getPinVaSac().setCongNghePin(addRequest
                 .getPinVaSacCongNghePinIds()
-                .stream().map(id-> {
-                    var congNghePin=new CongNghePin();
+                .stream().map(id -> {
+                    var congNghePin = new CongNghePin();
                     congNghePin.setId(id);
                     return congNghePin;
                 })
@@ -187,8 +188,8 @@ public class SanPhamController {
         );
         sp.getThongTinChung().setTinhNangDacBiet(addRequest
                 .getThongTinChungTinhNangDacBietIds()
-                .stream().map(id-> {
-                    var tinhNangDacBiet=new TinhNangDacBiet();
+                .stream().map(id -> {
+                    var tinhNangDacBiet = new TinhNangDacBiet();
                     tinhNangDacBiet.setId(id);
                     return tinhNangDacBiet;
                 })
@@ -199,7 +200,7 @@ public class SanPhamController {
         sp.getCameraSau().setDenFlash(addRequest.getCameraSauDenFlash());
 
         //Đưa ảnh về container chính
-        var anhSanPhamAddRquest=new Anh();
+        var anhSanPhamAddRquest = new Anh();
         anhSanPhamAddRquest.setName(addRequest.getAnhName());
         anhSanPhamAddRquest.setUrl(imageService.moveImageToPermanent(addRequest.getAnhName()));
         var anhSanPham = anhRepository.save(anhSanPhamAddRquest);
@@ -207,23 +208,23 @@ public class SanPhamController {
         sp.setAnh(anhSanPham);
 
 
-        var lstSPCT=addRequest.getSanPhamChiTiet().stream().map(spctAddRequest->{
+        var lstSPCT = addRequest.getSanPhamChiTiet().stream().map(spctAddRequest -> {
             //Lưu ảnh trả về list Ảnh
-            var lstAnh= spctAddRequest.getAnh().stream().map(imageName->{
-                var newImage=new Anh();
+            var lstAnh = spctAddRequest.getAnh().stream().map(imageName -> {
+                var newImage = new Anh();
                 newImage.setName(imageName);
                 newImage.setUrl(imageService.moveImageToPermanent(imageName));
                 return anhRepository.save(newImage);
             }).collect(Collectors.toList());
 
             //Chuyển lai list khuyến mãi
-            var lstKhuyenMai=spctAddRequest.getKhuyenMaiIds().stream().map(khuyenMaiId->{
-                var newKhuyenMai=new KhuyenMai();
+            var lstKhuyenMai = spctAddRequest.getKhuyenMaiIds().stream().map(khuyenMaiId -> {
+                var newKhuyenMai = new KhuyenMai();
                 newKhuyenMai.setId(khuyenMaiId);
                 return newKhuyenMai;
             }).collect(Collectors.toList());
 
-            var spct=modelMapper.map(spctAddRequest, SanPhamChiTiet.class);
+            var spct = modelMapper.map(spctAddRequest, SanPhamChiTiet.class);
             spct.setKhuyenMai(lstKhuyenMai);
             spct.setAnh(lstAnh);
             spct.setSanPham(sp);
@@ -232,17 +233,53 @@ public class SanPhamController {
 
 
         sp.setSanPhamChiTiet(lstSPCT);
-        var spResponse=sanPhamRepository.save(sp);
+        var spResponse = sanPhamRepository.save(sp);
         return ResponseEntity.ok(spResponse);
     }
 
     @Transactional
     @ResponseBody
     @PostMapping("/api/v1/san-pham/{id}")
-    public ResponseEntity<?> edit(@RequestBody SanPhamEditRequest editRequest,@PathVariable(name="id") SanPham sp) {
-        sp.setId(-1);
-        modelMapper.map(editRequest, sp);
-        return ResponseEntity.ok(sp);
+    public ResponseEntity<?> edit(@RequestBody SanPhamEditRequest editRequest, @PathVariable(name = "id") SanPham sp) {
+        var spEdit = modelMapper.map(editRequest, SanPham.class);
+
+        //Đưa ảnh về container chính
+        if (spEdit.getAnh().getId() == null) {
+            var anhSanPhamAddRquest = new Anh();
+            anhSanPhamAddRquest.setName(editRequest.getAnh().getName());
+            anhSanPhamAddRquest.setUrl(imageService.moveImageToPermanent(editRequest.getAnh().getName()));
+            var anhSanPham = anhRepository.save(anhSanPhamAddRquest);
+            spEdit.setAnh(anhSanPham);
+        }
+
+        //Lưu ảnh theo màu sắc sản phẩm chi tiết.
+        Map<Integer, List<Anh>> mapImgByMsId = new HashMap<>();
+        spEdit.getSanPhamChiTiet().forEach(spct -> {
+            if (!mapImgByMsId.containsKey(spct.getMauSac().getId())) {
+                //Chuyển về cùng 1 thực thể
+                List<Anh> lstNewImg=new ArrayList<>();
+                if (spct.getAnh().get(0).getId() == null) {
+                    spct.getAnh().forEach(newImg -> {
+                        newImg.setUrl(imageService.moveImageToPermanent(newImg.getName()));
+                        var anhSanPham = anhRepository.save(newImg);
+                        lstNewImg.add(anhSanPham);
+                    });
+                }else{
+                    lstNewImg.addAll(spct.getAnh());
+                }
+
+                mapImgByMsId.put(spct.getMauSac().getId(), lstNewImg);
+            }
+        });
+        spEdit.getSanPhamChiTiet().forEach(spct -> {
+//            spct.setAnh(mapImgByMsId.get(spct.getMauSac().getId()));
+            spct.setAnh(mapImgByMsId.get(spct.getMauSac().getId()));
+            spct.setSanPham(sp);
+        });
+
+        sanPhamRepository.save(spEdit);
+
+        return ResponseEntity.ok("Save success");
 //
 //        sp.getCameraTruoc().setTinhNangCameras(addRequest
 //                .getCameraTruocTinhNangCameraIds()
@@ -355,7 +392,8 @@ public class SanPhamController {
     }
 
     private void optimizeField(Object source, Object target) {
-        if(target==null) {}
+        if (target == null) {
+        }
     }
 
 
@@ -372,7 +410,7 @@ public class SanPhamController {
 //        var orderBy=params.get("columns["+params.get("order[0][column]")+"][data]");
 //        var orderDir=params.get("order[0][dir]").toUpperCase();
 //        Pageable pageable = PageRequest.of(start,  lenght);
-        var spdt=sanPhamRepository.findAllSanPhamDataTable();
+        var spdt = sanPhamRepository.findAllSanPhamDataTable();
         return spdt;
     }
 

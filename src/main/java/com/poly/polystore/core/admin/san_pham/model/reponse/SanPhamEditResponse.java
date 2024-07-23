@@ -21,6 +21,7 @@ public class SanPhamEditResponse implements Serializable {
     Integer id;
     String tenSanPham;
     String anhUrl;
+    String anhName;
     String anhId;
     Integer manHinhCongNgheManHinhId;
     String manHinhDoPhanGiai;

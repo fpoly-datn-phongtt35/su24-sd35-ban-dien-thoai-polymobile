@@ -45,9 +45,7 @@ public class SecurityConfig {
     private final PasswordEncoder passwordEncoder;
     private final UserDetailsService userDetailsService;
 
-    String[] unAuthURL = {
-
-
+    public static String[] unAuthURL = {
             "/sign-in/**",
             "/sign-in",
             "/sign-up",
@@ -55,7 +53,14 @@ public class SecurityConfig {
             "/logout",
             "/vendor/**",
             "/js/**",
-            "/css/**"
+            "/css/**",
+            "/fonts/**",
+            "/iphone/**",
+            "/img/**",
+            "/api/v1/admin/data-list-add-san-pham/**",
+            "/api/v2/san-pham/**",
+            "/api/v2/san-pham"
+
 
     };
     String[] adminURL = {

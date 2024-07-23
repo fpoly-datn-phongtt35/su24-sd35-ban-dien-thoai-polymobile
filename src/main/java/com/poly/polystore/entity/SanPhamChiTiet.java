@@ -52,7 +52,7 @@ public class SanPhamChiTiet implements Serializable {
     )
     private List<KhuyenMai> khuyenMai;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "SAN_PHAM_CHI_TIET_ANH",
             joinColumns = @JoinColumn(name = "SAN_PHAM_CHI_TIET_ID"),
@@ -60,7 +60,7 @@ public class SanPhamChiTiet implements Serializable {
     )
     //Order by id ảnh nào đầu tiên thì là ảnh sản phẩm chi tiết chính
     private List<Anh> anh;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MAU_SAC_ID")
     private MauSac mauSac;
 
@@ -89,7 +89,7 @@ public class SanPhamChiTiet implements Serializable {
     @Column(name = "STT")
     private Integer stt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DOT_GIAM_GIA_ID")
     private PhieuGiamGia dotGiamGia;
 
