@@ -78,7 +78,7 @@
 <div class="container">
     <div class="card" th:if="${gioHangs != null}">
         <div class="cart-item" th:each="item : ${gioHangs}">
-            <img th:src="${item.getIdSanPhamChiTiet()}" th:alt="${item.idSanPhamChiTiet.getSanPham().tenSanPham}">
+            <img th:src="${item.getIdSanPhamChiTiet()}">
             <div class="cart-item-info">
                 <h5 th:text="${item.idSanPhamChiTiet.getSanPham().tenSanPham}"></h5>
                 <p>Online giá rẻ quá <a href="#">(Xem chi tiết)</a></p>

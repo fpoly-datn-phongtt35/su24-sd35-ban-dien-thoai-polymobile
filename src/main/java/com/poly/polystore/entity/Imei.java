@@ -8,7 +8,6 @@ import org.hibernate.annotations.Nationalized;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "IMEI")
 public class Imei {
@@ -16,7 +15,6 @@ public class Imei {
         TRONG_KHO,DA_BAN
     }
     @Id
-    @Nationalized
     @Column(name = "IMEI", nullable = false)
     private String imei;
 
