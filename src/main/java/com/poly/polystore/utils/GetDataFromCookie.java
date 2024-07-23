@@ -29,7 +29,7 @@ public class GetDataFromCookie {
         String token = null;
         for(Cookie item : cookies){
             if("Authorization".equals(item.getName())){
-                token = item.getValue().substring(7);
+                token = item.getValue();
             }
         }
         if(token == null){
