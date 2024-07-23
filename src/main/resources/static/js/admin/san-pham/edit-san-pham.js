@@ -2423,6 +2423,7 @@ $(document).ready(function () {
                         //Swap id
                         let firstId= Math.min(...lstImgName.map(img=>img.id)).toString();
                         let swapId=lstImgName[0].id;
+                        firstId=firstId=="NaN"?undefined:firstId;
                         lstImgName.forEach(img=>{
                             if(img.id==firstId)
                                 img.id=swapId
