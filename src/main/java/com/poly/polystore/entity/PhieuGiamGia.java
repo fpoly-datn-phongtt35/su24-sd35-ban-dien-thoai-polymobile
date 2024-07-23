@@ -7,6 +7,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -50,4 +52,11 @@ public class PhieuGiamGia {
 
     @Column(name = "Deleted")
     private Boolean deleted;
+
+    @OneToMany(mappedBy = "dotGiamGia")
+    private Set<HoaDonChiTiet> hoaDonChiTiets = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "dotGiamGia")
+    private Set<SanPhamChiTiet> sanPhamChiTiets = new LinkedHashSet<>();
+
 }

@@ -34,8 +34,6 @@ public class SanPhamClientController {
             @PathVariable(name = "id") SanPham sp,
             Model model) {
         model.addAttribute("sp", sp);
-
-
         return "client/page/iphone-product";
     }
 

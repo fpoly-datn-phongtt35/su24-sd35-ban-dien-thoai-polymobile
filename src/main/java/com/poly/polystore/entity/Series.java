@@ -7,6 +7,9 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Nationalized;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -28,5 +31,12 @@ public class Series {
     @ColumnDefault("0")
     @Column(name = "DELETED")
     private Boolean deleted;
+
+    @Size(max = 20)
+    @Column(name = "Ma_series", length = 20)
+    private String maSeries;
+
+    @OneToMany(mappedBy = "series")
+    private Set<SanPham> sanPhams = new LinkedHashSet<>();
 
 }

@@ -23,6 +23,9 @@ public class GetDataFromCookie {
     private final SanPhamChiTietRepository sanPhamChiTietRepository;
     public TaiKhoan getTaiKhoan(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
+        if(cookies == null){
+            return null;
+        }
         String token = null;
         for(Cookie item : cookies){
             if("Authorization".equals(item.getName())){
@@ -40,8 +43,11 @@ public class GetDataFromCookie {
     public List<GioHang> getDataFromCart(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String cart = null;
+        if(cookies == null){
+            return null;
+        }
         for(Cookie item : cookies){
-            if("cart".equals(item.getName())){
+            if("Cart".equals(item.getName())){
                 cart = item.getValue();
             }
         }

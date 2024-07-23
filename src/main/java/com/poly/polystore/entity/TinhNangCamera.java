@@ -7,6 +7,9 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Nationalized;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -33,5 +36,11 @@ public class TinhNangCamera {
     @ColumnDefault("0")
     @Column(name = "DELETED")
     private Boolean deleted;
+
+    @ManyToMany
+    @JoinTable(name = "CAMERA_TRUOC_TINH_NANG_CAMERA",
+            joinColumns = @JoinColumn(name = "TINH_NANG_CAMERA_ID"),
+            inverseJoinColumns = @JoinColumn(name = "SAN_PHAM_ID"))
+    private Set<SanPham> sanPhams = new LinkedHashSet<>();
 
 }

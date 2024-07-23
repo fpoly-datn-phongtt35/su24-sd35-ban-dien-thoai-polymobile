@@ -6,6 +6,9 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Nationalized;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -28,5 +31,14 @@ public class Anh {
     @Nationalized
     @Column(name = "NAME")
     private String name;
+
+    @OneToOne(mappedBy = "anh")
+    private SanPham sanPhams;
+
+    @ManyToMany
+    @JoinTable(name = "SAN_PHAM_CHI_TIET_ANH",
+            joinColumns = @JoinColumn(name = "ANH_ID"),
+            inverseJoinColumns = @JoinColumn(name = "SAN_PHAM_CHI_TIET_ID"))
+    private Set<SanPhamChiTiet> sanPhamChiTiets = new LinkedHashSet<>();
 
 }

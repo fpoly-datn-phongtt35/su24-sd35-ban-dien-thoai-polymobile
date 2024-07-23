@@ -8,6 +8,8 @@ import org.hibernate.annotations.Nationalized;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -45,5 +47,11 @@ public class KhuyenMai {
 
     @Column(name = "DELETED")
     private Boolean deleted;
+
+    @ManyToMany(mappedBy = "khuyenMai")
+    private Set<SanPhamChiTiet> sanPhamChiTiets = new LinkedHashSet<>();
+
+    @ManyToMany(mappedBy = "khuyenMai")
+    private Set<SanPham> sanPhams = new LinkedHashSet<>();
 
 }

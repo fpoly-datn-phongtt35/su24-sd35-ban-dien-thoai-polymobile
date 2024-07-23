@@ -5,6 +5,8 @@ import lombok.*;
 import org.hibernate.annotations.Nationalized;
 
 import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -35,5 +37,8 @@ public class ThongTinBaoHanh {
     @Nationalized
     @Column(name = "Trang_thai")
     private String trangThai;
+
+    @OneToMany(mappedBy = "idThongTinBaoHanh")
+    private Set<LichSuBaoHanh> lichSuBaoHanhs = new LinkedHashSet<>();
 
 }

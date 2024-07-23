@@ -12,6 +12,7 @@ import com.poly.polystore.utils.GetDataFromCookie;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -62,6 +63,7 @@ public class CartApi {
                     dataFromCart.add(gioHang);
                 }
             }
+            request.getSession().setAttribute("cart",dataFromCart.size());
             StringBuilder cart = new StringBuilder();
             for(GioHang gioHang : dataFromCart){
                 cart.append(gioHang.getIdSanPhamChiTiet().getId());
@@ -71,11 +73,13 @@ public class CartApi {
             }
             cart.deleteCharAt(cart.length() - 1);
             Cookie[] cookies = request.getCookies();
-            for(Cookie i : cookies){
-                if(i.getName().equals("Cart")){
-                    i.setMaxAge(0);
-                    response.addCookie(i);
-                    break;
+            if(cookies != null){
+                for(Cookie i : cookies){
+                    if(i.getName().equals("Cart")){
+                        i.setMaxAge(0);
+                        response.addCookie(i);
+                        break;
+                    }
                 }
             }
             Cookie cookie = new Cookie("Cart", cart.toString());
@@ -107,6 +111,7 @@ public class CartApi {
                     gioHangRepository.save(gioHang);
                 }
             }
+            request.getSession().setAttribute("cart",gioHangRepository.findByIdKhachHang(optionalTaiKhoan.get().getId()).size());
         }
         return ResponseEntity.ok().build();
     }
@@ -156,10 +161,11 @@ public class CartApi {
                         dataFromCart.remove(i);
                         i--;
                     }
-                    break;
+
                 }
             }
         }
+        request.getSession().setAttribute("cart",dataFromCart.size());
         if (token == null){
             StringBuilder cart = new StringBuilder();
             for(GioHang gioHang : dataFromCart){

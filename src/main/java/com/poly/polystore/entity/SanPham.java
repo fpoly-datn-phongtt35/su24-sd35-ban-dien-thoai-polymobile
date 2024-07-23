@@ -3,9 +3,11 @@ package com.poly.polystore.entity;
 import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamDataTable;
 import com.poly.polystore.repository.SanPhamRepository;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -178,5 +180,59 @@ public class SanPham {
     private Integer stt;
 
 
+    @Nationalized
+    @Lob
+    @Column(name = "BAI_VIET_ID")
+    private String baiVietId;
 
+    @Nationalized
+    @Lob
+    @Column(name = "MO_TA_NOI_DUNG")
+    private String moTaNoiDung;
+
+    @Size(max = 50)
+    @Column(name = "ID_Binh_luan", length = 50)
+    private String idBinhLuan;
+
+    @ManyToMany
+    @JoinTable(name = "CAMERA_TRUOC_TINH_NANG_CAMERA",
+            joinColumns = @JoinColumn(name = "SAN_PHAM_ID"),
+            inverseJoinColumns = @JoinColumn(name = "TINH_NANG_CAMERA_ID"))
+    private Set<TinhNangCamera> tinhNangCameras = new LinkedHashSet<>();
+
+    @ManyToMany
+    @JoinTable(name = "SAN_PHAM_BLUETOOTH",
+            joinColumns = @JoinColumn(name = "SAN_PHAM_ID"),
+            inverseJoinColumns = @JoinColumn(name = "BLUETOOTH_ID"))
+    private Set<Bluetooth> bluetooths = new LinkedHashSet<>();
+
+    @ManyToMany
+    @JoinTable(name = "SAN_PHAM_CONG_NGHE_PIN",
+            joinColumns = @JoinColumn(name = "SAN_PHAM_ID"),
+            inverseJoinColumns = @JoinColumn(name = "CONG_NGHE_PIN_ID"))
+    private Set<CongNghePin> congNghePins = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "sanPham")
+    private Set<SanPhamDaXem> sanPhamDaXems = new LinkedHashSet<>();
+
+    @ManyToMany
+    @JoinTable(name = "SAN_PHAM_GPS",
+            joinColumns = @JoinColumn(name = "SAN_PHAM_ID"),
+            inverseJoinColumns = @JoinColumn(name = "GPS_ID"))
+    private Set<Gps> gps = new LinkedHashSet<>();
+
+    @ManyToMany
+    @JoinTable(name = "SAN_PHAM_TINH_NANG_DAC_BIET",
+            joinColumns = @JoinColumn(name = "SAN_PHAM_ID"),
+            inverseJoinColumns = @JoinColumn(name = "TINH_NANG_DAC_BIET_ID"))
+    private Set<TinhNangDacBiet> tinhNangDacBiets = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "sanPham")
+    private Set<SanPhamUaThich> sanPhamUaThiches = new LinkedHashSet<>();
+
+    @ManyToMany
+    @JoinTable(name = "SAN_PHAM_WIFI",
+            joinColumns = @JoinColumn(name = "SAN_PHAM_ID"),
+            inverseJoinColumns = @JoinColumn(name = "WIFI_ID"))
+    private Set<Wifi> wifis = new LinkedHashSet<>();
 }

@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -20,5 +23,14 @@ public class BinhLuan {
     @Lob
     @Column(name = "Binh_luan_chi_tiet")
     private String binhLuanChiTiet;
+
+    @OneToMany(mappedBy = "idBinhLuan")
+    private Set<BaiViet> baiViets = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "idBinhLuan")
+    private Set<BinhLuanChiTiet> binhLuanChiTiets = new LinkedHashSet<>();
+
+    @OneToOne(mappedBy = "binhLuan")
+    private SanPham sanPhams;
 
 }

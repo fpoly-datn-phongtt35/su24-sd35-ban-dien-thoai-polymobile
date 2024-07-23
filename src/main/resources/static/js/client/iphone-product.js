@@ -121,10 +121,8 @@ Promise.all([cloneData('/api/v2/san-pham/' + id), documentReadyPromise]).then(()
                     <del class="text-white h-5 mt-2 price text-15 text-th">${toCurrency(spct.giaBan)}
                         
                     </del>
-                    <span class="ml-1"> - ${spct.dotGiamGia.donvi=='%'?spct.dotGiamGia.giaTriGiam+'%':toCurrency(spct.dotGiamGia.giaTriGiam)}</span>
                     
                     </div>
-                    <div class="p-0"><span class="text-white h-5 mt-2 price font-weight-bold">${toCurrency(spct.dotGiamGia.donvi=='%'?spct.giaBan-spct.giaBan*spct.dotGiamGia.giaTriGiam/100:spct.giaBan-spct.dotGiamGia.giaTriGiam)}</span></div>
 `
                 $('#sp-gia').html(giaSanPhamHtml)
             }

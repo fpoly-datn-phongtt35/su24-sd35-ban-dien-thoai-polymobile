@@ -10,7 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -70,6 +72,18 @@ public class TaiKhoan implements UserDetails {
     @Nationalized
     @Column(name = "Trang_thai", length = 255)
     private Boolean trangthai;
+
+    @OneToMany(mappedBy = "idTaiKhoan")
+    private Set<KhachHang> khachHangs = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "idTaiKhoan")
+    private Set<LichSuHoaDon> lichSuHoaDons = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "idTaiKhoan")
+    private Set<TaiKhoanThongBao> taiKhoanThongBaos = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "idTaiKhoan")
+    private Set<TuongTacBinhLuan> tuongTacBinhLuans = new LinkedHashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

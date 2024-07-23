@@ -55,8 +55,11 @@ public class SecurityConfig {
             "/logout",
             "/vendor/**",
             "/js/**",
-            "/css/**"
-
+            "/css/**",
+            "/iphone/**",
+            "/client/**",
+            "/img/**",
+            "/api/v2/san-pham/**"
     };
     String[] adminURL = {
 

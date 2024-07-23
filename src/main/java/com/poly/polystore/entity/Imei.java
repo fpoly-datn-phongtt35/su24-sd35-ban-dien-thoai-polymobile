@@ -25,7 +25,7 @@ public class Imei {
     private SanPhamChiTiet sanPhamChiTiet;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "")
+    @Column(name = "TRANG_THAI")
     private TrangThai trangThai;
 
 

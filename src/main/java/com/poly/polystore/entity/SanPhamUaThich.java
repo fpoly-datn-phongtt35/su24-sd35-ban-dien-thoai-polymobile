@@ -27,4 +27,8 @@ public class SanPhamUaThich {
     @Column(name = "Thoi_gian")
     private Instant thoiGian;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SAN_PHAM_ID")
+    private SanPham sanPham;
+
 }

@@ -7,6 +7,9 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Nationalized;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -34,5 +37,8 @@ public class MauSac {
     @ColumnDefault("0")
     @Column(name = "DELETED")
     private Boolean deleted;
+
+    @OneToMany(mappedBy = "mauSac")
+    private Set<SanPhamChiTiet> sanPhamChiTiets = new LinkedHashSet<>();
 
 }

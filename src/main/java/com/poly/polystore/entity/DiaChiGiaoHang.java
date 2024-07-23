@@ -17,7 +17,6 @@ public class DiaChiGiaoHang {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_Khach_hang")
     private KhachHang idKhachHang;
 
     @Nationalized
