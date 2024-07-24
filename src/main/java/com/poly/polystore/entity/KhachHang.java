@@ -2,6 +2,10 @@ package com.poly.polystore.entity;
 
 import jakarta.persistence.*;
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
 

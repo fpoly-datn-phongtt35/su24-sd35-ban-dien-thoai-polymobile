@@ -6,6 +6,8 @@ import org.hibernate.annotations.Nationalized;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -69,5 +71,12 @@ public class HoaDon {
     @Nationalized
     @Column(name = "Last_modified_by")
     private String lastModifiedBy;
+
+    @Column(name = "tong_Tien_hoa_Don", precision = 38, scale = 2)
+    private BigDecimal tongTienHoaDon;
+
+    @Column(name = "thoi_Gian_Mua_Hang")
+    private Instant thoiGianMuaHang;
+
 
 }

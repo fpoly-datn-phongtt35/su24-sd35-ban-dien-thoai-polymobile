@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/client/layout/layout-client.html">
 
 <head>
     <meta charset="UTF-8">
@@ -73,11 +74,11 @@
     </style>
 </head>
 
-<body>
+<body layout:fragment="content">
 <div class="container">
     <div class="card" th:if="${gioHangs != null}">
         <div class="cart-item" th:each="item : ${gioHangs}">
-            <img th:src="${item.idSanPhamChiTiet.anh.get(0)}" th:alt="${item.idSanPhamChiTiet.getSanPham().tenSanPham}">
+            <img th:src="${item.getIdSanPhamChiTiet()}">
             <div class="cart-item-info">
                 <h5 th:text="${item.idSanPhamChiTiet.getSanPham().tenSanPham}"></h5>
                 <p>Online giá rẻ quá <a href="#">(Xem chi tiết)</a></p>

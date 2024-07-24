@@ -23,7 +23,6 @@ import java.util.Set;
 public class SanPhamProductResponse implements Serializable {
     Integer id;
     String tenSanPham;
-    BinhLuan binhLuan;
     Set<SanPhamChiTiet> sanPhamChiTiet;
     String thoiGianBaoHanh;
     SanPhamRepository.TrangThai trangThai;

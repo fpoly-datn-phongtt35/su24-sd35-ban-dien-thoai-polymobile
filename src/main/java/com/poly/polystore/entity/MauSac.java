@@ -7,11 +7,13 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Nationalized;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "MAU_SAC")
 public class MauSac {

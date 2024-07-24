@@ -89,10 +89,10 @@
                 <hr class="border-light">
 
 
-                <a class="bg-primary d-block rounded-lg w-100 py-3 text-center">
+                <a class="bg-primary d-block rounded-lg w-100 py-3 text-center" >
                     <span class="text-decoration-none text-light h3 ">Mua ngay</span>
                 </a>
-                <a class="bg-primary d-block rounded-lg w-100 py-3 text-center my-4">
+                <a class="bg-primary d-block rounded-lg w-100 py-3 text-center my-4" th:onclick="handleClick()">
                     <span class="text-decoration-none text-light h3 ">Thêm vào giỏ hàng</span>
                 </a>
             </aside>
@@ -475,6 +475,44 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.2/flickity.pkgd.min.js"></script>
 
     <script src="/js/client/iphone-product.js"></script>
+    <script type="text/javascript">
+        function getCookie(name) {
+            let cookieArr = document.cookie.split(";");
 
+            for (let i = 0; i < cookieArr.length; i++) {
+                let cookiePair = cookieArr[i].split("=");
+
+                /* Removing whitespace at the beginning of the cookie name
+                and compare it with the given string */
+                if (name == cookiePair[0].trim()) {
+                    return decodeURIComponent(cookiePair[1]);
+                }
+            }
+
+            // Return null if not found
+            return null;
+        }
+        function handleClick() {
+            let token = getCookie("Authorization");
+            let ajaxSettings = {
+                type : 'POST',
+                url: '/client/addToCart',
+                data : {
+                    idSanPhamChiTiet : selectedId,
+                    quantity : 1
+                },
+                success: function(response) {
+                    location.reload();
+                },
+            };
+            if (token) {
+                ajaxSettings.headers = {
+                    'Authorization': 'Bearer ' + token
+                };
+            };
+            $.ajax(ajaxSettings);
+        }
+    </script>
 </th:block>
+
 </html>

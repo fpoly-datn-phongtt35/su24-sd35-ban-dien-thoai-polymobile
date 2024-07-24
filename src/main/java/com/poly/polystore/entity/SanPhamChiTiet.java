@@ -8,7 +8,9 @@ import org.hibernate.annotations.Nationalized;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -89,10 +91,11 @@ public class SanPhamChiTiet implements Serializable {
     @Column(name = "STT")
     private Integer stt;
 
+    @Transient
+    private BigDecimal giaKhuyenMai;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DOT_GIAM_GIA_ID")
     private PhieuGiamGia dotGiamGia;
 
-    @Transient
-    private BigDecimal giaKhuyenMai;
 }

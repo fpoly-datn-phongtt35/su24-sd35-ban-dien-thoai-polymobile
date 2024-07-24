@@ -3,9 +3,11 @@ package com.poly.polystore.entity;
 import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamDataTable;
 import com.poly.polystore.repository.SanPhamRepository;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 

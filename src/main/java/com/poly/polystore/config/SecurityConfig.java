@@ -59,9 +59,11 @@ public class SecurityConfig {
             "/img/**",
             "/api/v1/admin/data-list-add-san-pham/**",
             "/api/v2/san-pham/**",
-            "/api/v2/san-pham"
-
-
+            "/api/v2/san-pham",
+            "/iphone/**",
+            "/client/**",
+            "/img/**",
+            "/api/v2/san-pham/**"
     };
     String[] adminURL = {
 

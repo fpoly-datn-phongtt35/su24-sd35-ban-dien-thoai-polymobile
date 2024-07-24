@@ -8,7 +8,6 @@ import org.hibernate.annotations.Nationalized;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "IMEI")
 public class Imei {
@@ -16,7 +15,6 @@ public class Imei {
         TRONG_KHO,DA_BAN
     }
     @Id
-    @Nationalized
     @Column(name = "IMEI", nullable = false)
     private String imei;
 
@@ -25,7 +23,7 @@ public class Imei {
     private SanPhamChiTiet sanPhamChiTiet;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "")
+    @Column(name = "TRANG_THAI")
     private TrangThai trangThai;
 
 

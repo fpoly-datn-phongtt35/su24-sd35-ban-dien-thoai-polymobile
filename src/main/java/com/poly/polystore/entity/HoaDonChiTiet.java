@@ -1,9 +1,7 @@
 package com.poly.polystore.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
 
@@ -43,5 +41,13 @@ public class HoaDonChiTiet {
     @Nationalized
     @Column(name = "Trang_thai")
     private String trangThai;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DOT_GIAM_GIA_ID")
+    private PhieuGiamGia dotGiamGia;
+
+    @Size(max = 255)
+    @Column(name = "anh_San_Pham")
+    private String anhSanPham;
 
 }
