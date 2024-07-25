@@ -71,11 +71,13 @@ public class CartApi {
             }
             cart.deleteCharAt(cart.length() - 1);
             Cookie[] cookies = request.getCookies();
-            for(Cookie i : cookies){
-                if(i.getName().equals("Cart")){
-                    i.setMaxAge(0);
-                    response.addCookie(i);
-                    break;
+            if(cookies != null){
+                for(Cookie i : cookies){
+                    if(i.getName().equals("Cart")){
+                        i.setMaxAge(0);
+                        response.addCookie(i);
+                        break;
+                    }
                 }
             }
             Cookie cookie = new Cookie("Cart", cart.toString());
@@ -130,10 +132,10 @@ public class CartApi {
             dataFromCart = gioHangRepository.findByIdKhachHang(optionalTaiKhoan.get().getId());
             temp = gioHangRepository.findByIdKhachHang(optionalKhachHang.get().getId());
         }
-        if("add".equals(action)) {
+        if("update".equals(action)) {
             for (GioHang gioHang : dataFromCart) {
                 if(gioHang.getIdSanPhamChiTiet().getId() == idSanPhamChiTiet){
-                    gioHang.setSoLuong(gioHang.getSoLuong() + quantity);
+                    gioHang.setSoLuong(quantity);
                     break;
                 }
             }
@@ -143,20 +145,6 @@ public class CartApi {
                 if(dataFromCart.get(i).getIdSanPhamChiTiet().getId() == idSanPhamChiTiet){
                     dataFromCart.remove(i);
                     i--;
-                }
-            }
-        }
-        else if("minus".equals(action)) {
-            for (int i = 0;i < dataFromCart.size(); i++) {
-                if(dataFromCart.get(i).getIdSanPhamChiTiet().getId() == idSanPhamChiTiet){
-                    if(dataFromCart.get(i).getSoLuong() > 1){
-                        dataFromCart.get(i).setSoLuong(dataFromCart.get(i).getSoLuong() - quantity);
-                    }
-                    else {
-                        dataFromCart.remove(i);
-                        i--;
-                    }
-                    break;
                 }
             }
         }

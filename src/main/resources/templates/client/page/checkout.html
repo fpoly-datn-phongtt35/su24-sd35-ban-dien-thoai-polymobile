@@ -8,142 +8,131 @@
     <title>Shopping Cart</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        body {
-            background-color: #f7f7f7;
-        }
-
-        .card {
-            margin: 20px auto;
-            padding: 20px;
-            border: none;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-
-        .cart-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        .product {
+            border-bottom: 1px solid #ddd;
             padding: 15px 0;
-            border-bottom: 1px solid #e0e0e0;
         }
-
-        .cart-item img {
-            width: 60px;
+        .product img {
+            max-width: 100px;
         }
-
-        .cart-item-info {
-            flex-grow: 1;
-            padding-left: 20px;
+        .total {
+            font-size: 1.5rem;
+            font-weight: bold;
         }
-
-        .cart-item-info h5 {
-            margin: 0;
-            font-size: 18px;
+        .card-header {
+            background-color: #f8f9fa;
+            font-size: 1.25rem;
+            font-weight: bold;
         }
-
-        .cart-item-info p {
-            margin: 5px 0;
-            color: #757575;
+        .form-section {
+            margin-top: 30px;
         }
-
-        .cart-item-quantity {
-            display: flex;
-            align-items: center;
+        .form-section h5 {
+            margin-bottom: 20px;
+            font-size: 1.25rem;
+            font-weight: bold;
         }
-
-        .cart-item-quantity button {
-            margin: 0 5px;
+        .form-check-label {
+            margin-left: 10px;
         }
-
-        .summary {
-            padding: 20px 0;
+        .btn-checkout {
+            background-color: #28a745;
+            color: #fff;
+            font-weight: bold;
+            width: 100%;
+            padding: 15px;
+            border-radius: 5px;
+            border: none;
+            margin-top: 20px;
         }
-
-        .summary h5 {
-            margin: 0 0 10px;
-        }
-
-        .customer-info {
-            padding: 20px 0;
-        }
-
-        .customer-info input {
-            margin-bottom: 10px;
+        .btn-checkout:hover {
+            background-color: #218838;
         }
     </style>
 </head>
 
 <body layout:fragment="content">
-<div class="container">
-    <div class="card" th:if="${gioHangs != null}">
-        <div class="cart-item" th:each="item : ${gioHangs}">
-            <img th:src="${item.getIdSanPhamChiTiet()}">
-            <div class="cart-item-info">
-                <h5 th:text="${item.idSanPhamChiTiet.getSanPham().tenSanPham}"></h5>
-                <p>Online giá rẻ quá <a href="#">(Xem chi tiết)</a></p>
-                <select class="custom-select" style="width: 150px;">
-                    <th:block th:each="a : ${item.idSanPhamChiTiet.sanPham.sanPhamChiTiet}">
-                        <option  th:text="${a.mauSac.ten}" th:value="${a.id}" th:selected="${a.id == item.idSanPhamChiTiet.id}">
-                            Titan đen
-                        </option>
-                    </th:block>
-                </select>
-                <div class="policy mt-2">
-                    <ul>
-                        <li>Giao hàng nhanh chóng (tùy khu vực)</li>
-                        <li>Mỗi số điện thoại chỉ mua 3 sản phẩm trong 1 tháng</li>
-                        <li>Giá và khuyến mãi có thể kết thúc sớm</li>
-                    </ul>
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            Your Shopping Cart
+        </div>
+        <div class="card-body">
+            <!-- Products Section -->
+            <div class="product" th:each="item : ${gioHangs}">
+                <div class="row">
+                    <div class="col-md-2">
+                        <img th:src="${item.getIdSanPhamChiTiet().anh.get(0).url}" alt="iPhone 15 Pro">
+                    </div>
+                    <div class="col-md-6">
+                        <h5 th:text="${item.idSanPhamChiTiet.getSanPham().tenSanPham}"></h5>
+                        <p th:text="${#numbers.formatDecimal(item.idSanPhamChiTiet.giaBan.doubleValue(), 0, 'COMMA', 2, 'POINT')}"></p>
+                        <p><small>Online giá rẻ quá (Xem chi tiết)</small></p>
+                        <p><small>Nhập mã VNPAYTGDD3 giảm từ 50,000₫ đến 200,000₫ (áp dụng tùy giá trị đơn hàng) khi thanh toán qua VNPAY-QR (Xem chi tiết tại đây)</small></p>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control" onchange="changeSP">
+                            <th:block th:each="a : ${item.idSanPhamChiTiet.sanPham.sanPhamChiTiet}">
+                                <option  th:text="${a.mauSac.ten}" th:value="${a.id}" th:selected="${a.id == item.idSanPhamChiTiet.id}">
+                                </option>
+                            </th:block>
+                        </select>
+                    </div>
+                    <div class="col-md-2 text-right">
+                        <input type="number" class="form-control" th:value="${item.soLuong}" min="1" onchange="updateCart()">
+                    </div>
                 </div>
             </div>
-            <div class="cart-item-quantity">
-                <button class="btn btn-outline-secondary btn-sm">-</button>
-                <span th:value="${item.soLuong}"></span>
-                <button class="btn btn-outline-secondary btn-sm">+</button>
+            <!-- Total Section -->
+            <div class="row mt-4">
+                <div class="col-md-12 text-right total">
+                    Tổng cộng: <span id="total-price" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT')}"></span>
+                </div>
             </div>
-            <div class="cart-item-price">
-                <h5 th:text="${#numbers.formatDecimal(item.idSanPhamChiTiet.giaBan.doubleValue() * item.soLuong, 0, 'COMMA', 2, 'POINT')}"></h5>
-                <a href="#" class="text-danger">Xóa</a>
-            </div>
-        </div>
-        <div class="summary">
-            <h5>Tạm tính (<th:block th:text="${gioHangs.size()}"></th:block> sản phẩm):</h5>
-            <h4 th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT')}"></h4>
-        </div>
 
-        <div class="customer-info">
-            <h5>Thông tin khách hàng</h5>
-            <div class="form-group">
-                <label for="customerName">Họ và Tên</label>
-                <input type="text" class="form-control" id="customerName" th:value="${khachHang.idDiaChi.laDiaChiMacDinh ? khachHang.idDiaChi.tenNguoiNhan : ''}">
+            <!-- Customer Information -->
+            <div class="form-section">
+                <h5>Thông tin khách hàng</h5>
+                <div class="form-group">
+                    <label>Họ và Tên</label>
+                    <input type="text" class="form-control" th:value="${khachHang != null && khachHang.idDiaChi != null && khachHang.idDiaChi.laDiaChiMacDinh ? khachHang.idDiaChi.tenNguoiNhan : ''}" placeholder="Họ và Tên">
+                </div>
+                <div class="form-group">
+                    <label>Số điện thoại</label>
+                    <input type="text" class="form-control" th:value="${khachHang != null && khachHang.idDiaChi != null && khachHang.idDiaChi.laDiaChiMacDinh ? khachHang.idDiaChi.soDienThoai : ''}" placeholder="Số điện thoại">
+                </div>
+                <div class="form-group">
+                    <label for="notes">Nhập ghi chú (nếu có)</label>
+                    <textarea id="notes" class="form-control" rows="3"></textarea>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="customerPhone">Số điện thoại</label>
-                <input type="text" class="form-control" id="customerPhone" th:value="${khachHang.idDiaChi.laDiaChiMacDinh ? khachHang.idDiaChi.soDienThoai : ''}">
-            </div>
-        </div>
 
-        <div class="delivery-method">
-            <h5>Chọn hình thức nhận hàng</h5>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="deliveryMethod" id="homeDelivery" checked>
-                <label class="form-check-label" for="homeDelivery">Giao tận nơi</label>
+            <!-- Delivery Method -->
+            <div class="form-section">
+                <h5>Chọn hình thức nhận hàng</h5>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="deliveryMethod" id="homeDelivery" value="homeDelivery" checked>
+                    <label class="form-check-label" for="homeDelivery">
+                        Giao tận nơi
+                    </label>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="address">Số nhà, tên đường</label>
-                <input type="text" class="form-control" id="address" th:value="${khachHang.idDiaChi.laDiaChiMacDinh? khachHang.idDiaChi.diaChi : '' }">
+            <div class="form-section">
+                <h5>Sử dụng mã giảm giá</h5>
+                <div class="form-group">
+                    <label for="discount-code">Mã giảm giá</label>
+                    <input type="text" class="form-control" id="discount-code" th:value="${phieuGiamGia != null ? phieuGiamGia.giaTriGiam.doubleValue() : ''}" disabled>
+                    <p th:if="${phieuGiamGia != null}">Bạn được giảm <th:block th:text="${phieuGiamGia.giaTriGiam + (phieuGiamGia.donvi == '%'? '%' : '')}"></th:block> cho đơn hàng này</p>
+                </div>
             </div>
-        </div>
 
-        <div class="text-right">
-            <button type="button" class="btn btn-primary">Đặt hàng</button>
+            <!-- Checkout Button -->
+            <button class="btn-checkout" onclick="window.location.href='/'">Thanh toán</button>
         </div>
     </div>
 </div>
-
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 
