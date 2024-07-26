@@ -293,6 +293,9 @@
     }
     function checkMagiamgia(){
         let code = $('#discount-code').val();
+        if(code == ''){
+            toastr.error("Bạn quên chọn mã giảm giá rồi");
+        }
         $.ajax(
             {
                 url: "/client/magiamgia/check",
@@ -371,6 +374,10 @@
     function shippingfee(){
         let streetCode = $('#street').val();
         let city = $('#city').val();
+        if(streetCode == '' || city == ''){
+            toastr.error('Bạn quên chọn địa điểm nhận hàng rồi');
+            return;
+        }
         let feeRequest = {
             to_ward_code : streetCode,
             to_district_id : city,
