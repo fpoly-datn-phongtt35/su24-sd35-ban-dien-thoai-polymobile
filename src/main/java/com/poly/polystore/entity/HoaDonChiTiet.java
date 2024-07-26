@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.Nationalized;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,6 +18,7 @@ import java.math.BigDecimal;
 public class HoaDonChiTiet {
     @Id
     @Column(name = "ID", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "ID_Hoa_don")
@@ -30,9 +32,6 @@ public class HoaDonChiTiet {
 
     @Column(name = "Gia_ban", precision = 18, scale = 2)
     private BigDecimal giaBan;
-
-    @Column(name = "Gia_khuyen_mai", precision = 18, scale = 2)
-    private BigDecimal giaKhuyenMai;
 
     @Nationalized
     @Column(name = "IMEI")
@@ -49,5 +48,8 @@ public class HoaDonChiTiet {
     @Size(max = 255)
     @Column(name = "anh_San_Pham")
     private String anhSanPham;
+
+    @Column(name = "so_luong")
+    private int soLuong;
 
 }

@@ -1,38 +1,47 @@
 package com.poly.polystore.core.client.controller;
 
-import com.poly.polystore.entity.GioHang;
-import com.poly.polystore.entity.KhachHang;
-import com.poly.polystore.entity.PhieuGiamGia;
-import com.poly.polystore.entity.TaiKhoan;
-import com.poly.polystore.repository.GioHangRepository;
-import com.poly.polystore.repository.KhachHangRepository;
-import com.poly.polystore.repository.PhieuGiamGiaRepository;
-import com.poly.polystore.utils.GetDataFromCookie;
+
+import com.poly.polystore.Constant.TRANGTHAIDONHANG;
+import com.poly.polystore.entity.*;
+import com.poly.polystore.repository.*;
+import com.poly.polystore.utils.CookieUlti;
+import com.poly.polystore.utils.SendMailUtil;
+import com.poly.polystore.utils.VNPAYService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/client")
 @RequiredArgsConstructor
 public class CartController {
-    private final GetDataFromCookie getDataFromCookie;
+    private final CookieUlti cookieUlti;
     private final  KhachHangRepository khachHangRepository;
     private final GioHangRepository gioHangRepository;
     private final PhieuGiamGiaRepository phieuGiamGiaRepository;
+    private final DiaChiGiaoHangRepository diaChiGiaoHangRepository;
+    private final HoaDonRepository hoaDonRepository;
+    private final HoaDonChiTietRepository hoaDonChiTietRepository;
+    private final VNPAYService vnpayService;
+    private final LichSuHoaDonRepository lichSuHoaDonRepository;
+    private final SendMailUtil sendMailUtil;
+    private final SanPhamChiTietRepository sanPhamChiTietRepository;
+
     @GetMapping("/checkout")
     public String checkout(HttpServletRequest request, Model model) {
-        TaiKhoan taiKhoan = getDataFromCookie.getTaiKhoan(request);
+        TaiKhoan taiKhoan = cookieUlti.getTaiKhoan(request);
         List<GioHang> gioHangs = new ArrayList<>();
         if(taiKhoan != null) {
             Optional<KhachHang> optionalKhachHang = khachHangRepository.findByIdTaiKhoan(taiKhoan.getId());
@@ -43,24 +52,26 @@ public class CartController {
             }
         }
         else {
-            gioHangs = getDataFromCookie.getDataFromCart(request);
-        }
-        double total = 0;
-        if (gioHangs != null) {
-            for (GioHang gioHang : gioHangs) {
-                total += gioHang.getSoLuong() * gioHang.getIdSanPhamChiTiet().getGiaBan().doubleValue();
-            }
+            gioHangs = cookieUlti.getDataFromCart(request);
         }
         List<PhieuGiamGia> list = phieuGiamGiaRepository.findAll().stream().filter(n -> n.getThoiGianBatDau().isBefore(Instant.now()) &&
                 n.getThoiGianKetThuc().isAfter(Instant.now()) && !n.getDeleted()).toList();
         if(!list.isEmpty()){
             PhieuGiamGia phieuGiamGia = list.get(0);
-            model.addAttribute("phieuGiamGia",phieuGiamGia);
-            if(phieuGiamGia.getDonvi().equals("%")){
-                total -= total * phieuGiamGia.getGiaTriGiam().doubleValue() / 100;
+            for(GioHang gioHang : gioHangs) {
+                if(phieuGiamGia.getDonvi().equals("%")){
+                    gioHang.setRealPrice(BigDecimal.valueOf(gioHang.getIdSanPhamChiTiet().getGiaBan().doubleValue() * (100 - phieuGiamGia.getGiaTriGiam().doubleValue()) / 100));
+                }
+                else {
+                    gioHang.setRealPrice(BigDecimal.valueOf(gioHang.getIdSanPhamChiTiet().getGiaBan().doubleValue() - phieuGiamGia.getGiaTriGiam().doubleValue()));
+                }
             }
-            else {
-                total -= phieuGiamGia.getGiaTriGiam().doubleValue();
+        }
+        double total = 0;
+        if (gioHangs != null) {
+            for (GioHang gioHang : gioHangs) {
+                gioHang.setSanPhamCungLoai(sanPhamChiTietRepository.findBySanPhamAndRom(gioHang.getIdSanPhamChiTiet().getSanPham(),gioHang.getIdSanPhamChiTiet().getRom()));
+                total += gioHang.getSoLuong() * gioHang.getRealPrice().doubleValue();
             }
         }
         model.addAttribute("gioHangs", gioHangs);
@@ -69,7 +80,128 @@ public class CartController {
     }
 
     @PostMapping("/checkout")
-    public String checkout(){
-        return "redirect:/";
+    public String checkout(@RequestParam("name") String name, @RequestParam("phone") String phone,
+                           @RequestParam("address") String address, @RequestParam("note") String note,
+                           @RequestParam("payment") String payment, @RequestParam("discount-code") String code,
+                           @RequestParam("province") String province, @RequestParam("city") String city,
+                           @RequestParam("street") String street, HttpServletRequest request,
+                           @RequestParam("email") String email, @RequestParam("shipping") String shipping,
+                           HttpServletResponse response) throws MessagingException, IOException {
+        TaiKhoan taiKhoan = cookieUlti.getTaiKhoan(request);
+        List<GioHang> gioHangs = new ArrayList<>();
+        KhachHang khachHang = new KhachHang();
+        if(taiKhoan != null) {
+            Optional<KhachHang> optionalKhachHang = khachHangRepository.findByIdTaiKhoan(taiKhoan.getId());
+            if(optionalKhachHang.isPresent()) {
+                khachHang = optionalKhachHang.get();
+                gioHangs = gioHangRepository.findByIdKhachHang(khachHang.getId());
+                gioHangRepository.deleteAll(gioHangs);
+            }
+        }
+        else {
+            khachHang = new KhachHang();
+            khachHang.setEmail(email);
+            khachHang.setSoDienThoai(phone);
+            khachHang.setTen(name);
+            khachHangRepository.save(khachHang);
+            DiaChiGiaoHang diaChiGiaoHang = new DiaChiGiaoHang();
+            diaChiGiaoHang.setProvince(province);
+            diaChiGiaoHang.setWard(city);
+            diaChiGiaoHang.setStreet(street);
+            diaChiGiaoHang.setIdKhachHang(khachHang);
+            diaChiGiaoHang.setLaDiaChiMacDinh(false);
+            diaChiGiaoHangRepository.save(diaChiGiaoHang);
+            gioHangs = cookieUlti.getDataFromCart(request);
+            cookieUlti.removeCookie(request,response);
+        }
+        List<PhieuGiamGia> list = phieuGiamGiaRepository.findAll().stream().filter(n -> n.getThoiGianBatDau().isBefore(Instant.now()) &&
+                n.getThoiGianKetThuc().isAfter(Instant.now()) && !n.getDeleted()).toList();
+        if(!list.isEmpty()){
+            PhieuGiamGia phieuGiamGia = list.get(0);
+            for(GioHang gioHang : gioHangs) {
+                if(phieuGiamGia.getDonvi().equals("%")){
+                    gioHang.setRealPrice(BigDecimal.valueOf(gioHang.getIdSanPhamChiTiet().getGiaBan().doubleValue() * (100 - phieuGiamGia.getGiaTriGiam().doubleValue()) / 100));
+                }
+                else {
+                    gioHang.setRealPrice(BigDecimal.valueOf(gioHang.getIdSanPhamChiTiet().getGiaBan().doubleValue() - phieuGiamGia.getGiaTriGiam().doubleValue()));
+                }
+            }
+        }
+        double total = 0;
+        if (gioHangs != null) {
+            for (GioHang gioHang : gioHangs) {
+                total += gioHang.getSoLuong() * gioHang.getRealPrice().doubleValue();
+            }
+        }
+        total -= Double.parseDouble(shipping);
+        HoaDon hoaDon = new HoaDon();
+        hoaDon.setMa(UUID.randomUUID().toString());
+        hoaDon.setIdKhachHang(khachHang);
+        hoaDon.setMaGiamGia(code);
+        hoaDon.setTenNguoiNhan(name);
+        hoaDon.setSoDienThoai(phone);
+        hoaDon.setDiaChi(address);
+        hoaDon.setTongSanPham(gioHangs.size());
+        hoaDon.setPhiGiaoHang(new BigDecimal(shipping));
+        hoaDon.setTrangThai(payment.equals("offline")? TRANGTHAIDONHANG.CHO_XAC_NHAN : TRANGTHAIDONHANG.CHO_THANH_TOAN);
+        hoaDon.setHinhThucGiaoHang("Giao tận nơi");
+        hoaDon.setCreatedAt(Instant.now());
+        hoaDon.setTongTienHoaDon(new BigDecimal(total));
+        hoaDon.setThoiGianMuaHang(Instant.now());
+        hoaDon.setHinhThucGiaoHang(payment);
+        hoaDon.setNote(note);
+        hoaDon.setEmail(email);
+        hoaDonRepository.save(hoaDon);
+        for(GioHang gioHang : gioHangs) {
+            HoaDonChiTiet hoaDonChiTiet = new HoaDonChiTiet();
+            hoaDonChiTiet.setIdSanPhamChiTiet(gioHang.getIdSanPhamChiTiet().getId());
+            hoaDonChiTiet.setIdHoaDon(hoaDon.getId());
+            hoaDonChiTiet.setGiaGoc(gioHang.getIdSanPhamChiTiet().getGiaBan());
+            hoaDonChiTiet.setGiaBan(gioHang.getRealPrice());
+            hoaDonChiTiet.setSoLuong(gioHang.getSoLuong());
+            hoaDonChiTietRepository.save(hoaDonChiTiet);
+        }
+        sendMailUtil.sendMailOrder(hoaDon,email);
+        if(payment.equals("offline")){
+            LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
+            lichSuHoaDon.setIdHoaDon(hoaDon);
+            lichSuHoaDon.setThoiGian(Instant.now());
+            lichSuHoaDon.setTieuDe("Chờ xác nhận");
+            lichSuHoaDonRepository.save(lichSuHoaDon);
+            return "redirect:/iphone";
+        }
+        else {
+            String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+            String vnpayUrl = vnpayService.createOrder(request, (int) total, "Thanh toán cho đơn hàng " + hoaDon.getId(), baseUrl);
+            LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
+            lichSuHoaDon.setIdHoaDon(hoaDon);
+            lichSuHoaDon.setThoiGian(Instant.now());
+            lichSuHoaDon.setTieuDe("Chờ Thanh Toán");
+            lichSuHoaDonRepository.save(lichSuHoaDon);
+            return "redirect:" + vnpayUrl;
+        }
+    }
+
+    @GetMapping("/vnpay-payment-return")
+    public String paymentCompleted(HttpServletRequest request, Model model){
+        int paymentStatus =vnpayService.orderReturn(request);
+
+        String orderInfo = request.getParameter("vnp_OrderInfo");
+        String id = orderInfo.substring("Thanh toán cho đơn hàng ".length()).trim();
+        HoaDon hoaDon = hoaDonRepository.findById(Integer.parseInt(id)).get();
+        LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
+        lichSuHoaDon.setThoiGian(Instant.now());
+        lichSuHoaDon.setIdHoaDon(hoaDon);
+        if(paymentStatus == 1){
+            hoaDon.setTrangThai(TRANGTHAIDONHANG.CHO_XAC_NHAN);
+            lichSuHoaDon.setTieuDe("Chờ xác nhận");
+        }
+        else {
+            hoaDon.setTrangThai(TRANGTHAIDONHANG.DA_HUY);
+            lichSuHoaDon.setTieuDe("Đơn hàng đã hủy");
+        }
+        hoaDonRepository.save(hoaDon);
+        lichSuHoaDonRepository.save(lichSuHoaDon);
+        return "redirect:/iphone";
     }
 }

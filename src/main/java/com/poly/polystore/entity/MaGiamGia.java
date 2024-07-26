@@ -24,10 +24,6 @@ public class MaGiamGia {
     @Column(name = "Code", nullable = false,unique = true)
     private String code;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_San_pham_chi_tiet")
-    private SanPhamChiTiet idSanPhamChiTiet;
-
     @Column(name = "Phan_tram_giam")
     private Double phanTramGiam;
 

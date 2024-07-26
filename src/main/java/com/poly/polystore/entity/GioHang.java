@@ -3,6 +3,9 @@ package com.poly.polystore.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -26,4 +29,9 @@ public class GioHang {
     @Column(name = "So_luong")
     private Integer soLuong;
 
+    @Transient
+    private BigDecimal realPrice;
+
+    @Transient
+    private List<SanPhamChiTiet> sanPhamCungLoai;
 }
