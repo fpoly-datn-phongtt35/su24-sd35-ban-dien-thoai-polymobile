@@ -115,13 +115,13 @@
                         <label>Họ và Tên</label>
                         <input type="text" class="form-control" name="name"
                                th:value="${khachHang != null && khachHang.idDiaChi != null && khachHang.idDiaChi.laDiaChiMacDinh ? khachHang.idDiaChi.tenNguoiNhan : ''}"
-                               placeholder="Họ và Tên">
+                               placeholder="Họ và Tên" required>
                     </div>
                     <div class="form-group">
                         <label>Số điện thoại</label>
                         <input type="text" class="form-control" name="phone"
                                th:value="${khachHang != null && khachHang.idDiaChi != null && khachHang.idDiaChi.laDiaChiMacDinh ? khachHang.idDiaChi.soDienThoai : ''}"
-                               placeholder="Số điện thoại">
+                               placeholder="Số điện thoại" required>
                     </div>
                     <div class="form-group">
                         <label for="province">Tỉnh/Thành Phố</label>
@@ -145,13 +145,13 @@
                         <label>Địa chỉ cụ thể</label>
                         <input type="text" class="form-control" name="address"
                                th:value="${khachHang != null && khachHang.idDiaChi != null && khachHang.idDiaChi.laDiaChiMacDinh ? khachHang.idDiaChi.soDienThoai : ''}"
-                               placeholder="Địa chỉ cụ thể">
+                               placeholder="Địa chỉ cụ thể" required>
                     </div>
                     <div class="form-group">
                         <label>Địa chỉ Email</label>
                         <input type="text" class="form-control" name="email"
                                th:value="${khachHang != null && khachHang.email != null ? khachHang.email : ''}"
-                               placeholder="Email">
+                               placeholder="Email" required>
                     </div>
                     <div class="form-group">
                         <label for="notes">Nhập ghi chú (nếu có)</label>
@@ -303,7 +303,7 @@
                 type: 'Post',
                 data: code,
                 success: function (data, textStatus, jqXHR) {
-                    showSuccessToast('Mã giảm giá đã được áp dụng');
+                    toastr.success('Mã giảm giá đã được áp dụng');
                     $('#total-price').html(data.total);
                 },
                 error: function(xhr, status, error) {

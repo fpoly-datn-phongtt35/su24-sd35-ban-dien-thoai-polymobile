@@ -34,8 +34,8 @@ public class MagiamgiaApi {
             return ResponseEntity.badRequest().body("Mã giảm giá không tồn tại");
         }
         else {
-            if(magiamgia.getThoiGianBatDau().isBefore(Instant.now()) || magiamgia.getThoiGianBatDau().isAfter(Instant.now())){
-                return ResponseEntity.badRequest().body("Mã giảm giá không còn hiệu lực");
+            if(magiamgia.getThoiGianBatDau().isAfter(Instant.now()) || magiamgia.getThoiGianKetThuc().isBefore(Instant.now())){
+                return ResponseEntity.badRequest().body("Mã giảm giá không có hiệu lực");
             }
             TaiKhoan taiKhoan = cookieUlti.getTaiKhoan(request);
             List<GioHang> gioHangs = new ArrayList<>();
@@ -74,6 +74,8 @@ public class MagiamgiaApi {
             if(magiamgia.getSoLuong() == 0){
                 return ResponseEntity.badRequest().body("Mã giảm giá không tồn tại");
             }
+            double giamgia = Math.min(total * magiamgia.getPhanTramGiam(),magiamgia.getGiamToiDa().doubleValue());
+            total -= giamgia;
             return ResponseEntity.ok(new MagiamgiaResp(magiamgia,total));
         }
     }
