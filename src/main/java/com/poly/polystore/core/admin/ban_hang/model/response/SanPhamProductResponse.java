@@ -1,4 +1,4 @@
-package com.poly.polystore.core.client.models.response;
+package com.poly.polystore.core.admin.ban_hang.model.response;
 
 import com.poly.polystore.repository.SanPhamRepository;
 import jakarta.validation.constraints.NotNull;
@@ -27,18 +27,6 @@ public class SanPhamProductResponse implements Serializable {
     String thoiGianBaoHanh;
     SanPhamRepository.TrangThai trangThai;
 
-    /**
-     * DTO for {@link com.poly.polystore.entity.BinhLuan}
-     */
-    @AllArgsConstructor
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @Builder
-    public static class BinhLuan implements Serializable {
-        Integer id;
-        String binhLuanChiTiet;
-    }
 
     /**
      * DTO for {@link com.poly.polystore.entity.SanPhamChiTiet}
@@ -51,9 +39,9 @@ public class SanPhamProductResponse implements Serializable {
     public static class SanPhamChiTiet implements Serializable {
         Integer id;
         List<KhuyenMai> khuyenMai;
-        List<Anh> anh;
         MauSac mauSac;
         String rom;
+        Integer soLuong;
         BigDecimal giaBan;
         SanPhamRepository.TrangThai trangThai;
         PhieuGiamGia dotGiamGia;
@@ -87,7 +75,6 @@ public class SanPhamProductResponse implements Serializable {
         @Builder
         public static class Anh implements Serializable {
             String url;
-            String name;
         }
 
         /**

@@ -1,0 +1,81 @@
+#nav-invoice {
+    button {
+        color: #fff;
+    }
+
+    .active {
+        color: #000;
+    }
+
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+.bottom {
+    .nav {
+        .nav-link.active {
+            color: #0070F3;
+            border: none;
+            border-top: solid 2px #0070F3;
+            border-radius: 0px;
+            padding: 5px 20px 5px 20px;
+
+            i {
+                padding: 12px;
+                border-radius: 50%;
+                background: rgba(0,112,244,0.15);
+            }
+        }
+    }
+}
+li{
+    list-style: none;
+}
+.icon-btn{
+    i{
+        padding: 15px;
+    }
+    i:hover{
+        padding: 15px;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.2)
+}
+
+}
+#tbl-san-pham{
+.product{
+height: 130px;
+}
+.product:hover{
+background: rgba(0,112,244,0.15);
+}
+.product.disable:hover{
+position: relative;
+opacity: 0.5;
+background: rgba(0,112,244,0.15);
+::after {
+content: "Hết hàng";
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0, 0, 0, 0.5);
+color: white;
+display: flex;
+justify-content: center;
+align-items: center;
+font-size: 1.5em;
+font-weight: bold;
+text-transform: uppercase;
+z-index: 10;
+pointer-events: none;
+}
+}
+}

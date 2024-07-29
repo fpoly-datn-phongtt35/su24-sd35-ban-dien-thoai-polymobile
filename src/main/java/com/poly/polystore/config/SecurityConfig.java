@@ -123,10 +123,12 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authenticationProvider(authenticationProvider())
-//                .formLogin(form -> form
-//                        .loginPage("/sign-in?error=401")
-//                )
-        ;
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/sign-in")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("Authorization")
+                );
 
         return http.build();
     }

@@ -1,5 +1,7 @@
 package com.poly.polystore.repository;
 
+import com.poly.polystore.core.admin.ban_hang.model.response.SanPhamDataTableBanHang;
+import com.poly.polystore.core.admin.ban_hang.model.response.SanPhamDetailBanHang;
 import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamDataTable;
 import com.poly.polystore.entity.SanPham;
 import org.springframework.data.domain.Page;
@@ -7,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.*;
 
@@ -31,6 +34,27 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer>, JpaS
     }
     @Query(nativeQuery = true,name = "findAllSanPhamDataTable")
     public List<SanPhamDataTable> findAllSanPhamDataTable();
+
+    @Query("SELECT new SanPhamDataTableBanHang(sp.id, sp.anh.url, sp.tenSanPham, sp.trangThai,SUM(spct.soLuong)) " +
+            "FROM SanPham sp " +
+            "LEFT JOIN sp.sanPhamChiTiet spct " +
+            "GROUP BY sp.id, sp.tenSanPham, sp.anh.url, sp.trangThai")
+    public List<SanPhamDataTableBanHang> findAllSanPhamDataTableBanHang();
+
+    @Query("SELECT new SanPhamDataTableBanHang(sp.id, sp.anh.url, sp.tenSanPham, sp.trangThai, SUM(spct.soLuong)) " +
+            "FROM SanPham sp " +
+            "LEFT JOIN sp.sanPhamChiTiet spct " +
+            "WHERE (:searchKey IS NULL OR sp.tenSanPham LIKE %:searchKey%)" +
+            "GROUP BY sp.id, sp.tenSanPham, sp.anh.url, sp.trangThai")
+    public List<SanPhamDataTableBanHang> findAllSanPhamDataTableBanHang(@Param("searchKey") String searchKey);
+
+    @Query("SELECT new SanPhamDataTableBanHang(sp.id, sp.anh.url, sp.tenSanPham, sp.trangThai, SUM(spct.soLuong)) " +
+            "FROM SanPham sp " +
+            "LEFT JOIN sp.sanPhamChiTiet spct " +
+            "GROUP BY sp.id, sp.tenSanPham, sp.anh.url, sp.trangThai")
+    public List<SanPhamDetailBanHang> findAllSanPhamDataTableBanHang(Integer id);
+
+
 
 
 //    default SanPhamDataTable findAllSanPhamDataTable(Pageable pageable,String sortBy,String sortOder, String searchKey,Integer draw, EntityManager em) {
