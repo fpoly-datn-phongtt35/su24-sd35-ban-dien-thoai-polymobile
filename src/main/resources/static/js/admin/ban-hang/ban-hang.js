@@ -6,7 +6,6 @@ function chuyenCheDoNhap(btn) {
     }
     showSuccessToast("Chuyển chế độ nhập", "Đã chuyển sang chế độ nhập " + (status == "false" ? "thường" : "nhanh"))
 }
-
 function showSuccessToast(title, message) {
     $('.toast-container').append(`
        <div class="toast hide " role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
@@ -73,6 +72,8 @@ var _selectedId = -1;
 var _selectedInvoice = -1;
 //Map sản phẩm chi tiết theo rom làm key
 var _uniqueProductRoms;
+//Chứa đuôi của url filter sản phẩm
+let _mapParamFilters= new Map();
 
 
 $(document).ready(() => {
@@ -178,41 +179,71 @@ $(document).ready(() => {
 
 
     });
+    $.get('/api/v1/admin/data-list-add-san-pham/series').done(dataSeries=>{
+        $('#filter-series').select2({
+            placeholder: "Tất cả",
+            data:  dataSeries.results,
+            closeOnSelect:false
+        });
+    })
+
     $('#select-san-pham').select2({
         placeholder: "Chọn khách hàng (F4)"
     });
 
+
+})
+//Filter
+$(document).ready(()=>{
     $.get('/api/v1/sale/product')
         .done((data) => {
             let mapData = new Map(data.map(d => [d.id, d]));
             fillDataToTableSanPham(mapData)
             _mapProduct = mapData
         })
+
+
     let timeout;
     $('#input-search').on('input', function () {
         let searchKey = $(this).val();
         clearTimeout(timeout);
-        timeout = setTimeout(function () {
+        _mapParamFilters.set('searchKey',searchKey)
+        timeout = setTimeout(applyFilter(), 500); // Thay đổi giá trị này đ
+    })
+    $('#filter-series').on('change', function () {
+        if($(this).val().length>0) {
+            $(this).val().forEach(seriesId=>{
 
-            $.get(`/api/v1/sale/product?searchKey=${searchKey}`)
-                .done((data) => {
-                    let mapData = new Map(data.map(d => [d.id, d]));
-                    fillDataToTableSanPham(mapData)
-                    _mapProduct = mapData
-                })
-        }, 500); // Thay đổi giá trị này đ
-
-
+            })
+        }
     })
 
 })
 
+
+function applyFilter() {
+    let suffixUrl='';
+    _mapParamFilters.forEach((value, key) => {
+        if(!value||value!='')
+        suffixUrl+=`${key}=${value}&`
+    })
+    if(suffixUrl.length>0){
+        suffixUrl.substring(0,suffixUrl.length-2);
+    }
+    $.get(`/api/v1/sale/product?${suffixUrl}`)
+        .done((data) => {
+            let mapData = new Map(data.map(d => [d.id, d]));
+            fillDataToTableSanPham(mapData)
+            _mapProduct = mapData
+        })
+}
 function fillDataToTableSanPham(mapData) {
     let dataSP = '';
     mapData.forEach((sp, id) => {
-        let disable = (sp.soLuong < 1 || sp.trangThai != 'IN_STOCK') ? "disable" : ""
+        let disable = (sp.trangThai != 'IN_STOCK') ? "disable" : "";
+        let outOfStock = (sp.soLuong < 1) ? "out-of-stock" : "";
         dataSP += `
-                <div sp-id="${sp.id}" class="col-4 p-4 d-flex justify-content-between product ${disable}">
+                <div sp-id="${sp.id}" class="col-4 p-4 d-flex justify-content-between product ${outOfStock} ${disable}">
                     <img class="w-25" src="${sp.anhUrl}">
                     <div class="ms-3">
                         <span class="w-50" style="font-size: 12px">${sp.tenSanPham}</span><br>
@@ -554,7 +585,7 @@ function checkout(invoice) {
     $('#tbl-imei').html(imeiRow);
     $('#hd-tong-so-tien').text(toCurrency(tongTien));
     $('#hd-khach-tra').text(toCurrency(tongTien));
-    $('#hd-voucher').off('select2:select')
+    updateBillStep2(tongTien);
     $('#hd-voucher').val([]).trigger('change');
 
     $offcv.find('input[spct-id]').on('focus', function ()  {
@@ -632,40 +663,36 @@ function checkout(invoice) {
 
     })
 
-    $('#hd-voucher').on('select2:select', function () {
+    $('#hd-voucher').on('select2:select select2:unselect', function () {
+        if($(this).val().length==0){
+            applyVoucher(undefined);
+            return;
+        }
         $.get('/api/v1/sale/promotion/' + $(this).val())
             .then((response) => {
                 applyVoucher(response);
             })
     })
 
-    function showCustomerDetailInOder(customer) {
 
-        if(customer.deleted!=0){
-            showWarnToast('Cảnh báo','Khách hàng đã bị xóa');
-            return;
-        }
-        $('#hd-kh-ten').val(customer.ten);
-        $('#hd-kh-email').val(customer.email);
-        $('#hd-kh-sdt').val(customer.soDienThoai);
-    }
-
-    $('#hd-khach-hang').on('select2:select', function () {
-        $.get('/api/v1/sale/customer/' + $(this).val())
-            .then((response) => {
-                showCustomerDetailInOder(response);
-            })
-    })
 
 
     function applyVoucher(response) {
+
+        if(!response){
+            $('#hd-giam-gia').text(toCurrency(0))
+            $('#hd-khach-tra').text(toCurrency(tongTien));
+            updateBillStep2(tongTien);
+            return;
+        }
+
         let voucher = {
             "id": 3,
             "code": "ABCD-1234567890",
-            "phanTramGiam": 100.0,
-            "giamToiDa": 1000000.00,
+            "phanTramGiam": 0,
+            "giamToiDa": 0,
             "giaTriToiThieu": 0.00,
-            "soLuong": 12,
+            "soLuong": 1,
             "thoiGianKetThuc": "2024-06-26T00:00:00Z",
             "thoiGianBatDau": "2024-06-04T00:00:00Z",
             "createAt": "2024-06-09T22:52:43.486Z",
@@ -701,12 +728,41 @@ function checkout(invoice) {
         }
 
         function getGiaTriGiam(tongTien) {
-            return tongTien * voucher.phanTramGiam > voucher.giamToiDa ? voucher.giamToiDa : tongTien * voucher.phanTramGiam
+            return tongTien * voucher.phanTramGiam / 100 > voucher.giamToiDa ? voucher.giamToiDa : tongTien * voucher.phanTramGiam /100
         }
 
         $('#hd-giam-gia').text(toCurrency(getGiaTriGiam(tongTien)))
-        $('#hd-khach-tra').text(toCurrency(tongTien - getGiaTriGiam(tongTien)))
+        $('#hd-khach-tra').text(toCurrency(tongTien - getGiaTriGiam(tongTien)));
+        updateBillStep2(tongTien - getGiaTriGiam(tongTien));
     }
+}
+
+$(document).ready(function () {
+    function showCustomerDetailInOder(customer) {
+
+        if(customer.deleted!=0){
+            showWarnToast('Cảnh báo','Khách hàng đã bị xóa');
+            return;
+        }
+        $('#hd-kh-ten').val(customer.ten);
+        $('#hd-kh-email').val(customer.email);
+        $('#hd-kh-sdt').val(customer.soDienThoai);
+    }
+
+    $('#hd-khach-hang').on('select2:select select2:unselect', function () {
+        $.get('/api/v1/sale/customer/' + $(this).val())
+            .then((response) => {
+                showCustomerDetailInOder(response);
+            })
+    })
+})
+function updateBillStep2(soTienThanhToan){
+    const stk="XUNGCONGQUY";
+    const tenTaiKhoan="NGUYEN%20BA%20CHUC";
+    const noiDung="ABCXYZ";
+    let imgSrc=`https://img.vietqr.io/image/tpbank-${stk}-compact2.jpg?amount=${soTienThanhToan}&addInfo=${noiDung}&accountName=${tenTaiKhoan}`
+    $('.qrcode').attr('src',imgSrc)
+    $('#httt-tien-mat > span > span:nth-child(2)').text(toCurrency(soTienThanhToan))
 }
 
 function checkDuplicate(form,selector){
@@ -741,10 +797,59 @@ $(document).ready(()=>{
         if(form.find('.is-invalid').length === 0){
             $('#offcanvas-check-out').offcanvas('hide');
             $('#offcanvas-check-out-step-2').offcanvas('show');
+
         }
     });
     $('#offcanvas-check-out-step-2 > div.offcanvas-header > button').on('click', function () {
         $('#offcanvas-check-out').offcanvas('show');
         $('#offcanvas-check-out-step-2').offcanvas('hide');
+        $('#offcanvas-check-out-step-2').find('form').removeClass('was-validated');
     })
+
+    $('#nav-profile-tab').on('click',()=>{
+        setTimeout(()=>{
+            $('.qrcode')[0].scrollIntoView({ behavior: 'smooth', block: 'center' });},200);
+    })
+
+})
+
+
+async function showConfirm(parentComponent,title,message){
+    let $modal=$(`
+        <div class="modal fade" id="ex-modal" tabindex="-1" aria-labelledby="ex-modalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="ex-modalLabel">${title}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                ${message}
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary">Xác nhận</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    `);
+}
+
+$(document).ready(()=>{
+
+    $('#form-check-out-step-2').on('submit', function (event) {
+        event.preventDefault();
+        let form=$(this);
+        if (!form[0].checkValidity()) {
+            event.stopPropagation();
+        }
+        form.addClass('was-validated')
+        if(form.find('.is-invalid').length === 0){
+            alert('OK')
+
+        }
+    });
+
+
 })

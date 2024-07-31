@@ -80,8 +80,10 @@
                     <input class="form-control me-sm-2 flex-grow-1" id="input-search" type="search" placeholder="Tìm hàng hóa (F3)"
                            aria-label="Search">
                     <div class="w-25 d-flex justify-content-around">
-                        <i class="fa fa-list" aria-hidden="true"></i>
-                        <i class="fa-solid fa-filter"></i>
+
+                        <a data-bs-toggle="offcanvas" href="#offcanvasFilter" role="button" aria-controls="offcanvasFilter">
+                            <i class="fa fa-list" aria-hidden="true"></i>
+                        </a>
                     </div>
                 </form>
             </div>
@@ -115,30 +117,6 @@
 
 </div>
 
-
-
-<!--DMO-->
-<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasExampleLabel">Offcanvas</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-        <div>
-            Some text as placeholder. In real life you can have the elements you have chosen. Like, text, images, lists, etc.
-        </div>
-        <div class="dropdown mt-3">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
-                Dropdown button
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
 
 
 
@@ -276,22 +254,39 @@
                         Vui lòng chọn khuyến mại
                     </div>
                 </div>
-                <div class="col-12 m-3">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1" checked>
-                        <label class="form-check-label" for="inlineRadio1">Tiền mặt</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
-                        <label class="form-check-label" for="inlineRadio2">Chuyển khoản</label>
-                    </div>
 
-                </div>
                 <button type="submit" class="btn btn-primary btn-xl w-100 mt-2 py-2"  id="check-out-finish" tabindex="3071">Thanh toán</button>
             </div>
         </form>
 
 
+
+    </div>
+</div>
+
+<!--Canvas fillter-->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasFilter" aria-labelledby="offcanvasFilterLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasFilterLabel">Lọc sản phẩm</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+
+
+        <div class="mb-3">
+            <label for="filter-series" class="form-label">Series</label>
+            <select class="form-control position-relative" id="filter-series" multiple="multiple">
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="filter-order" class="form-label">Sắp xếp theo</label>
+            <select class="form-control position-relative" id="filter-order">
+                <option>Mới ra mắt</option>
+                <option>Bán chạy</option>
+                <option>Giá thấp đến cao</option>
+                <option>Giá cao đến thấp</option>
+            </select>
+        </div>
 
     </div>
 </div>
@@ -303,35 +298,69 @@
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
-        <form id="form-check-out-step-2">
+        <form id="form-check-out-step-2" novalidate>
             <div class="row">
                 <div class="form-group position-relative col-12">
                     <select class="form-control position-relative" id="hd-khach-hang" multiple="multiple">
                         <option></option>
                     </select>
-                    <a class="position-absolute" id="btn-add-khuyen-mai" style="right: 25px;top: 8px"><i
-                            class="fa fa-plus"
-                            aria-hidden="true"></i></a>
+                    <div class="form-text">Bạn có thể cập nhật thông tin đối với khách hàng này hoặc tạo mới</div>
+
+
+                </div>
+                <div class="form-group mt-4 col-12">
+                    <fieldset>
+                        <legend>Khách hàng</legend>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" required placeholder="Tên khách hàng" id="hd-kh-ten">
+                            <div class="invalid-feedback">
+                                Vui lòng nhập tên khách hàng
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <input type="email" class="form-control" required placeholder="Địa chỉ email" id="hd-kh-email">
+                            <div class="invalid-feedback">
+                                Vui lòng nhập địa chỉ email khách hàng
+                            </div>
+                        </div>
+                        <div class="">
+                            <input type="tel" class="form-control" required placeholder="Số điện thoại" id="hd-kh-sdt">
+                            <div class="invalid-feedback">
+                                Vui lòng nhập số điện thoại khách hàng
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Thanh toán</legend>
+                        <nav>
+                            <div class="nav nav-tabs" id="hinhThucTT" role="tablist">
+                                <a class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" href="#httt-tien-mat" role="tab" aria-controls="httt-tien-mat" aria-selected="true">Tiền mặt</a>
+                                <a class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" href="#httt-chuyen-khoan" role="tab" aria-controls="httt-chuyen-khoan" aria-selected="false">Chuyển Khoản</a>
+                            </div>
+                        </nav>
+                        <div class="tab-content" id="hinhThucTTContent">
+                            <div class="tab-pane fade show active" id="httt-tien-mat" role="tabpanel" aria-labelledby="httt-tien-mat-tab">
+                               <span class="h3 ps-1"><span>Số tiền:</span>  <span ></span></span>
+                            </div>
+                            <div class="tab-pane qrcode-container fade" id="httt-chuyen-khoan" role="tabpanel" aria-labelledby="httt-chuyen-khoan-tab">
+                                <img class="qrcode" alt="">
+                            </div>
+
+                        </div>
+
+                    </fieldset>
+                </div>
+
+                <div class="ms-3 form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
+                    <label class="form-check-label" for="invalidCheck">
+                        Đã nhận đủ
+                    </label>
                     <div class="invalid-feedback">
-                        Vui lòng chọn khuyến mại
+                        Bạn cần xác nhận nhận đủ tiền trước khi kết thúc
                     </div>
                 </div>
-                <div class="form-group col-12">
-                    <div class="my-3">
-                        <input type="email" class="form-control" placeholder="Tên khách hàng" id="hd-kh-ten"
-                               aria-describedby="emailHelp">
-                    </div>
-                    <div class="my-3">
-                        <input type="email" class="form-control" placeholder="Địa chỉ email" id="hd-kh-email"
-                               aria-describedby="emailHelp">
-                    </div>
-                    <div class="mb-3">
-                        <input type="text" class="form-control" placeholder="Số điện thoại" id="hd-kh-sdt">
-                    </div>
-                </div>
-
-
-                <button  type="submit" class="btn btn-primary btn-xl w-100 mt-2 py-2"  id="check-out-finish-2" tabindex="3071">Thanh toán</button>
+                <button  type="submit" class="btn btn-primary btn-xl w-100 mt-2 py-2"  id="check-out-finish-2" tabindex="3071">Hoàn tất</button>
             </div>
         </form>
 
@@ -339,7 +368,6 @@
 
     </div>
 </div>
-
 
 
 <div class="toast-container position-fixed bottom-0 left-0 p-3" style="z-index: 99999; bottom: 0;">
@@ -379,3 +407,7 @@
     })
 </script>
 </html>
+
+
+
+

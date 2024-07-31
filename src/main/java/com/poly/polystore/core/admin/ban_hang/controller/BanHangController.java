@@ -68,8 +68,11 @@ public class BanHangController {
     @GetMapping("/api/v1/sale/promotion/{id}")
     @ResponseBody
     public ResponseEntity<?> getPromotion(
-            @PathVariable(name = "id") MaGiamGia promotion
+            @PathVariable(name = "id",required = false) MaGiamGia promotion
     ) {
+        if(promotion == null) {
+            return ResponseEntity.ok(null);
+        }
         var spResponse = modelMapper.map(promotion, MaGiamGiaDto.class);
         return ResponseEntity.ok(spResponse);
     }
