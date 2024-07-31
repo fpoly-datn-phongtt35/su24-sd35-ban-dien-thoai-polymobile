@@ -108,7 +108,6 @@ public class KhachHangController {
             try {
                 Path path = Paths.get("resources/static/Images/");
                 String newPhoto = photo.getOriginalFilename();
-                newKhachHang.setAnhKhachHang(newPhoto);
                 InputStream inputStream = photo.getInputStream();
                 Files.copy(inputStream, path.resolve(Objects.requireNonNull(photo.getOriginalFilename())),
                         StandardCopyOption.REPLACE_EXISTING);
@@ -128,9 +127,7 @@ public class KhachHangController {
                 e.printStackTrace();
                 return "Invalid date format";
             }
-            newKhachHang.setNgaySinh(ngaySinh);
             newKhachHang.setSoDienThoai(requestAddKhachHang.getSoDienThoai());
-            newKhachHang.setTrangThai(String.valueOf(1));
             KhachHang id_KhachHang = khachHangRepository.save(newKhachHang);
 
             diaChiGiaoHangRepository.updateDiaChi(requestAddKhachHang.getDiaChi(),
@@ -159,9 +156,7 @@ public class KhachHangController {
             e.printStackTrace();
             return "Invalid date format";
         }
-        newKhachHang.setNgaySinh(ngaySinh);
         newKhachHang.setSoDienThoai(requestAddKhachHang.getSoDienThoai());
-        newKhachHang.setTrangThai(String.valueOf(1));
         khachHangRepository.save(newKhachHang);
 //    if(id_KhachHang.getId()!=0) {
 //      return "redirect:/view-add-KhachHang";

@@ -1,15 +1,10 @@
 package com.poly.polystore.core.admin.ban_hang.controller;
 
-import com.poly.polystore.core.admin.ban_hang.MaGiamGiaDto;
-import com.poly.polystore.core.admin.ban_hang.model.response.PromotionResponseSelect2;
-import com.poly.polystore.core.admin.ban_hang.model.response.SanPhamProductResponse;
+import com.poly.polystore.core.admin.ban_hang.model.response.*;
 import com.poly.polystore.core.admin.san_pham.controller.SanPhamController;
 import com.poly.polystore.core.common.image.service.ImageService;
 import com.poly.polystore.entity.*;
-import com.poly.polystore.repository.AnhRepository;
-import com.poly.polystore.repository.ImeiRepository;
-import com.poly.polystore.repository.MaGiamGiaRepository;
-import com.poly.polystore.repository.SanPhamRepository;
+import com.poly.polystore.repository.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +30,8 @@ import java.util.stream.Collectors;
 public class BanHangController {
     private final MaGiamGiaRepository maGiamGiaRepository;
     private final ImeiRepository imeiRepository;
+    private final SanPhamChiTietRepository sanPhamChiTietRepository;
+    private final KhachHangRepository khachHangRepository;
     @PersistenceContext
     private EntityManager entityManager;
     private static final Logger log = LoggerFactory.getLogger(SanPhamController.class);
@@ -76,6 +73,16 @@ public class BanHangController {
         var spResponse = modelMapper.map(promotion, MaGiamGiaDto.class);
         return ResponseEntity.ok(spResponse);
     }
+    @GetMapping("/api/v1/sale/customer/{id}")
+    @ResponseBody
+    public ResponseEntity<?> getCustomer(
+            @PathVariable(name = "id") KhachHang customer
+    ) {
+        var spResponse = modelMapper.map(customer, CustomerDto.class);
+        return ResponseEntity.ok(spResponse);
+    }
+
+
 
     @GetMapping("/api/v1/sale/promotion")
     @ResponseBody
@@ -97,6 +104,29 @@ public class BanHangController {
         response.setResults(result);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/api/v1/sale/customer")
+    @ResponseBody
+    public ResponseEntity<?> getAllKhachHang(
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "pageSize", required = false) Integer pageSize,
+            @RequestParam(name = "code", required = false) Optional<String> code
+    ) {
+        Pageable pageAble = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "ten"));
+        Page<KhachHang> customers;
+        if (code.isPresent()) {
+            customers = khachHangRepository.findByEmailLikeOrSoDienThoaiLike("%" + code.get() + "%",code.get(), pageAble);
+        } else {
+            customers = khachHangRepository.findAll(pageAble);
+        }
+        CustomerResponseSelect2 response = new CustomerResponseSelect2();
+        response.setPagination(new CustomerResponseSelect2.Pagination(!customers.isLast()));
+        var result = customers.getContent().stream().map(customer -> new CustomerResponseSelect2.CustomerResponse(customer.getId(), customer.getTen())).collect(Collectors.toList());
+        response.setResults(result);
+        return ResponseEntity.ok(response);
+    }
+
+
 
     @ResponseBody
     @GetMapping("/api/v1/sale/check-imei")
@@ -141,12 +171,19 @@ public class BanHangController {
             @RequestParam(name = "spctid") Integer spctId){
         Imei imei=new Imei();
         imei.setImei(newImei);
-        var spct=new SanPhamChiTiet();
-        spct.setId(spctId);
-        imei.setSanPhamChiTiet(spct);
+
         imei.setTrangThai(Imei.TrangThai.TRONG_KHO);
-        var nImei= imeiRepository.save(imei);
-        return ResponseEntity.ok(nImei);
+        var oldSPCT=sanPhamChiTietRepository.findById(spctId).get();
+        if(oldSPCT.getTrangThai()== SanPhamRepository.TrangThai.IN_STOCK){
+            oldSPCT.setSoLuong(oldSPCT.getSoLuong()+1);
+            SanPhamChiTiet spct= sanPhamChiTietRepository.save(oldSPCT);
+            imei.setSanPhamChiTiet(spct);
+            var nImei= imeiRepository.save(imei);
+            return ResponseEntity.ok(nImei);
+        }
+        return ResponseEntity.badRequest().build();
+
+
     }
 
 }

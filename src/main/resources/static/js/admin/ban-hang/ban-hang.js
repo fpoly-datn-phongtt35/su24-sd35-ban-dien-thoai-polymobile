@@ -34,6 +34,19 @@ function showErrToast(title, message) {
     `);
     $('.toast-container').find('.toast').last().toast('show')
 }
+function showWarnToast(title, message) {
+    $('.toast-container').append(`
+       <div class="toast hide " role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+            <div class="toast-header bg-warning text-light">
+                <strong class="me-auto">${title}</strong>
+            </div>
+            <div class="toast-body ">
+                ${message}
+            </div>
+        </div>
+    `);
+    $('.toast-container').find('.toast').last().toast('show')
+}
 
 
 var invoice = {
@@ -46,12 +59,20 @@ var invoice = {
         }
     ]
 }
+//Chứa danh sách toàn bộ sản phẩm đang trong các hóa đơn;
 const danhSachSanPhamDaThem = new Map();
+//Chứa danh sách các hóa đơn
 var _mapInvoice = new Map();
+//Chứa danh sách sản phẩm
 var _mapProduct = new Map();
+//Chứa danh sách sản phẩm đang được chọn
 var _mapProductDetail = new Map();
+//Sản phẩm chi tiết đang được chọn
 var _selectedId = -1;
+//Hóa đơn đang được chọn
 var _selectedInvoice = -1;
+//Map sản phẩm chi tiết theo rom làm key
+var _uniqueProductRoms;
 
 
 $(document).ready(() => {
@@ -124,11 +145,23 @@ $(document).ready(() => {
 })
 $(document).ready(() => {
     $('#hd-khach-hang').select2({
-        placeholder: "Chọn khách hàng (F4)"
+        placeholder: "Chọn 1 khách hàng",
+        ajax: {
+            url: '/api/v1/sale/customer',
+            delay: 500,
+            data: function (params) {
+                return {
+                    code: params.term,
+                    page: params.page || 0,
+                    pageSize: 10
+                };
+            }
+
+        },
+        maximumSelectionLength: 1
     });
     $('#hd-voucher').select2({
-        language: 'vi',
-
+        placeholder: "Chọn mã giảm giá",
         ajax: {
             url: '/api/v1/sale/promotion',
             delay: 500,
@@ -214,8 +247,7 @@ function loadToOffcanvas(idSp) {
     $canvas.find('.spinner-grow').show();
     updateDSSPDC()
     $.get('/api/v1/sale/product/' + idSp).then(function (sanPham) {
-        _mapProductDetail = new Map();
-        let uniqueProductRoms = new Map();
+        _uniqueProductRoms = new Map();
         sanPham.sanPhamChiTiet.forEach(spct => {
 
             _mapProductDetail.set(spct.id.toString(), {
@@ -227,22 +259,22 @@ function loadToOffcanvas(idSp) {
                 mauSacTen: spct.mauSac.ten
             });
 
-            if (uniqueProductRoms.get(spct.rom) == undefined) {
-                uniqueProductRoms.set(spct.rom, [spct]);
+            if (_uniqueProductRoms.get(spct.rom) == undefined) {
+                _uniqueProductRoms.set(spct.rom, [spct]);
             } else {
-                uniqueProductRoms.set(spct.rom, [...uniqueProductRoms.get(spct.rom), spct]);
+                _uniqueProductRoms.set(spct.rom, [..._uniqueProductRoms.get(spct.rom), spct]);
             }
 
         })
-        uniqueProductRoms = new Map([...uniqueProductRoms.entries()].sort((a, b) => a[0].replace(/1TB/g, '6').localeCompare(b[0].replace(/1TB/g, '6'))))
-        uniqueProductRoms.forEach((value, key) => {
+        _uniqueProductRoms = new Map([..._uniqueProductRoms.entries()].sort((a, b) => a[0].replace(/1TB/g, '6').localeCompare(b[0].replace(/1TB/g, '6'))))
+        _uniqueProductRoms.forEach((value, key) => {
             value.sort((a, b) => a.giaBan > b.giaBan ? -1 : 0);
             let mapVal = new Map(value.map(i => [i.mauSac.ma, i]));
-            uniqueProductRoms.set(key, mapVal);
+            _uniqueProductRoms.set(key, mapVal);
         })
 
         let romBtnHtml = ''
-        uniqueProductRoms.forEach((value, key) => {
+        _uniqueProductRoms.forEach((value, key) => {
             romBtnHtml += `
                 <input type="radio" class="btn-check" name="selected-rom" id='${key}' autocomplete="off"/>
                 <label class="btn btn-secondary" for="${key}">${key}</label>
@@ -253,7 +285,7 @@ function loadToOffcanvas(idSp) {
         $('#container-btn-rom').on('click', 'input[name="selected-rom"]', function () {
             let mauSacBtnHtml = '';
             let rom = $(this).attr('id');
-            uniqueProductRoms.get(rom).forEach((spct, maMauSac) => {
+            _uniqueProductRoms.get(rom).forEach((spct, maMauSac) => {
 
                 mauSacBtnHtml += `
 
@@ -266,7 +298,7 @@ function loadToOffcanvas(idSp) {
             $('#container-btn-mau-sac').on('click', 'input[name="selected-mau-sac"]', function () {
                 let rom = $(this).attr('rom-id');
                 let mauSac = $(this).attr('id');
-                let spct = uniqueProductRoms.get(rom).get(mauSac);
+                let spct = _uniqueProductRoms.get(rom).get(mauSac);
                 $('#ten-mau-sac').html(spct.mauSac.ten);
 
 
@@ -356,6 +388,18 @@ function loadInvoice() {
         `
     })
     $('#tbl-invoice').find('tbody').html(dataRow)
+
+    $('#tbl-invoice').find('.fa-plus').on('click', function () {
+        let spctId=$(this).attr('spct-id');
+        addToCart(spctId,1,"")
+    })
+    $('#tbl-invoice').find('.fa-minus').on('click', function () {
+        let spctId = $(this).attr('spct-id');
+        removeFromCart(spctId,-1,"")
+    })
+
+
+
     $('#tbl-invoice').find('.fa-trash-can').on('click', function () {
         let spctId = $(this).attr('spct-id');
         _mapInvoice.get(_selectedInvoice).delete(spctId);
@@ -363,16 +407,7 @@ function loadInvoice() {
         danhSachSanPhamDaThem.set(spctId, danhSachSanPhamDaThem.get(spctId) - soLuong)
         this.closest('tr').remove();
     })
-    $('#tbl-invoice').find('.fa-minus').on('click', function () {
-        let spctId = $(this).attr('spct-id');
-        _mapInvoice.get(_selectedInvoice).delete(spctId);
-        this.closest('tr').remove();
-    })
-    $('#tbl-invoice').find('.fa-plus').on('click', function () {
-        let spctId = $(this).attr('spct-id');
-        _mapInvoice.get(_selectedInvoice).delete(spctId);
-        this.closest('tr').remove();
-    })
+
 }
 
 
@@ -390,6 +425,32 @@ function updateDSSPDC() {
     })
 }
 
+function removeFromCart(spctId, soLuongThem, tenSanPham) {
+
+    let mapSpct = _mapInvoice.get(_selectedInvoice);
+    if (danhSachSanPhamDaThem.get(spctId)) {
+        danhSachSanPhamDaThem.set(spctId, (danhSachSanPhamDaThem.get(spctId) + soLuongThem));
+    }
+
+    _mapProductDetail.get(spctId).soLuong -= soLuongThem;
+
+    //Kiểm tra tồn tại sản phẩm
+    if (mapSpct.get(spctId)) {
+        let spTemp = mapSpct.get(spctId);
+        spTemp.soLuong += soLuongThem;
+        mapSpct.set(spctId, spTemp);
+    }
+    if(mapSpct.get(spctId).soLuong<1){
+        mapSpct.delete(spctId);
+    }
+    $('#sp-add-to-cart').find('[name="so-luong"]').html("Số lượng sản phẩm: <span></span>")
+    $('#sp-add-to-cart').find('[name="so-luong"] span').text(_mapProductDetail.get(spctId).soLuong)
+    _mapInvoice.set(_selectedInvoice, mapSpct);
+    console.log(_mapInvoice);
+    loadInvoice();
+}
+
+
 function addToCart(spctId, soLuongThem, tenSanPham) {
     //Lấy danh sách các sản phẩm của hóa đơn hiện tại
     let mapSpct = _mapInvoice.get(_selectedInvoice);
@@ -399,8 +460,7 @@ function addToCart(spctId, soLuongThem, tenSanPham) {
         mapSpct = new Map();
     }
     if (_mapProductDetail.get(spctId).soLuong < soLuongThem) {
-        showErrToast("Lỗi", "Đã vượt quá số lượng tồn kho");
-        return;
+        showWarnToast("Lỗi", "Đã vượt quá số lượng tồn kho bạn cần bổ sung sản phẩm này");
     }
     if (danhSachSanPhamDaThem.get(spctId)) {
         danhSachSanPhamDaThem.set(spctId, (danhSachSanPhamDaThem.get(spctId) + soLuongThem));
@@ -417,10 +477,10 @@ function addToCart(spctId, soLuongThem, tenSanPham) {
         spTemp.soLuong += soLuongThem;
 
 
-        mapSpct.set(_selectedId, spTemp);
+        mapSpct.set(spctId, spTemp);
     } else {
         let spct = _mapProductDetail.get(spctId);
-        mapSpct.set(_selectedId, {
+        mapSpct.set(spctId, {
             sanPhamChiTietId: spctId,
             soLuong: soLuongThem,
             sanPhamTen: tenSanPham + " " + spct.rom + " " + spct.mauSacTen,
@@ -447,7 +507,6 @@ $(document).ready(() => {
         checkout(_mapInvoice.get(_selectedInvoice));
     })
 })
-var _IMEIs = new Set();
 
 function checkout(invoice) {
     if (invoice.size == 0) {
@@ -498,16 +557,29 @@ function checkout(invoice) {
     $('#hd-voucher').off('select2:select')
     $('#hd-voucher').val([]).trigger('change');
 
+    $offcv.find('input[spct-id]').on('focus', function ()  {
+        $(this)[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    })
     $offcv.find('input[spct-id]').on('blur', function () {
         let $input=$(this);
+        if($input.val()==''){
+            $input.addClass('is-invalid').removeClass('is-valid');
+            showErrToast("Lỗi","IMEI Không được để trống")
+            return;
+        }
         $input.parent().find('.fa-plus').parent().remove();
         let spctId = $(this).attr('spct-id');
         let imei = $(this).val();
+
+        if(!checkDuplicate($('#tbl-imei'),'input[spct-id]')){
+            showErrToast("Lỗi","IMEI là duy nhất");
+            return;
+        }
         $.get(`/api/v1/sale/check-imei?imei=${imei}&spctid=${spctId}`,
             function (data,message,jqXhr) {
             switch (jqXhr.status) {
                 case 200:{
-                    $input.addClass('is-valid');
+                    $input.addClass('is-valid').removeClass('is-invalid');
                     break;
                 }
                 case 201:{
@@ -521,8 +593,13 @@ function checkout(invoice) {
                     `)
                     $input.after($btnAdd);
                     $btnAdd.on('click',function (){
-                        $btnAdd.remove()
+                        $btnAdd.html(`
+                            <div class="spinner-border" role="status">
+                              <span class="visually-hidden"></span>
+                            </div>
+                        `)
                         if(imei.length>15){
+                            $btnAdd.remove();
                             showErrToast("Thêm mới thất bại",'Độ dài tối đa của imei là 15 ký tự');
                             return;
                         }
@@ -531,7 +608,9 @@ function checkout(invoice) {
                             console.log('Dữ liệu đã được gửi thành công:', spctId);
                             showSuccessToast("Thêm mới thành công",'Thêm mới IMEI: '+imei);
                             $input.addClass('is-valid').removeClass('is-invalid');
+                            $btnAdd.remove();
                         }).fail(()=>{
+                            $btnAdd.remove();
                             showErrToast("Thêm mới thất bại",'');
                         })
                     })
@@ -559,6 +638,25 @@ function checkout(invoice) {
                 applyVoucher(response);
             })
     })
+
+    function showCustomerDetailInOder(customer) {
+
+        if(customer.deleted!=0){
+            showWarnToast('Cảnh báo','Khách hàng đã bị xóa');
+            return;
+        }
+        $('#hd-kh-ten').val(customer.ten);
+        $('#hd-kh-email').val(customer.email);
+        $('#hd-kh-sdt').val(customer.soDienThoai);
+    }
+
+    $('#hd-khach-hang').on('select2:select', function () {
+        $.get('/api/v1/sale/customer/' + $(this).val())
+            .then((response) => {
+                showCustomerDetailInOder(response);
+            })
+    })
+
 
     function applyVoucher(response) {
         let voucher = {
@@ -610,14 +708,37 @@ function checkout(invoice) {
         $('#hd-khach-tra').text(toCurrency(tongTien - getGiaTriGiam(tongTien)))
     }
 }
+
+function checkDuplicate(form,selector){
+    let values = [];
+    let duplicates = [];
+    form.find(selector).each(function() {
+        let value = $(this).val().trim();
+        if (value && values.includes(value)) {
+            duplicates.push($(this));
+        } else {
+            values.push(value);
+        }
+    });
+    if(duplicates.length > 0){
+        duplicates.forEach(duplicateElm=>{duplicateElm.addClass('is-invalid')})
+        return false;
+    }
+    return true;
+}
+
 $(document).ready(()=>{
+
+    $('#form-check-out').off();
     $('#form-check-out').on('submit', function (event) {
         event.preventDefault();
         let form=$(this);
         if (!form[0].checkValidity()) {
+            form.find(":invalid").removeClass("is-valid").addClass("is-invalid");
+            form.find(":valid").prop("valid",false)
             event.stopPropagation();
-            form.addClass('was-validated');
-        } else {
+        }
+        if(form.find('.is-invalid').length === 0){
             $('#offcanvas-check-out').offcanvas('hide');
             $('#offcanvas-check-out-step-2').offcanvas('show');
         }

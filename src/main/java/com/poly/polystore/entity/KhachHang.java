@@ -1,10 +1,6 @@
 package com.poly.polystore.entity;
 
 import jakarta.persistence.*;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
@@ -26,40 +22,20 @@ public class KhachHang {
   @JoinColumn(name = "ID_Tai_khoan")
   private TaiKhoan idTaiKhoan;
 
-
-  @JoinColumn(name = "MaKhachHang")
-  private String maKhachHang;
-
   @Nationalized
   @Column(name = "Ten")
   private String ten;
 
 
   @Nationalized
-  @Column(name = "So_Dien_Thoai", length = 10)
+  @Column(name = "So_Dien_Thoai", length = 13)
   private String soDienThoai;
-
-  @JoinColumn(name = "IDDiaChi")
-  @ManyToOne
-  private DiaChiGiaoHang idDiaChi;
-
-
-  @Column(name = "Ngay_Sinh", length = 10)
-  private Date ngaySinh;
-
-
-  @Column(name = "Anh_Khach_Hang", length = 10)
-  private String AnhKhachHang;
-
-
-  @Column(name = "Trang_thai", length = 10)
-  private String trangThai;
 
 
   @Column(name = "Email", length = 10)
-  private String Email;
+  private String email;
 
 
   @Column(name = "Deteted", length = 10)
-  private int deteted;
+  private Integer deleted;
 }

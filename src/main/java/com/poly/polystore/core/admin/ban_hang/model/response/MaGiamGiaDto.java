@@ -1,7 +1,6 @@
-package com.poly.polystore.core.admin.ban_hang;
+package com.poly.polystore.core.admin.ban_hang.model.response;
 
 import lombok.Data;
-import lombok.Value;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
