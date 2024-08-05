@@ -13,8 +13,8 @@ import java.io.Serializable;
  * DTO for {@link com.poly.polystore.entity.SanPham}
  */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class SanPhamDataTableBanHang implements Serializable {
     @Id
@@ -22,5 +22,6 @@ public class SanPhamDataTableBanHang implements Serializable {
     private String anhUrl;
     private String tenSanPham;
     private SanPhamRepository.TrangThai trangThai;
-    private Long soLuong;
+    private Integer soLuong;
+
 }

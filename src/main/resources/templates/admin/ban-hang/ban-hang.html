@@ -20,7 +20,7 @@
     <nav class="navbar navbar-light bg-primary row">
 
         <form class="form-inline col-4 d-flex">
-            <input class="form-control me-sm-2 flex-grow-1"  type="search" placeholder="Tìm hàng hóa (F3)"
+            <input class="form-control me-sm-2 flex-grow-1" type="search" placeholder="Tìm hàng hóa (F3)"
                    aria-label="Search">
 
             <a check="true" class="btn btn-outline-light my-2 my-sm-0" onclick="chuyenCheDoNhap(this)"
@@ -37,11 +37,13 @@
             </button>
         </div>
         <div class="col-4 d-flex justify-content-end text-light">
-            <a class="text-light icon-btn me-4" href="/admin" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Quay về trang chủ">
+            <a class="text-light icon-btn me-4" href="/admin" data-bs-toggle="tooltip" data-bs-placement="bottom"
+               title="Quay về trang chủ">
                 <i class="fa-solid fa-reply "></i>
             </a>
             <span class="align-middle" style="line-height: 46px" th:text="${username}"></span>
-            <a class="text-light icon-btn" href="/logout" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Đăng xuất">
+            <a class="text-light icon-btn" href="/logout" data-bs-toggle="tooltip" data-bs-placement="bottom"
+               title="Đăng xuất">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i>
             </a>
         </div>
@@ -58,7 +60,8 @@
             </div>
             <div class="">
                 <div class="form-group">
-                    <textarea type="text" placeholder="✎ Ghi chú đơn hàng" class="form-control " id="hd-ghi-chu"></textarea>
+                    <textarea type="text" placeholder="✎ Ghi chú đơn hàng" class="form-control "
+                              id="hd-ghi-chu"></textarea>
                 </div>
             </div>
         </div>
@@ -77,20 +80,35 @@
             </div>
             <div class="row">
                 <form class="form-inline col-12 d-flex justify-content-between">
-                    <input class="form-control me-sm-2 flex-grow-1" id="input-search" type="search" placeholder="Tìm hàng hóa (F3)"
+                    <input class="form-control me-sm-2 flex-grow-1" id="input-search" type="search"
+                           placeholder="Tìm hàng hóa (F3)"
                            aria-label="Search">
                     <div class="w-25 d-flex justify-content-around">
 
-                        <a data-bs-toggle="offcanvas" href="#offcanvasFilter" role="button" aria-controls="offcanvasFilter">
-                            <i class="fa fa-list" aria-hidden="true"></i>
+                        <a class="position-relative" data-bs-toggle="offcanvas" href="#offcanvasFilter" role="button"
+                           aria-controls="offcanvasFilter">
+                            <i class="fa fa-list" aria-hidden="true">
+
+                            </i>
+                            <span id="filter-badge" class="d-none position-absolute top-0 ms-1 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                                    <span class="visually-hidden">New alerts</span>
+                            </span>
                         </a>
                     </div>
                 </form>
             </div>
-            <div class="row m-2" id="tbl-san-pham" style="height: 500px; overflow-y: auto;">
+
+            <div style="height: 500px; overflow-y: auto;">
+                <div class="row m-2" id="tbl-san-pham"></div>
+                <div class="w-100 text-center">
+                    <button class="text-center show-more">Xem thêm <span></span></button>
+                </div>
             </div>
+
             <div>
-                <button  type="button" class="btn btn-primary btn-xl w-100 mt-2 py-2"  id="check-out" tabindex="3071">Thanh toán</button>
+                <button type="button" class="btn btn-primary btn-xl w-100 mt-2 py-2" id="check-out" tabindex="3071">
+                    Thanh toán
+                </button>
             </div>
         </div>
         <div class="tab-pane fade" id="nav-deli-sale" style="width: 50%;" role="tabpanel"
@@ -114,10 +132,7 @@
     </div>
 
 
-
 </div>
-
-
 
 
 <div class="offcanvas offcanvas-end" tabindex="-1" id="sp-add-to-cart"
@@ -171,7 +186,8 @@
             </div>
 
             <!--                Khuyen mai-->
-            <div class="container p-4" style="border-radius: 20px; background-color: #2F3033; height: 40vh; overflow-y: auto">
+            <div class="container p-4"
+                 style="border-radius: 20px; background-color: #2F3033; height: 40vh; overflow-y: auto">
                 <h5 class="font-weight-bold text-light h5">Khuyến mãi</h5>
                 <hr class="border-light">
                 <ul class="khuyen-mai-ap-dung ml-4"></ul>
@@ -255,10 +271,11 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-xl w-100 mt-2 py-2"  id="check-out-finish" tabindex="3071">Thanh toán</button>
+                <button type="submit" class="btn btn-primary btn-xl w-100 mt-2 py-2" id="check-out-finish"
+                        tabindex="3071">Thanh toán
+                </button>
             </div>
         </form>
-
 
 
     </div>
@@ -281,10 +298,10 @@
         <div class="mb-3">
             <label for="filter-order" class="form-label">Sắp xếp theo</label>
             <select class="form-control position-relative" id="filter-order">
-                <option>Mới ra mắt</option>
-                <option>Bán chạy</option>
-                <option>Giá thấp đến cao</option>
-                <option>Giá cao đến thấp</option>
+                <option value="id:desc">Mới ra mắt</option>
+                <option value="banChay:desc">Bán chạy</option>
+                <option value="soLuong:asc">Số lượng nhiều nhất</option>
+                <option value="soLuong:desc">Số lượng thấp nhất</option>
             </select>
         </div>
 
@@ -312,13 +329,15 @@
                     <fieldset>
                         <legend>Khách hàng</legend>
                         <div class="mb-3">
-                            <input type="text" class="form-control" required placeholder="Tên khách hàng" id="hd-kh-ten">
+                            <input type="text" class="form-control" required placeholder="Tên khách hàng"
+                                   id="hd-kh-ten">
                             <div class="invalid-feedback">
                                 Vui lòng nhập tên khách hàng
                             </div>
                         </div>
                         <div class="mb-3">
-                            <input type="email" class="form-control" required placeholder="Địa chỉ email" id="hd-kh-email">
+                            <input type="email" class="form-control" required placeholder="Địa chỉ email"
+                                   id="hd-kh-email">
                             <div class="invalid-feedback">
                                 Vui lòng nhập địa chỉ email khách hàng
                             </div>
@@ -334,15 +353,19 @@
                         <legend>Thanh toán</legend>
                         <nav>
                             <div class="nav nav-tabs" id="hinhThucTT" role="tablist">
-                                <a class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" href="#httt-tien-mat" role="tab" aria-controls="httt-tien-mat" aria-selected="true">Tiền mặt</a>
-                                <a class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" href="#httt-chuyen-khoan" role="tab" aria-controls="httt-chuyen-khoan" aria-selected="false">Chuyển Khoản</a>
+                                <a class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" href="#httt-tien-mat"
+                                   role="tab" aria-controls="httt-tien-mat" aria-selected="true">Tiền mặt</a>
+                                <a class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" href="#httt-chuyen-khoan"
+                                   role="tab" aria-controls="httt-chuyen-khoan" aria-selected="false">Chuyển Khoản</a>
                             </div>
                         </nav>
                         <div class="tab-content" id="hinhThucTTContent">
-                            <div class="tab-pane fade show active" id="httt-tien-mat" role="tabpanel" aria-labelledby="httt-tien-mat-tab">
-                               <span class="h3 ps-1"><span>Số tiền:</span>  <span ></span></span>
+                            <div class="tab-pane fade show active" id="httt-tien-mat" role="tabpanel"
+                                 aria-labelledby="httt-tien-mat-tab">
+                                <span class="h3 ps-1"><span>Số tiền:</span>  <span></span></span>
                             </div>
-                            <div class="tab-pane qrcode-container fade" id="httt-chuyen-khoan" role="tabpanel" aria-labelledby="httt-chuyen-khoan-tab">
+                            <div class="tab-pane qrcode-container fade" id="httt-chuyen-khoan" role="tabpanel"
+                                 aria-labelledby="httt-chuyen-khoan-tab">
                                 <img class="qrcode" alt="">
                             </div>
 
@@ -360,10 +383,11 @@
                         Bạn cần xác nhận nhận đủ tiền trước khi kết thúc
                     </div>
                 </div>
-                <button  type="submit" class="btn btn-primary btn-xl w-100 mt-2 py-2"  id="check-out-finish-2" tabindex="3071">Hoàn tất</button>
+                <button type="submit" class="btn btn-primary btn-xl w-100 mt-2 py-2" id="check-out-finish-2"
+                        tabindex="3071">Hoàn tất
+                </button>
             </div>
         </form>
-
 
 
     </div>

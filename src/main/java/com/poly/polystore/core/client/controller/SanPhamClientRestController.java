@@ -4,7 +4,10 @@ import com.poly.polystore.core.client.models.response.SanPhamProductResponse;
 import com.poly.polystore.core.client.models.response.SanPhamResponse;
 import com.poly.polystore.entity.SanPham;
 import com.poly.polystore.repository.SanPhamRepository;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
@@ -54,6 +57,7 @@ public class SanPhamClientRestController {
         var currentTime=new Date().getTime();
         var spResponse=modelMapper.map(sanPham, SanPhamProductResponse.class);
         var excuteTime=new Date().getTime()-currentTime;
+
         System.out.println(excuteTime);
         return ResponseEntity.ok(spResponse);
     }

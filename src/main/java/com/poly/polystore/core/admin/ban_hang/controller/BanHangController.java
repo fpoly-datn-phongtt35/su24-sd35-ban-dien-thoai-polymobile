@@ -1,26 +1,32 @@
 package com.poly.polystore.core.admin.ban_hang.controller;
 
 import com.poly.polystore.core.admin.ban_hang.model.response.*;
+import com.poly.polystore.core.admin.ban_hang.repository.impl.SanPhamRepositoryImpl;
 import com.poly.polystore.core.admin.san_pham.controller.SanPhamController;
 import com.poly.polystore.core.common.image.service.ImageService;
 import com.poly.polystore.entity.*;
 import com.poly.polystore.repository.*;
+import com.poly.polystore.utils.PageResponse;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,6 +38,7 @@ public class BanHangController {
     private final ImeiRepository imeiRepository;
     private final SanPhamChiTietRepository sanPhamChiTietRepository;
     private final KhachHangRepository khachHangRepository;
+    private final SanPhamRepositoryImpl sanPhamRepositoryImpl;
     @PersistenceContext
     private EntityManager entityManager;
     private static final Logger log = LoggerFactory.getLogger(SanPhamController.class);
@@ -48,13 +55,12 @@ public class BanHangController {
 
     @GetMapping("/api/v1/sale/product")
     public ResponseEntity<?> getAll(
-            @RequestParam(name="searchKey",required = false,defaultValue = "%") Optional<String> searchKey
+            @RequestParam(required = false,defaultValue = "") String searchKey,
+            @RequestParam(required = false,defaultValue = "") Integer[] seriesFilter,
+            @RequestParam(required = false,defaultValue = "id:desc") String orderBy,
+            @RequestParam(required = false,defaultValue = "0") Integer pageNo
     ) {
-        if(searchKey.isPresent()) {
-            return ResponseEntity.ok(sanPhamRepository.findAllSanPhamDataTableBanHang(searchKey.get()));
-        }
-        var sp = sanPhamRepository.findAllSanPhamDataTableBanHang();
-        return ResponseEntity.ok(sp);
+            return ResponseEntity.ok(sanPhamRepositoryImpl.findAllSanPhamDataTableBanHang(searchKey,seriesFilter,orderBy,PageRequest.of(pageNo,12)));
     }
 
     @GetMapping("/api/v1/sale/product/{id}")

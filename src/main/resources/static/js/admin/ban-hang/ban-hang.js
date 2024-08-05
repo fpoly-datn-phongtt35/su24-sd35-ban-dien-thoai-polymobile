@@ -197,9 +197,8 @@ $(document).ready(() => {
 $(document).ready(()=>{
     $.get('/api/v1/sale/product')
         .done((data) => {
-            let mapData = new Map(data.map(d => [d.id, d]));
-            fillDataToTableSanPham(mapData)
-            _mapProduct = mapData
+            fillDataToTableSanPham(data)
+
         })
 
 
@@ -208,38 +207,143 @@ $(document).ready(()=>{
         let searchKey = $(this).val();
         clearTimeout(timeout);
         _mapParamFilters.set('searchKey',searchKey)
+        _mapParamFilters.set('pageNo', 0)
         timeout = setTimeout(applyFilter(), 500); // Thay đổi giá trị này đ
     })
     $('#filter-series').on('change', function () {
-        if($(this).val().length>0) {
-            $(this).val().forEach(seriesId=>{
+            _mapParamFilters.set('seriesFilter',$(this).val())
+            _mapParamFilters.set('pageNo', 0)
+            applyFilter()
 
-            })
-        }
+
+    })
+    $('#filter-order').on('change', function () {
+        _mapParamFilters.set('orderBy',$(this).val())
+        _mapParamFilters.set('pageNo', 0)
+
+        applyFilter()
     })
 
 })
 
 
 function applyFilter() {
+
+    if($('#filter-order').val()!='id:desc'||$('#filter-series').val().length>0){
+        $('#filter-badge').removeClass('d-none')
+    }else{
+        $('#filter-badge').addClass('d-none')
+    }
+
+
+
     let suffixUrl='';
-    _mapParamFilters.forEach((value, key) => {
-        if(!value||value!='')
-        suffixUrl+=`${key}=${value}&`
+    _mapParamFilters.forEach((values, key) => {
+
+        if(!values||values.length>0||Number.isInteger(values)){
+            if(Array.isArray(values))
+                values.forEach(value=>suffixUrl+=`${key}=${value}&`);
+            else{
+                suffixUrl+=`${key}=${values}&`
+            }
+        }
     })
     if(suffixUrl.length>0){
-        suffixUrl.substring(0,suffixUrl.length-2);
+        suffixUrl=suffixUrl.substring(0,suffixUrl.length-1);
     }
     $.get(`/api/v1/sale/product?${suffixUrl}`)
         .done((data) => {
-            let mapData = new Map(data.map(d => [d.id, d]));
-            fillDataToTableSanPham(mapData)
-            _mapProduct = mapData
+            fillDataToTableSanPham(data)
         })
 }
-function fillDataToTableSanPham(mapData) {
+
+$(document).ready(()=>{
+    $('button.show-more').on('click', function () {
+        _mapParamFilters.set('pageNo',(_mapParamFilters.get('pageNo'))+1|1);
+        applyFilter();
+    })
+})
+
+function fillDataToTableSanPham(data) {
+    let sampleData={
+        "content": [
+            {
+                "id": 1006,
+                "anhUrl": "https://nbchuc.blob.core.windows.net/image/5b427175-6039-49f6-90b9-4b3b7e32bb68-1%20-%20Copy.jpg",
+                "tenSanPham": "IPhone 16 Pro Max",
+                "trangThai": "IN_STOCK",
+                "soLuong": 53
+            },
+            {
+                "id": 4,
+                "anhUrl": "https://nbchuc.blob.core.windows.net/image/iPhone%2013%20(128GB)%20-%20Green%20-%20Copy.jpg",
+                "tenSanPham": "iPhone XS",
+                "trangThai": "IN_STOCK",
+                "soLuong": 710
+            },
+            {
+                "id": 3,
+                "anhUrl": "https://nbchuc.blob.core.windows.net/image/iPhone%2013%20(128GB)%20-%20Blue.jpg",
+                "tenSanPham": "iPhone XS Max",
+                "trangThai": "IN_STOCK",
+                "soLuong": 700
+            },
+            {
+                "id": 2,
+                "anhUrl": "https://nbchuc.blob.core.windows.net/image/iPhone%2013%20(128GB)%20-%20Blue%20-%20Copy.jpg",
+                "tenSanPham": "iPhone XR",
+                "trangThai": "IN_STOCK",
+                "soLuong": 700
+            },
+            {
+                "id": 1,
+                "anhUrl": "https://nbchuc.blob.core.windows.net/image/iPhone%2012%20(128GB)%20-%20Purple.jpg",
+                "tenSanPham": "iPhone X",
+                "trangThai": "IN_STOCK",
+                "soLuong": 170
+            }
+        ],
+        "pageable": {
+            "pageNumber": 0,
+            "pageSize": 10,
+            "sort": {
+                "empty": true,
+                "sorted": false,
+                "unsorted": true
+            },
+            "offset": 0,
+            "paged": true,
+            "unpaged": false
+        },
+        "last": true,
+        "totalPages": 1,
+        "totalElements": 5,
+        "size": 10,
+        "number": 0,
+        "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+        },
+        "first": true,
+        "numberOfElements": 5,
+        "empty": false
+    }
+    // data=sampleData;
+    if(data.first)
+        _mapProduct.clear();
+    data.content.forEach((item) => {
+        _mapProduct.set(item.id, item);
+    })
+    if(!data.last){
+        $('button.show-more').parent().show()
+        $('button.show-more span').text(`${data.totalElements-data.numberOfElements} sản phẩm`);
+    }else{
+        $('button.show-more').parent().hide()
+    }
+
     let dataSP = '';
-    mapData.forEach((sp, id) => {
+    _mapProduct.forEach((sp, id) => {
         let disable = (sp.trangThai != 'IN_STOCK') ? "disable" : "";
         let outOfStock = (sp.soLuong < 1) ? "out-of-stock" : "";
         dataSP += `

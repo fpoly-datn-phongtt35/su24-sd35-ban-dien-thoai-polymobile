@@ -153,7 +153,7 @@ public class SanPham {
     private Series series;
 
     @OneToMany(
-            fetch = FetchType.LAZY,
+            fetch = FetchType.EAGER,
             mappedBy = "sanPham",
             cascade =  CascadeType.ALL,
             orphanRemoval = true
@@ -174,6 +174,9 @@ public class SanPham {
     @Nationalized
     @Column(name = "MO_TA")
     private String moTa;
+    @Nationalized
+    @Column(name = "TAG")
+    private String tag;
 
     @Nationalized
     @Column(name = "STT")
