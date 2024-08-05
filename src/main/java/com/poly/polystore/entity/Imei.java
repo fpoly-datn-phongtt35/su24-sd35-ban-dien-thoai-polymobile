@@ -12,8 +12,9 @@ import org.hibernate.annotations.Nationalized;
 @Table(name = "IMEI")
 public class Imei {
     public enum TrangThai{
-        TRONG_KHO,DA_BAN
+        TRONG_KHO,DA_BAN,CHO_BAN
     }
+
     @Id
     @Column(name = "IMEI", nullable = false)
     private String imei;

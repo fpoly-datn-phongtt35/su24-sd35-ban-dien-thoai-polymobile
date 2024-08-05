@@ -14,6 +14,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.stream.Collectors;
 
 @RestController
@@ -50,7 +51,10 @@ public class SanPhamClientRestController {
     public ResponseEntity<?> getSanPhamById(
             @PathVariable(name="id") SanPham sanPham
     ) {
+        var currentTime=new Date().getTime();
         var spResponse=modelMapper.map(sanPham, SanPhamProductResponse.class);
+        var excuteTime=new Date().getTime()-currentTime;
+        System.out.println(excuteTime);
         return ResponseEntity.ok(spResponse);
     }
 

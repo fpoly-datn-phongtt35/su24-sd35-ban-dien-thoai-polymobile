@@ -4,13 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.poly.polystore.repository.SanPhamRepository;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Nationalized;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -45,7 +44,7 @@ public class SanPhamChiTiet implements Serializable {
 //    private DotGiamGia dotGiamGia;
 
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "SAN_PHAM_CHI_TIET_KHUYEN_MAI",
             joinColumns = @JoinColumn(name = "SAN_PHAM_CHI_TIET_ID"),
@@ -54,7 +53,7 @@ public class SanPhamChiTiet implements Serializable {
     )
     private List<KhuyenMai> khuyenMai;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "SAN_PHAM_CHI_TIET_ANH",
             joinColumns = @JoinColumn(name = "SAN_PHAM_CHI_TIET_ID"),
@@ -62,7 +61,7 @@ public class SanPhamChiTiet implements Serializable {
     )
     //Order by id ảnh nào đầu tiên thì là ảnh sản phẩm chi tiết chính
     private List<Anh> anh;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "MAU_SAC_ID")
     private MauSac mauSac;
 
@@ -94,7 +93,10 @@ public class SanPhamChiTiet implements Serializable {
     @Transient
     private BigDecimal giaKhuyenMai;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Column(name = "SO_LUONG")
+    private Integer soLuong;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "DOT_GIAM_GIA_ID")
     private PhieuGiamGia dotGiamGia;
 

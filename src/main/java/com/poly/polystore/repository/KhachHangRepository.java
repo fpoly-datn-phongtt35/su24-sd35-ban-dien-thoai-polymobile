@@ -6,6 +6,8 @@ import com.poly.polystore.entity.KhachHang;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -28,4 +30,6 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, Integer> {
 
     @Query("Select KhachHang from KhachHang where idTaiKhoan.id = :idTaiKhoan")
     Optional<KhachHang> findByIdTaiKhoan(Integer idTaiKhoan);
+
+    Page<KhachHang> findByEmailLikeOrSoDienThoaiLike(String s1,String s2, Pageable pageAble);
 }

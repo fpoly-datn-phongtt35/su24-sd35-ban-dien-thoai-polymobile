@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ImeiRepository extends JpaRepository<Imei, String> {
     Integer countBySanPhamChiTiet_Id(Integer id);
+
+    Imei findFirstByTrangThaiLike(Imei.TrangThai trangThai);
 }

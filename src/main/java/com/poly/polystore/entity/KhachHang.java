@@ -33,7 +33,7 @@ public class KhachHang {
 
 
   @Nationalized
-  @Column(name = "So_Dien_Thoai", length = 10)
+  @Column(name = "So_Dien_Thoai", length = 13)
   private String soDienThoai;
   @OneToMany(
           fetch = FetchType.LAZY,
@@ -45,9 +45,9 @@ public class KhachHang {
 
 
   @Column(name = "Email", length = 10)
-  private String Email;
+  private String email;
 
 
   @Column(name = "Deteted", length = 10)
-  private int deteted;
+  private Integer deleted;
 }

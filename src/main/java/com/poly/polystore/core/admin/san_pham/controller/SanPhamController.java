@@ -242,7 +242,6 @@ public class SanPhamController {
     @PostMapping("/api/v1/san-pham/{id}")
     public ResponseEntity<?> edit(@RequestBody SanPhamEditRequest editRequest, @PathVariable(name = "id") SanPham sp) {
         var spEdit = modelMapper.map(editRequest, SanPham.class);
-
         //Đưa ảnh về container chính
         if (spEdit.getAnh().getId() == null) {
             var anhSanPhamAddRquest = new Anh();
@@ -400,16 +399,7 @@ public class SanPhamController {
     @ResponseBody
     @GetMapping("/api/v1/san-pham-data-table")
     public List<SanPhamDataTable> getAll(
-//            @RequestParam Map<String, String> params
     ) {
-//        System.out.println(params);
-//        var searchKey=params.get("search[value]");
-//        var draw=Integer.parseInt(params.get("draw"));
-//        var start=Integer.parseInt(params.get("start"));
-//        var lenght=Integer.parseInt(params.get("length"));
-//        var orderBy=params.get("columns["+params.get("order[0][column]")+"][data]");
-//        var orderDir=params.get("order[0][dir]").toUpperCase();
-//        Pageable pageable = PageRequest.of(start,  lenght);
         var spdt = sanPhamRepository.findAllSanPhamDataTable();
         return spdt;
     }
