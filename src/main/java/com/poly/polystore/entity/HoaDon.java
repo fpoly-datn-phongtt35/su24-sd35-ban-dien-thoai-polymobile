@@ -58,7 +58,7 @@ public class HoaDon {
 
     @Nationalized
     @Column(name = "Trang_thai")
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private TRANGTHAIDONHANG trangThai;
 
     @Nationalized
@@ -78,12 +78,18 @@ public class HoaDon {
     @Column(name = "tong_Tien_hoa_Don", precision = 38, scale = 2)
     private BigDecimal tongTienHoaDon;
 
-    @Column(name = "thoi_Gian_Mua_Hang")
-    private Instant thoiGianMuaHang;
+    @Column(name = "THOI_GIAN_NHAN_HANG")
+    private Instant thoiGianNhanHang;
 
     @Column(name = "note")
     private String note;
 
     @Column(name = "email")
     private String email;
+
+    @Column(name = "Hinh_Thuc_Thanh_Toan")
+    private String hinhThucThanhToan;
+
+    @Column(name = "TRANG_THAI_THANH_TOAN")
+    private String trangThaiThanhToan;
 }

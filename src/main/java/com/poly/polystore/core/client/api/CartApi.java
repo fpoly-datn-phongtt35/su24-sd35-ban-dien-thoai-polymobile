@@ -35,9 +35,10 @@ public class CartApi {
     @PostMapping("/addToCart")
     public ResponseEntity<?> addToCart(@RequestParam int idSanPhamChiTiet, @RequestParam int quantity,
                                        HttpServletRequest request, HttpServletResponse response) {
-        String token = request.getHeader("Authorization");
-        if (token == null) {
-            List<GioHang> dataFromCart = cookieUlti.getDataFromCart(request);
+        TaiKhoan taiKhoan = cookieUlti.getTaiKhoan(request);
+        List<GioHang> dataFromCart = new ArrayList<>();
+        if(taiKhoan == null){
+            dataFromCart = cookieUlti.getDataFromCart(request);
             if (dataFromCart == null || dataFromCart.isEmpty()) {
                 dataFromCart = new ArrayList<>();
                 GioHang gioHang = new GioHang();
@@ -85,14 +86,10 @@ public class CartApi {
             response.addCookie(cookie);
         }
         else {
-            token = token.substring(7);
-            String email = jwtService.extractEmail(token);
-            Optional<TaiKhoan> optionalTaiKhoan = taiKhoanRepository.findByEmail(email);
-            Optional<KhachHang> optionalKhachHang = khachHangRepository.findByIdTaiKhoan(optionalTaiKhoan.get().getId());
-            List<GioHang> list = gioHangRepository.findByIdKhachHang(optionalTaiKhoan.get().getId());
+            dataFromCart = gioHangRepository.findByIdTaiKhoan(taiKhoan.getId());
             boolean flag = false;
-            if(list != null && !list.isEmpty()) {
-                for (GioHang gioHang : list) {
+            if(dataFromCart != null && !dataFromCart.isEmpty()) {
+                for (GioHang gioHang : dataFromCart) {
                     if(gioHang.getIdSanPhamChiTiet().getId() == idSanPhamChiTiet){
                         gioHang.setSoLuong(gioHang.getSoLuong() + quantity);
                         gioHangRepository.save(gioHang);
@@ -103,10 +100,17 @@ public class CartApi {
                 if(!flag) {
                     GioHang gioHang = new GioHang();
                     gioHang.setSoLuong(quantity);
-                    gioHang.setIdKhachHang(optionalKhachHang.get());
+                    gioHang.setIdTaiKhoan(taiKhoan.getId());
                     gioHang.setIdSanPhamChiTiet(sanPhamChiTietRepository.findById(idSanPhamChiTiet).get());
                     gioHangRepository.save(gioHang);
                 }
+            }
+            else {
+                GioHang gioHang = new GioHang();
+                gioHang.setSoLuong(quantity);
+                gioHang.setIdTaiKhoan(taiKhoan.getId());
+                gioHang.setIdSanPhamChiTiet(sanPhamChiTietRepository.findById(idSanPhamChiTiet).get());
+                gioHangRepository.save(gioHang);
             }
         }
         return ResponseEntity.ok().build();
@@ -117,11 +121,7 @@ public class CartApi {
         TaiKhoan taiKhoan = cookieUlti.getTaiKhoan(request);
         List<GioHang> gioHangs = new ArrayList<>();
         if(taiKhoan != null) {
-            Optional<KhachHang> optionalKhachHang = khachHangRepository.findByIdTaiKhoan(taiKhoan.getId());
-            if(optionalKhachHang.isPresent()) {
-                KhachHang khachHang = optionalKhachHang.get();
-                gioHangs = gioHangRepository.findByIdKhachHang(khachHang.getId());
-            }
+            gioHangs = gioHangRepository.findByIdTaiKhoan(taiKhoan.getId());
         }
         else {
             gioHangs = cookieUlti.getDataFromCart(request);
@@ -160,19 +160,15 @@ public class CartApi {
     public ResponseEntity<?> updateCart(@RequestBody CartRequest cartRequest,
                                         HttpServletRequest request, HttpServletResponse response)
     {
-        String token = request.getHeader("Authorization");
-        List<GioHang> dataFromCart = new ArrayList<>();
+        List<GioHang> dataFromCart;
         List<GioHang> temp = new ArrayList<>();
-        if (token == null) {
-            dataFromCart = cookieUlti.getDataFromCart(request);
+        TaiKhoan taiKhoan = cookieUlti.getTaiKhoan(request);
+        if(taiKhoan != null){
+            dataFromCart = gioHangRepository.findByIdTaiKhoan(taiKhoan.getId());
+            temp = gioHangRepository.findByIdTaiKhoan(taiKhoan.getId());
         }
         else {
-            token = token.substring(7);
-            String email = jwtService.extractEmail(token);
-            Optional<TaiKhoan> optionalTaiKhoan = taiKhoanRepository.findByEmail(email);
-            Optional<KhachHang> optionalKhachHang = khachHangRepository.findByIdTaiKhoan(optionalTaiKhoan.get().getId());
-            dataFromCart = gioHangRepository.findByIdKhachHang(optionalTaiKhoan.get().getId());
-            temp = gioHangRepository.findByIdKhachHang(optionalKhachHang.get().getId());
+            dataFromCart = cookieUlti.getDataFromCart(request);
         }
         if("update".equals(cartRequest.getAction())) {
             for (GioHang gioHang : dataFromCart) {
@@ -190,7 +186,7 @@ public class CartApi {
                 }
             }
         }
-        if (token == null){
+        if (taiKhoan == null){
             StringBuilder cart = new StringBuilder();
             for(GioHang gioHang : dataFromCart){
                 cart.append(gioHang.getIdSanPhamChiTiet().getId());
@@ -217,5 +213,17 @@ public class CartApi {
             gioHangRepository.saveAll(dataFromCart);
         }
         return ResponseEntity.ok().build();
+    }
+    @PostMapping("/get-number-items-in-cart")
+    public ResponseEntity<?> getNumberItemsInCart(HttpServletRequest request){
+        TaiKhoan taiKhoan = cookieUlti.getTaiKhoan(request);
+        List<GioHang> dataFromCart ;
+        if(taiKhoan != null){
+            dataFromCart = gioHangRepository.findByIdTaiKhoan(taiKhoan.getId());
+        }
+        else {
+            dataFromCart = cookieUlti.getDataFromCart(request);
+        }
+        return ResponseEntity.ok().body(dataFromCart != null ? dataFromCart.size() : "");
     }
 }

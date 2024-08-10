@@ -1,6 +1,7 @@
 package com.poly.polystore.core.client.controller;
 
 
+import com.google.common.base.Strings;
 import com.poly.polystore.Constant.TRANGTHAIDONHANG;
 import com.poly.polystore.entity.*;
 import com.poly.polystore.repository.*;
@@ -42,13 +43,16 @@ public class CartController {
     @GetMapping("/checkout")
     public String checkout(HttpServletRequest request, Model model) {
         TaiKhoan taiKhoan = cookieUlti.getTaiKhoan(request);
+        model.addAttribute("checked",false);
         List<GioHang> gioHangs = new ArrayList<>();
         if(taiKhoan != null) {
+            model.addAttribute("checked",true);
+            gioHangs = gioHangRepository.findByIdTaiKhoan(taiKhoan.getId());
             Optional<KhachHang> optionalKhachHang = khachHangRepository.findByIdTaiKhoan(taiKhoan.getId());
             if(optionalKhachHang.isPresent()) {
                 KhachHang khachHang = optionalKhachHang.get();
-                gioHangs = gioHangRepository.findByIdKhachHang(khachHang.getId());
                 model.addAttribute("khachHang", khachHang);
+                model.addAttribute("isChecked","1");
             }
         }
         else {
@@ -67,12 +71,15 @@ public class CartController {
                 }
             }
         }
-        double total = 0;
-        if (gioHangs != null) {
-            for (GioHang gioHang : gioHangs) {
-                gioHang.setSanPhamCungLoai(sanPhamChiTietRepository.findBySanPhamAndRom(gioHang.getIdSanPhamChiTiet().getSanPham(),gioHang.getIdSanPhamChiTiet().getRom()));
-                total += gioHang.getSoLuong() * gioHang.getRealPrice().doubleValue();
+        else {
+            for(GioHang gioHang : gioHangs) {
+                    gioHang.setRealPrice(BigDecimal.valueOf(gioHang.getIdSanPhamChiTiet().getGiaBan().doubleValue()));
             }
+        }
+        double total = 0;
+        for (GioHang gioHang : gioHangs) {
+            gioHang.setSanPhamCungLoai(sanPhamChiTietRepository.findBySanPhamAndRom(gioHang.getIdSanPhamChiTiet().getSanPham(), gioHang.getIdSanPhamChiTiet().getRom()));
+            total += gioHang.getSoLuong() * gioHang.getRealPrice().doubleValue();
         }
         model.addAttribute("gioHangs", gioHangs);
         model.addAttribute("total", total);
@@ -80,22 +87,39 @@ public class CartController {
     }
 
     @PostMapping("/checkout")
-    public String checkout(@RequestParam("name") String name, @RequestParam("phone") String phone,
-                           @RequestParam("address") String address, @RequestParam("note") String note,
+    public String checkout(@RequestParam(value = "name",required = false) String name, @RequestParam(value = "phone",required = false) String phone,
+                           @RequestParam(value = "address",required = false) String address, @RequestParam(value = "note",required = false) String note,
                            @RequestParam("payment") String payment, @RequestParam("discount-code") String code,
-                           @RequestParam("province") String province, @RequestParam("city") String city,
-                           @RequestParam("street") String street, HttpServletRequest request,
-                           @RequestParam("email") String email, @RequestParam("shipping") String shipping,
+                           @RequestParam(value =  "province",required = false) String province, @RequestParam(value = "city",required = false) String city,
+                           @RequestParam(value = "street",required = false) String street, HttpServletRequest request,
+                           @RequestParam(value = "email",required = false) String email, @RequestParam("shipping") String shipping,
+                           @RequestParam(value = "iddiachi",required = false) String iddiachi,@RequestParam(value = "defaultAddress",required = false) String defaultAddress,
                            HttpServletResponse response) throws MessagingException, IOException {
         TaiKhoan taiKhoan = cookieUlti.getTaiKhoan(request);
         List<GioHang> gioHangs = new ArrayList<>();
         KhachHang khachHang = new KhachHang();
         if(taiKhoan != null) {
+            gioHangs = gioHangRepository.findByIdTaiKhoan(taiKhoan.getId());
+            gioHangRepository.deleteAll(gioHangs);
             Optional<KhachHang> optionalKhachHang = khachHangRepository.findByIdTaiKhoan(taiKhoan.getId());
-            if(optionalKhachHang.isPresent()) {
+            if(!optionalKhachHang.isPresent()){
+                khachHang = new KhachHang();
+                khachHang.setEmail(email);
+                khachHang.setSoDienThoai(phone);
+                khachHang.setTen(name);
+                khachHang.setIdTaiKhoan(taiKhoan);
+                khachHang.setDeleted(0);
+                khachHangRepository.save(khachHang);
+                DiaChiGiaoHang diaChiGiaoHang = new DiaChiGiaoHang();
+                diaChiGiaoHang.setProvince(province);
+                diaChiGiaoHang.setWard(city);
+                diaChiGiaoHang.setStreet(street);
+                diaChiGiaoHang.setIdKhachHang(khachHang);
+                diaChiGiaoHang.setLaDiaChiMacDinh("1".equals(defaultAddress));
+                diaChiGiaoHangRepository.save(diaChiGiaoHang);
+            }
+            else {
                 khachHang = optionalKhachHang.get();
-                gioHangs = gioHangRepository.findByIdKhachHang(khachHang.getId());
-                gioHangRepository.deleteAll(gioHangs);
             }
         }
         else {
@@ -103,6 +127,7 @@ public class CartController {
             khachHang.setEmail(email);
             khachHang.setSoDienThoai(phone);
             khachHang.setTen(name);
+            khachHang.setDeleted(0);
             khachHangRepository.save(khachHang);
             DiaChiGiaoHang diaChiGiaoHang = new DiaChiGiaoHang();
             diaChiGiaoHang.setProvince(province);
@@ -127,11 +152,14 @@ public class CartController {
                 }
             }
         }
-        double total = 0;
-        if (gioHangs != null) {
-            for (GioHang gioHang : gioHangs) {
-                total += gioHang.getSoLuong() * gioHang.getRealPrice().doubleValue();
+        else {
+            for(GioHang gioHang : gioHangs) {
+                gioHang.setRealPrice(BigDecimal.valueOf(gioHang.getIdSanPhamChiTiet().getGiaBan().doubleValue()));
             }
+        }
+        double total = 0;
+        for (GioHang gioHang : gioHangs) {
+            total += gioHang.getSoLuong() * gioHang.getRealPrice().doubleValue();
         }
         total -= Double.parseDouble(shipping);
         HoaDon hoaDon = new HoaDon();
@@ -147,8 +175,8 @@ public class CartController {
         hoaDon.setHinhThucGiaoHang("Giao tận nơi");
         hoaDon.setCreatedAt(Instant.now());
         hoaDon.setTongTienHoaDon(new BigDecimal(total));
-        hoaDon.setThoiGianMuaHang(Instant.now());
-        hoaDon.setHinhThucGiaoHang(payment);
+        hoaDon.setHinhThucThanhToan(payment);
+        hoaDon.setTrangThaiThanhToan("Chưa thanh toán");
         hoaDon.setNote(note);
         hoaDon.setEmail(email);
         hoaDonRepository.save(hoaDon);
@@ -194,6 +222,7 @@ public class CartController {
         lichSuHoaDon.setIdHoaDon(hoaDon);
         if(paymentStatus == 1){
             hoaDon.setTrangThai(TRANGTHAIDONHANG.CHO_XAC_NHAN);
+            hoaDon.setTrangThaiThanhToan("Đã Thanh Toán");
             lichSuHoaDon.setTieuDe("Chờ xác nhận");
         }
         else {

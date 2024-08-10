@@ -16,6 +16,7 @@ import java.util.List;
 public class GioHang {
     @Id
     @Column(name = "ID", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,6 +30,8 @@ public class GioHang {
     @Column(name = "So_luong")
     private Integer soLuong;
 
+    @Column(name = "ID_Tai_khoan")
+    private Integer idTaiKhoan;
     @Transient
     private BigDecimal realPrice;
 

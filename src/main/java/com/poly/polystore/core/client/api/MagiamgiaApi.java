@@ -43,7 +43,7 @@ public class MagiamgiaApi {
                 Optional<KhachHang> optionalKhachHang = khachHangRepository.findByIdTaiKhoan(taiKhoan.getId());
                 if(optionalKhachHang.isPresent()) {
                     KhachHang khachHang = optionalKhachHang.get();
-                    gioHangs = gioHangRepository.findByIdKhachHang(khachHang.getId());
+                    gioHangs = gioHangRepository.findByIdTaiKhoan(khachHang.getId());
                 }
             }
             else {

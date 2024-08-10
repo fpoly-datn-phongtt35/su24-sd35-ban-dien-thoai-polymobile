@@ -92,7 +92,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <input type="number" class="form-control" th:value="${item.soLuong}" min="1"
+                        <input type="number" class="form-control" th:value="${item.soLuong}" min="1" th:max="${item.idSanPhamChiTiet.soLuong}"
                                th:onchange="updateCart(this,[[${item.idSanPhamChiTiet.id}]])">
                     </div>
                     <div class="col-md-2 text-right">
@@ -107,9 +107,9 @@
                                      th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT')}"></span>
                 </div>
             </div>
-            <form th:action="@{/client/checkout}" method="post">
+            <form th:action="@{/client/checkout}" method="post" >
                 <!-- Customer Information -->
-                <div class="form-section">
+                <div class="form-section" id="customerinfo" th:if="${khachHang == null}">
                     <h5>Thông tin khách hàng</h5>
                     <div class="form-group">
                         <label>Họ và Tên</label>
@@ -157,8 +157,57 @@
                         <label for="notes">Nhập ghi chú (nếu có)</label>
                         <textarea id="notes" class="form-control" rows="3" name="note"></textarea>
                     </div>
+                    <div class="form-group" th:if="${checked}">
+                        <label class="form-check-label" for="defaultCheck1">
+                            Đặt làm địa chỉ mặc định
+                        </label>
+                        <input style="margin-left: 3%" class="form-check-input" name="defaultAddress" type="checkbox" value="1" id="defaultCheck1">
+                    </div>
                 </div>
+                <div id="accordionExample" class="form-section accordion" th:if="${khachHang != null}">
+                    <th:block th:if="${khachHang.idDiaChi != null}">
+                        <div th:each="item : ${khachHang.idDiaChi}" >
+                            <div class="card">
+                                <div class="card-header" id="headingOne">
+                                    <h2 class="mb-0">
+                                        <div data-toggle="collapse" aria-expanded="false"
+                                             aria-controls="private" th:onclick="collapse([[${item.id}]])">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="iddiachi" id="private_sector"
+                                                       th:value="${item.id}" th:checked="${item.laDiaChiMacDinh}">
+                                                <label class="form-check-label" for="private_sector" th:text="${item.diaChi}"></label>
+                                            </div>
+                                        </div>
+                                    </h2>
+                                </div>
 
+                                <div th:attr="id='collapseOne' + ${item.id}" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <label>Họ và Tên</label>
+                                            <input type="text" class="form-control" name="name"
+                                                   th:value="${item.tenNguoiNhan}"
+                                                   placeholder="Họ và Tên" disabled>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Số điện thoại</label>
+                                            <input type="text" class="form-control" name="phone"
+                                                   th:value="${item.soDienThoai}"
+                                                   placeholder="Số điện thoại" disabled>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="address">Địa chỉ cụ thể</label>
+                                            <input id="address" type="text" class="form-control" name="address"
+                                                   th:value="${item.diaChi}"
+                                                   placeholder="Địa chỉ cụ thể" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </th:block>
+
+                </div>
                 <!-- Delivery Method -->
                 <div class="form-section">
                     <h5>Chọn hình thức nhận hàng</h5>
@@ -215,25 +264,29 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script type="text/javascript">
     $().ready(function () {
-        $.ajax(
-            {
-                url: "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province",
-                headers: {
-                    token : 'bb276e96-3944-11ef-8e53-0a00184fe694'
-                },
-                contentType: 'application/json',
-                type: 'GET',
-                success: function (data, textStatus, jqXHR) {
-                    data.data.forEach(function (element,index){
-                        var option = document.createElement("option");
-                        option.text = element.NameExtension[0];
-                        option.value = element.ProvinceID;
-                        // Add the new option to the select element
-                        document.getElementById("province").add(option);
-                    })
+        var checked = "[[${isChecked}]]";
+        if(checked == '')
+        {
+            $.ajax(
+                {
+                    url: "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province",
+                    headers: {
+                        token : 'bb276e96-3944-11ef-8e53-0a00184fe694'
+                    },
+                    contentType: 'application/json',
+                    type: 'GET',
+                    success: function (data, textStatus, jqXHR) {
+                        data.data.forEach(function (element,index){
+                            var option = document.createElement("option");
+                            option.text = element.NameExtension[0];
+                            option.value = element.ProvinceID;
+                            // Add the new option to the select element
+                            document.getElementById("province").add(option);
+                        })
+                    }
                 }
-            }
-        )
+            )
+        }
     })
 
     function getCity(){
@@ -408,6 +461,11 @@
                 }
             }
         )
+    }
+
+    function collapse(item){
+        let temp = $('#collapseOne' + item);
+        temp.toggleClass('show')
     }
 
 </script>

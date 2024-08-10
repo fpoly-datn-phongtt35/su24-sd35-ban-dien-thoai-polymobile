@@ -40,9 +40,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private final AntPathMatcher antPathMatcher = new AntPathMatcher();
-    private final TaiKhoanRepository taiKhoanRepository;
-    private final KhachHangRepository khachHangRepository;
-    private final GioHangRepository gioHangRepository;
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -50,30 +47,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String authorization = "";
         final Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            Optional<Cookie> jwtCookie = Arrays.stream(cookies)
-                    .filter(cookie -> "Authorization".equals(cookie.getName()))
-                    .findFirst();
-            if (jwtCookie.isPresent()) {
-                authorization ="Bearer "+ jwtCookie.get().getValue();
-            }
-        }
-        if(authorization.equals("")){
-            Optional<Cookie> cartCookie = Arrays.stream(cookies).filter(cookie -> "Cart".equalsIgnoreCase(cookie.getName())).findFirst();
-            if(cartCookie.isPresent()){
-                String value = cartCookie.get().getValue();
-                String[] values = value.split("/");
-                request.getSession().setAttribute("cart",values.length / 2);
-            }
-        }
-        else {
-            String token = authorization.substring(7);
-            String email = jwtService.extractEmail(token);
-            Optional<TaiKhoan> optionalTaiKhoan = taiKhoanRepository.findByEmail(email);
-            Optional<KhachHang> optionalKhachHang = khachHangRepository.findByIdTaiKhoan(optionalTaiKhoan.get().getId());
-            List<GioHang> dataFromCart = gioHangRepository.findByIdKhachHang(optionalTaiKhoan.get().getId());
-            request.getSession().setAttribute("cart",dataFromCart.size());
-        }
         String requestUri = request.getRequestURI();
         // Kiểm tra xem đường dẫn có nằm trong danh sách không yêu cầu xác thực
         if (Arrays.stream(SecurityConfig.unAuthURL).anyMatch(pattern -> antPathMatcher.match(pattern, requestUri))) {
