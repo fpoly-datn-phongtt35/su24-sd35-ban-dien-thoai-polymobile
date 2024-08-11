@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface GioHangRepository extends JpaRepository<GioHang, Integer> {
-    @Query("SELECT GioHang from GioHang where idKhachHang.id = :id")
-    List<GioHang> findByIdKhachHang(Integer id);
+    @Query(value = "select * from GIO_HANG g where g.ID_Tai_khoan = ?1",nativeQuery = true)
+    List<GioHang> findByIdTaiKhoan(Integer id);
 }

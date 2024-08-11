@@ -2,10 +2,17 @@ package com.poly.polystore.config.jwt;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import com.poly.polystore.config.SecurityConfig;
 import com.poly.polystore.core.common.login.service.JwtService;
+import com.poly.polystore.entity.GioHang;
+import com.poly.polystore.entity.KhachHang;
+import com.poly.polystore.entity.TaiKhoan;
+import com.poly.polystore.repository.GioHangRepository;
+import com.poly.polystore.repository.KhachHangRepository;
+import com.poly.polystore.repository.TaiKhoanRepository;
 import jakarta.servlet.http.Cookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -33,26 +40,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private final AntPathMatcher antPathMatcher = new AntPathMatcher();
-
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
-
+        String authorization = "";
+        final Cookie[] cookies = request.getCookies();
         String requestUri = request.getRequestURI();
-
         // Kiểm tra xem đường dẫn có nằm trong danh sách không yêu cầu xác thực
         if (Arrays.stream(SecurityConfig.unAuthURL).anyMatch(pattern -> antPathMatcher.match(pattern, requestUri))) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String authorization = request.getHeader("Authorization");
+        authorization = request.getHeader("Authorization");
         final String jwt;
         final String email;
         if(authorization == null) {
-            final Cookie[] cookies = request.getCookies();
             if (cookies != null) {
                 Optional<Cookie> jwtCookie = Arrays.stream(cookies)
                         .filter(cookie -> "Authorization".equals(cookie.getName()))

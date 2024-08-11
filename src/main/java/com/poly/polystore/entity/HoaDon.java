@@ -1,5 +1,6 @@
 package com.poly.polystore.entity;
 
+import com.poly.polystore.Constant.TRANGTHAIDONHANG;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
@@ -19,6 +20,7 @@ import java.util.Set;
 public class HoaDon {
     @Id
     @Column(name = "ID", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -56,7 +58,7 @@ public class HoaDon {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "Trang_thai")
-    private TrangThai trangThai;
+    private TRANGTHAIDONHANG trangThai;
 
     @Nationalized
     @Column(name = "Hinh_thuc_giao_hang")
@@ -75,8 +77,9 @@ public class HoaDon {
     @Column(name = "tong_Tien_hoa_Don", precision = 38, scale = 2)
     private BigDecimal tongTienHoaDon;
 
-    @Column(name = "thoi_Gian_Mua_Hang")
-    private Instant thoiGianMuaHang;
+    @Column(name = "THOI_GIAN_NHAN_HANG")
+    private Instant thoiGianNhanHang;
+
 
     public enum TrangThai {
         MOI("Mới"),
@@ -105,4 +108,16 @@ public class HoaDon {
 
 
 
+    @Column(name = "note")
+    private String note;
+
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "Hinh_Thuc_Thanh_Toan")
+    private String hinhThucThanhToan;
+
+    @Column(name = "TRANG_THAI_THANH_TOAN")
+    private String trangThaiThanhToan;
 }

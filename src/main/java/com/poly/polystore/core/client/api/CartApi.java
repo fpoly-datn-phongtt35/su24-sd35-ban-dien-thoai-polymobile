@@ -1,5 +1,7 @@
 package com.poly.polystore.core.client.api;
 
+import com.poly.polystore.core.client.api.request.CartRequest;
+import com.poly.polystore.core.client.api.request.ChangeSPCartRequest;
 import com.poly.polystore.core.common.login.service.JwtService;
 import com.poly.polystore.entity.GioHang;
 import com.poly.polystore.entity.KhachHang;
@@ -8,16 +10,13 @@ import com.poly.polystore.repository.GioHangRepository;
 import com.poly.polystore.repository.KhachHangRepository;
 import com.poly.polystore.repository.SanPhamChiTietRepository;
 import com.poly.polystore.repository.TaiKhoanRepository;
-import com.poly.polystore.utils.GetDataFromCookie;
+import com.poly.polystore.utils.CookieUlti;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,13 +31,14 @@ public class CartApi {
     private final SanPhamChiTietRepository sanPhamChiTietRepository;
     private final KhachHangRepository khachHangRepository;
     private final GioHangRepository gioHangRepository;
-    private final GetDataFromCookie getDataFromCookie;
+    private final CookieUlti cookieUlti;
     @PostMapping("/addToCart")
     public ResponseEntity<?> addToCart(@RequestParam int idSanPhamChiTiet, @RequestParam int quantity,
                                        HttpServletRequest request, HttpServletResponse response) {
-        String token = request.getHeader("Authorization");
-        if (token == null) {
-            List<GioHang> dataFromCart = getDataFromCookie.getDataFromCart(request);
+        TaiKhoan taiKhoan = cookieUlti.getTaiKhoan(request);
+        List<GioHang> dataFromCart = new ArrayList<>();
+        if(taiKhoan == null){
+            dataFromCart = cookieUlti.getDataFromCart(request);
             if (dataFromCart == null || dataFromCart.isEmpty()) {
                 dataFromCart = new ArrayList<>();
                 GioHang gioHang = new GioHang();
@@ -71,6 +71,73 @@ public class CartApi {
             }
             cart.deleteCharAt(cart.length() - 1);
             Cookie[] cookies = request.getCookies();
+            if(cookies != null){
+                for(Cookie i : cookies){
+                    if(i.getName().equals("Cart")){
+                        i.setMaxAge(0);
+                        response.addCookie(i);
+                        break;
+                    }
+                }
+            }
+            Cookie cookie = new Cookie("Cart", cart.toString());
+            cookie.setPath("/");
+            cookie.setMaxAge(60 * 60 * 24 * 7);
+            response.addCookie(cookie);
+        }
+        else {
+            dataFromCart = gioHangRepository.findByIdTaiKhoan(taiKhoan.getId());
+            boolean flag = false;
+            if(dataFromCart != null && !dataFromCart.isEmpty()) {
+                for (GioHang gioHang : dataFromCart) {
+                    if(gioHang.getIdSanPhamChiTiet().getId() == idSanPhamChiTiet){
+                        gioHang.setSoLuong(gioHang.getSoLuong() + quantity);
+                        gioHangRepository.save(gioHang);
+                        flag = true;
+                        break;
+                    }
+                }
+                if(!flag) {
+                    GioHang gioHang = new GioHang();
+                    gioHang.setSoLuong(quantity);
+                    gioHang.setIdTaiKhoan(taiKhoan.getId());
+                    gioHang.setIdSanPhamChiTiet(sanPhamChiTietRepository.findById(idSanPhamChiTiet).get());
+                    gioHangRepository.save(gioHang);
+                }
+            }
+            else {
+                GioHang gioHang = new GioHang();
+                gioHang.setSoLuong(quantity);
+                gioHang.setIdTaiKhoan(taiKhoan.getId());
+                gioHang.setIdSanPhamChiTiet(sanPhamChiTietRepository.findById(idSanPhamChiTiet).get());
+                gioHangRepository.save(gioHang);
+            }
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/changesp")
+    public ResponseEntity<?> changeSP(@RequestBody ChangeSPCartRequest cartRequest, HttpServletRequest request, HttpServletResponse response){
+        TaiKhoan taiKhoan = cookieUlti.getTaiKhoan(request);
+        List<GioHang> gioHangs = new ArrayList<>();
+        if(taiKhoan != null) {
+            gioHangs = gioHangRepository.findByIdTaiKhoan(taiKhoan.getId());
+        }
+        else {
+            gioHangs = cookieUlti.getDataFromCart(request);
+        }
+        GioHang oldGioHang = gioHangs.stream().filter(n -> n.getIdSanPhamChiTiet().getId() == cartRequest.getOldID()).findFirst().get();
+        oldGioHang.setIdSanPhamChiTiet(sanPhamChiTietRepository.findById(cartRequest.getNewID()).get());
+        if (taiKhoan == null){
+            StringBuilder cart = new StringBuilder();
+            for(GioHang gioHang : gioHangs){
+                cart.append(gioHang.getIdSanPhamChiTiet().getId());
+                cart.append("/");
+                cart.append(gioHang.getSoLuong());
+                cart.append("/");
+            }
+            cart.deleteCharAt(cart.length() - 1);
+            Cookie[] cookies = request.getCookies();
             for(Cookie i : cookies){
                 if(i.getName().equals("Cart")){
                     i.setMaxAge(0);
@@ -84,83 +151,42 @@ public class CartApi {
             response.addCookie(cookie);
         }
         else {
-            token = token.substring(7);
-            String email = jwtService.extractEmail(token);
-            Optional<TaiKhoan> optionalTaiKhoan = taiKhoanRepository.findByEmail(email);
-            Optional<KhachHang> optionalKhachHang = khachHangRepository.findByIdTaiKhoan(optionalTaiKhoan.get().getId());
-            List<GioHang> list = gioHangRepository.findByIdKhachHang(optionalTaiKhoan.get().getId());
-            boolean flag = false;
-            if(list != null && !list.isEmpty()) {
-                for (GioHang gioHang : list) {
-                    if(gioHang.getIdSanPhamChiTiet().getId() == idSanPhamChiTiet){
-                        gioHang.setSoLuong(gioHang.getSoLuong() + quantity);
-                        gioHangRepository.save(gioHang);
-                        flag = true;
-                        break;
-                    }
-                }
-                if(!flag) {
-                    GioHang gioHang = new GioHang();
-                    gioHang.setSoLuong(quantity);
-                    gioHang.setIdKhachHang(optionalKhachHang.get());
-                    gioHang.setIdSanPhamChiTiet(sanPhamChiTietRepository.findById(idSanPhamChiTiet).get());
-                    gioHangRepository.save(gioHang);
-                }
-            }
+            gioHangRepository.saveAll(gioHangs);
         }
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/updateCart")
-    public ResponseEntity<?> updateCart(@RequestParam int idSanPhamChiTiet, @RequestParam(required = false) int quantity,
-                                       @RequestParam String action,
-                                       HttpServletRequest request, HttpServletResponse response)
+    public ResponseEntity<?> updateCart(@RequestBody CartRequest cartRequest,
+                                        HttpServletRequest request, HttpServletResponse response)
     {
-        String token = request.getHeader("Authorization");
-        List<GioHang> dataFromCart = new ArrayList<>();
+        List<GioHang> dataFromCart;
         List<GioHang> temp = new ArrayList<>();
-        if (token == null) {
-            dataFromCart = getDataFromCookie.getDataFromCart(request);
+        TaiKhoan taiKhoan = cookieUlti.getTaiKhoan(request);
+        if(taiKhoan != null){
+            dataFromCart = gioHangRepository.findByIdTaiKhoan(taiKhoan.getId());
+            temp = gioHangRepository.findByIdTaiKhoan(taiKhoan.getId());
         }
         else {
-            token = token.substring(7);
-            String email = jwtService.extractEmail(token);
-            Optional<TaiKhoan> optionalTaiKhoan = taiKhoanRepository.findByEmail(email);
-            Optional<KhachHang> optionalKhachHang = khachHangRepository.findByIdTaiKhoan(optionalTaiKhoan.get().getId());
-            dataFromCart = gioHangRepository.findByIdKhachHang(optionalTaiKhoan.get().getId());
-            temp = gioHangRepository.findByIdKhachHang(optionalKhachHang.get().getId());
+            dataFromCart = cookieUlti.getDataFromCart(request);
         }
-        if("add".equals(action)) {
+        if("update".equals(cartRequest.getAction())) {
             for (GioHang gioHang : dataFromCart) {
-                if(gioHang.getIdSanPhamChiTiet().getId() == idSanPhamChiTiet){
-                    gioHang.setSoLuong(gioHang.getSoLuong() + quantity);
+                if(gioHang.getIdSanPhamChiTiet().getId() == cartRequest.getIdSanPhamChiTiet()){
+                    gioHang.setSoLuong(cartRequest.getQuantity());
                     break;
                 }
             }
         }
-        else if("remove".equals(action)) {
+        else if("remove".equals(cartRequest.getAction())) {
             for (int i = 0;i < dataFromCart.size(); i++) {
-                if(dataFromCart.get(i).getIdSanPhamChiTiet().getId() == idSanPhamChiTiet){
+                if(dataFromCart.get(i).getIdSanPhamChiTiet().getId() == cartRequest.getIdSanPhamChiTiet()){
                     dataFromCart.remove(i);
                     i--;
                 }
             }
         }
-        else if("minus".equals(action)) {
-            for (int i = 0;i < dataFromCart.size(); i++) {
-                if(dataFromCart.get(i).getIdSanPhamChiTiet().getId() == idSanPhamChiTiet){
-                    if(dataFromCart.get(i).getSoLuong() > 1){
-                        dataFromCart.get(i).setSoLuong(dataFromCart.get(i).getSoLuong() - quantity);
-                    }
-                    else {
-                        dataFromCart.remove(i);
-                        i--;
-                    }
-                    break;
-                }
-            }
-        }
-        if (token == null){
+        if (taiKhoan == null){
             StringBuilder cart = new StringBuilder();
             for(GioHang gioHang : dataFromCart){
                 cart.append(gioHang.getIdSanPhamChiTiet().getId());
@@ -187,5 +213,17 @@ public class CartApi {
             gioHangRepository.saveAll(dataFromCart);
         }
         return ResponseEntity.ok().build();
+    }
+    @PostMapping("/get-number-items-in-cart")
+    public ResponseEntity<?> getNumberItemsInCart(HttpServletRequest request){
+        TaiKhoan taiKhoan = cookieUlti.getTaiKhoan(request);
+        List<GioHang> dataFromCart ;
+        if(taiKhoan != null){
+            dataFromCart = gioHangRepository.findByIdTaiKhoan(taiKhoan.getId());
+        }
+        else {
+            dataFromCart = cookieUlti.getDataFromCart(request);
+        }
+        return ResponseEntity.ok().body(dataFromCart != null ? dataFromCart.size() : "");
     }
 }

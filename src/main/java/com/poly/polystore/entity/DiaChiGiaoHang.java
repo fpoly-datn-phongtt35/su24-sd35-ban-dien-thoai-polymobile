@@ -14,6 +14,7 @@ import org.hibernate.annotations.Nationalized;
 public class DiaChiGiaoHang {
     @Id
     @Column(name = "ID", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,4 +36,12 @@ public class DiaChiGiaoHang {
     @Column(name = "La_dia_chi_mac_dinh")
     private Boolean laDiaChiMacDinh;
 
+    @Column(name = "Province")
+    private String province;
+
+    @Column(name = "Ward")
+    private String ward;
+
+    @Column(name = "Street")
+    private String street;
 }
