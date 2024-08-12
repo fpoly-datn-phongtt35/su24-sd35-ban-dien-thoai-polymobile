@@ -175,7 +175,7 @@
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="iddiachi" id="private_sector"
                                                        th:value="${item.id}" th:checked="${item.laDiaChiMacDinh}">
-                                                <label class="form-check-label" for="private_sector" th:text="${item.diaChi}"></label>
+                                                <label class="form-check-label" for="private_sector" th:text="${item.tenNguoiNhan + '-' + item.diaChi}"></label>
                                             </div>
                                         </div>
                                     </h2>
@@ -346,8 +346,9 @@
     }
     function checkMagiamgia(){
         let code = $('#discount-code').val();
-        if(code == ''){
+        if(code == '' || code == undefined){
             toastr.error("Bạn quên chọn mã giảm giá rồi");
+            return;
         }
         $.ajax(
             {
@@ -427,7 +428,8 @@
     function shippingfee(){
         let streetCode = $('#street').val();
         let city = $('#city').val();
-        if(streetCode == '' || city == ''){
+        let iddiachi = $('input[name="iddiachi"]:checked').val();
+        if((streetCode == undefined || streetCode == '') && (city == undefined || city == '') && (iddiachi == undefined || iddiachi == '')){
             toastr.error('Bạn quên chọn địa điểm nhận hàng rồi');
             return;
         }
@@ -450,6 +452,7 @@
                         weight : '1000',
                         name : 'abc',
                         quantity : [[${gioHangs.size()}]],
+                        iddiachi : iddiachi
                     }
                 ),
                 success: function (data, textStatus, jqXHR) {

@@ -16,6 +16,7 @@ public class FeeRequest {
     private int weight;
     private int quantity;
     private List<Detail> items;
+    private String iddiachi;
     @lombok.Data
     @AllArgsConstructor
     @NoArgsConstructor

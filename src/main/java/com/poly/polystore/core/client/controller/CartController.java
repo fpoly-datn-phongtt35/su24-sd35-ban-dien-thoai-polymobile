@@ -3,10 +3,14 @@ package com.poly.polystore.core.client.controller;
 
 import com.google.common.base.Strings;
 import com.poly.polystore.Constant.TRANGTHAIDONHANG;
+import com.poly.polystore.core.client.api.request.DistrictReq;
+import com.poly.polystore.core.client.api.request.WardReq;
+import com.poly.polystore.core.client.api.response.OrderGhnReq;
 import com.poly.polystore.entity.*;
 import com.poly.polystore.repository.*;
 import com.poly.polystore.utils.CookieUlti;
 import com.poly.polystore.utils.SendMailUtil;
+import com.poly.polystore.utils.ShippingService;
 import com.poly.polystore.utils.VNPAYService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,7 +43,7 @@ public class CartController {
     private final LichSuHoaDonRepository lichSuHoaDonRepository;
     private final SendMailUtil sendMailUtil;
     private final SanPhamChiTietRepository sanPhamChiTietRepository;
-
+    private final ShippingService shippingService;
     @GetMapping("/checkout")
     public String checkout(HttpServletRequest request, Model model) {
         TaiKhoan taiKhoan = cookieUlti.getTaiKhoan(request);
@@ -96,6 +100,20 @@ public class CartController {
                            @RequestParam(value = "iddiachi",required = false) String iddiachi,@RequestParam(value = "defaultAddress",required = false) String defaultAddress,
                            HttpServletResponse response) throws MessagingException, IOException {
         TaiKhoan taiKhoan = cookieUlti.getTaiKhoan(request);
+        if(!Strings.isNullOrEmpty(iddiachi)){
+            Optional<DiaChiGiaoHang> optionalDiaChiGiaoHang = diaChiGiaoHangRepository.findById(Integer.parseInt(iddiachi));
+            if(optionalDiaChiGiaoHang.isPresent()) {
+                DiaChiGiaoHang diaChiGiaoHang = optionalDiaChiGiaoHang.get();
+                city = diaChiGiaoHang.getWard();
+                address = diaChiGiaoHang.getDiaChi();
+                province = diaChiGiaoHang.getProvince();
+                street = diaChiGiaoHang.getStreet();
+                name = diaChiGiaoHang.getTenNguoiNhan();
+                phone = diaChiGiaoHang.getSoDienThoai();
+                email = diaChiGiaoHang.getIdKhachHang().getEmail();
+            }
+
+        }
         List<GioHang> gioHangs = new ArrayList<>();
         KhachHang khachHang = new KhachHang();
         if(taiKhoan != null) {
@@ -111,6 +129,8 @@ public class CartController {
                 khachHang.setDeleted(0);
                 khachHangRepository.save(khachHang);
                 DiaChiGiaoHang diaChiGiaoHang = new DiaChiGiaoHang();
+                diaChiGiaoHang.setTenNguoiNhan(name);
+                diaChiGiaoHang.setSoDienThoai(phone);
                 diaChiGiaoHang.setProvince(province);
                 diaChiGiaoHang.setWard(city);
                 diaChiGiaoHang.setStreet(street);
@@ -163,6 +183,13 @@ public class CartController {
         }
         total -= Double.parseDouble(shipping);
         HoaDon hoaDon = new HoaDon();
+        OrderGhnReq orderGhnReq = new OrderGhnReq();
+        orderGhnReq.setTo_name(name);
+        orderGhnReq.setTo_phone(phone);
+        orderGhnReq.setTo_address(address);
+        orderGhnReq.setTo_ward_name(shippingService.getWardByWardID(new WardReq(Integer.parseInt(city)),Integer.parseInt(street)).getWardName());
+        orderGhnReq.setTo_district_name(shippingService.getDistrictByDistrictID(new DistrictReq(Integer.parseInt(province)),Integer.parseInt(city)).getDistrictName());
+        List<OrderGhnReq.Detail> items = new ArrayList<>();
         hoaDon.setMa(UUID.randomUUID().toString());
         hoaDon.setIdKhachHang(khachHang);
         hoaDon.setMaGiamGia(code);

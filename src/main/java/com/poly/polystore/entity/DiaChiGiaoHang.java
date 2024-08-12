@@ -44,4 +44,5 @@ public class DiaChiGiaoHang {
 
     @Column(name = "Street")
     private String street;
+
 }

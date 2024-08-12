@@ -63,7 +63,8 @@ public class SecurityConfig {
             "/iphone/**",
             "/client/**",
             "/img/**",
-            "/api/v2/san-pham/**"
+            "/api/v2/san-pham/**",
+            "/client/shipping/shipping-fee"
     };
     String[] adminURL = {
 
