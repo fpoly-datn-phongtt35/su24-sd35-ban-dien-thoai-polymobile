@@ -719,11 +719,13 @@ function checkout(invoice) {
     })
 
     $offcv.find('.offcanvas-title').text(tenHoaDon)
+    $('#hd-giam-gia').text('')
     $('#hd-tong-so-luong').text(tongSoSanPham);
     $('#tbl-imei').html(imeiRow);
     $('#hd-tong-so-tien').text(toCurrency(tongTien));
     $('#hd-khach-tra').text(toCurrency(tongTien));
     updateBillStep2(tongTien);
+
     $('#hd-voucher').val([]).trigger('change');
 
     $offcv.find('input[spct-id]').on('focus', function ()  {
@@ -984,7 +986,40 @@ $(document).ready(()=>{
         }
         form.addClass('was-validated')
         if(form.find('.is-invalid').length === 0){
-            console.log(form.serialize())
+            let danhSachSanPham=[];
+
+            let formData = {
+                ten: $('#add-ten').val(),
+                gpu: $('#add-gpu').val(),
+                link: $('#add-link').val()
+            }
+            // Nếu form hợp lệ, gửi dữ liệu form lên server
+            $.ajax({
+                url: apiURL, // Thay 'URL_API' bằng đường dẫn của API của bạn
+                method: 'PUT', // Phương thức HTTP
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+                success: function (response) {
+                    Toast.fire({
+                        icon: "success",
+                        title: "Thêm mới thành công"
+                    })
+                    $('#modal-add').modal('hide');
+                    reloadDataTable();
+                    console.log(response);
+                },
+                error: function (xhr, status, error) {
+                    Toast.fire({
+                        icon: "error",
+                        title: "Thêm mới thất bại"
+                    });
+                    reloadDataTable();
+                    console.log(response);
+                    console.error(xhr.responseText);
+                }
+            });
+
+
 
         }
     });

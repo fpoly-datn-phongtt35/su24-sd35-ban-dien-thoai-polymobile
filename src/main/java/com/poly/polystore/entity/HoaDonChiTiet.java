@@ -25,23 +25,23 @@ public class HoaDonChiTiet {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "HOA_DON_ID")
+    @ToString.Exclude
     private HoaDon hoaDon;
 
     @Column(name = "GIA_GOC", precision = 18)
-    private BigDecimal giaGoc;
+    private BigDecimal giaGoc;// Là giá chưa áp dụng đợt giảm giá
 
     @Column(name = "GIA_BAN", precision = 18)
-    private BigDecimal giaBan;
+    private BigDecimal giaBan;// Là giá sau khi áp dụng đợt giảm giá
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DOT_GIAM_GIA_ID")
     private PhieuGiamGia dotGiamGia;
 
-    @Size(max = 255)
-    @Nationalized
-    @Column(name = "IMEI")
-    private String imei;
-
+    @ToString.Exclude
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "imei")
+    private Imei imei;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SAN_PHAM_CHI_TIET_ID")
