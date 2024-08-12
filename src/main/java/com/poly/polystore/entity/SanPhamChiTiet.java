@@ -100,4 +100,8 @@ public class SanPhamChiTiet implements Serializable {
     @JoinColumn(name = "DOT_GIAM_GIA_ID")
     private PhieuGiamGia dotGiamGia;
 
+    @OneToMany(mappedBy = "sanPhamChiTiet")
+    private List<HoaDonChiTiet> hoaDonChiTiet;
+
+
 }

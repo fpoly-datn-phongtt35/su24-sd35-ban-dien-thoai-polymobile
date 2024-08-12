@@ -384,12 +384,19 @@ function loadToOffcanvas(idSp) {
     $.get('/api/v1/sale/product/' + idSp).then(function (sanPham) {
         _uniqueProductRoms = new Map();
         sanPham.sanPhamChiTiet.forEach(spct => {
+            let giaBan=spct.giaBan;
+            if(spct.dotGiamGia && !spct.dotGiamGia.deleted){
+                if(spct.dotGiamGia.donvi == '%')
+                    giaBan =spct.giaBan - spct.giaBan * spct.dotGiamGia.giaTriGiam / 100;
+                else
+                    spct.giaBan - spct.dotGiamGia.giaTriGiam
+            }
 
             _mapProductDetail.set(spct.id.toString(), {
                 sanPhamChiTietId: spct.id,
                 sanPhamTen: sanPham.tenSanPham + " " + spct.rom + " " + spct.mauSac.ten,
                 soLuong: spct.soLuong - (danhSachSanPhamDaThem.get(spct.id.toString()) || 0),
-                giaBan: spct.dotGiamGia.donvi == '%' ? spct.giaBan - spct.giaBan * spct.dotGiamGia.giaTriGiam / 100 : spct.giaBan - spct.dotGiamGia.giaTriGiam,
+                giaBan: giaBan,
                 rom: spct.rom,
                 mauSacTen: spct.mauSac.ten
             });
@@ -460,18 +467,45 @@ function loadToOffcanvas(idSp) {
                 //dot giam gia
                 {
                     let giaSanPhamHtml = '';
-                    giaSanPhamHtml = `
-                    <div class="p-0 d-flex align-items-end">
-                    <h5 class="me-3">Giá gốc:</h5><del class="h5 mt-2 price text-15 text-th">${toCurrency(spct.giaBan)}
-                        
-                    </del>
-                    <span class="ml-1"> - ${spct.dotGiamGia.donvi == '%' ? spct.dotGiamGia.giaTriGiam + '%' : toCurrency(spct.dotGiamGia.giaTriGiam)}</span>
-                    
-                    </div>
-                     <div class="p-0 d-flex align-items-end">
-                        <h5 class="me-3 p-0 m-0">Giá khuyến mại:</h5><div class="p-0"><span class="h5 mt-2 price font-weight-bold">${toCurrency(spct.dotGiamGia.donvi == '%' ? spct.giaBan - spct.giaBan * spct.dotGiamGia.giaTriGiam / 100 : spct.giaBan - spct.dotGiamGia.giaTriGiam)}</span></div>
-                    </div>
-`
+                    let giaBan=spct.giaBan;
+                    if(spct.dotGiamGia && !spct.dotGiamGia.deleted){
+                        if(spct.dotGiamGia.donvi == '%')
+                            giaSanPhamHtml = `
+                                <div class="p-0 d-flex align-items-end">
+                                <h5 class="me-3">Giá gốc:</h5><del class="h5 mt-2 price text-15 text-th">${toCurrency(spct.giaBan)}
+                                    
+                                </del>
+                                <span class="ml-1"> - ${ spct.dotGiamGia.giaTriGiam + '%'}</span>
+                                
+                                </div>
+                                 <div class="p-0 d-flex align-items-end">
+                                    <h5 class="me-3 p-0 m-0">Giá khuyến mại:</h5><div class="p-0"><span class="h5 mt-2 price font-weight-bold">${toCurrency(spct.giaBan - spct.giaBan * spct.dotGiamGia.giaTriGiam / 100)}</span></div>
+                                </div>
+                                 `
+                        else
+                            giaSanPhamHtml = `
+                                <div class="p-0 d-flex align-items-end">
+                                <h5 class="me-3">Giá gốc:</h5><del class="h5 mt-2 price text-15 text-th">${toCurrency(spct.giaBan)}
+                                    
+                                </del>
+                                <span class="ml-1"> - ${toCurrency(spct.dotGiamGia.giaTriGiam)}</span>
+                                
+                                </div>
+                                 <div class="p-0 d-flex align-items-end">
+                                    <h5 class="me-3 p-0 m-0">Giá khuyến mại:</h5><div class="p-0"><span class="h5 mt-2 price font-weight-bold">${toCurrency(spct.giaBan - spct.dotGiamGia.giaTriGiam)}</span></div>
+                                </div>
+                                 `
+                    }else{
+                        giaSanPhamHtml = `
+                            <div class="p-0 d-flex align-items-end">
+                           
+                             <div class="p-0 d-flex align-items-end">
+                                <h5 class="me-3 p-0 m-0">Giá:</h5><div class="p-0"><span class="h5 mt-2 price font-weight-bold">${toCurrency(spct.giaBan)}</span></div>
+                            </div>`
+                    }
+
+
+
                     $('#sp-gia').html(giaSanPhamHtml)
                 }
 
@@ -950,7 +984,7 @@ $(document).ready(()=>{
         }
         form.addClass('was-validated')
         if(form.find('.is-invalid').length === 0){
-            alert('OK')
+            console.log(form.serialize())
 
         }
     });

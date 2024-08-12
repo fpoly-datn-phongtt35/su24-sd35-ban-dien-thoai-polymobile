@@ -43,7 +43,7 @@ public class SendMailUtil {
 		StringBuilder content = new StringBuilder();
 		content.append(HEADER);
 		for (HoaDonChiTiet oderDetail : listOrderDetails) {
-			SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietRepository.findById(oderDetail.getIdSanPhamChiTiet()).get();
+			SanPhamChiTiet sanPhamChiTiet = oderDetail.getSanPhamChiTiet();
 			content.append("<tr>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;text-align: center;\">\r\n"
 					+ "                                                        <img style=\"width: 85%;\" src="
@@ -52,10 +52,7 @@ public class SendMailUtil {
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
 					+ sanPhamChiTiet.getSanPham().getTenSanPham() + " " + sanPhamChiTiet.getRom() + " </td>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
-					+ oderDetail.getSoLuong() + " </td>\r\n"
-					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
-					+ format(String.valueOf(oderDetail.getSoLuong() * oderDetail.getGiaBan().doubleValue())) + " </td>\r\n"
-					+ "                                                </tr>");
+			);
 		}
 		content.append(BODY2);
 		content.append(
@@ -109,7 +106,8 @@ public class SendMailUtil {
 		StringBuilder content = new StringBuilder();
 		content.append(HEADERSUCCESS);
 		for (HoaDonChiTiet oderDetail : listOrderDetails) {
-			SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietRepository.findById(oderDetail.getIdSanPhamChiTiet()).get();
+			SanPhamChiTiet sanPhamChiTiet = oderDetail.getSanPhamChiTiet();
+
 			content.append("<tr>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;text-align: center;\">\r\n"
 					+ "                                                        <img style=\"width: 85%;\" src="
@@ -118,10 +116,7 @@ public class SendMailUtil {
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
 					+ sanPhamChiTiet.getSanPham().getTenSanPham() + " " + sanPhamChiTiet.getRom() + " </td>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
-					+ oderDetail.getSoLuong() + " </td>\r\n"
-					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
-					+ format(String.valueOf(oderDetail.getSoLuong() * oderDetail.getGiaBan().doubleValue())) + " </td>\r\n"
-					+ "                                                </tr>");
+					);
 		}
 		content.append(BODY2);
 		content.append(
@@ -175,7 +170,7 @@ public class SendMailUtil {
 		StringBuilder content = new StringBuilder();
 		content.append(HEADERDELIVER);
 		for (HoaDonChiTiet oderDetail : listOrderDetails) {
-			SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietRepository.findById(oderDetail.getIdSanPhamChiTiet()).get();
+			SanPhamChiTiet sanPhamChiTiet = oderDetail.getSanPhamChiTiet();
 			content.append("<tr>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;text-align: center;\">\r\n"
 					+ "                                                        <img style=\"width: 85%;\" src="
@@ -184,10 +179,7 @@ public class SendMailUtil {
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
 					+ sanPhamChiTiet.getSanPham().getTenSanPham() + " " + sanPhamChiTiet.getRom() + " </td>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
-					+ oderDetail.getSoLuong() + " </td>\r\n"
-					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
-					+ format(String.valueOf(oderDetail.getSoLuong() * oderDetail.getGiaBan().doubleValue())) + " </td>\r\n"
-					+ "                                                </tr>");
+					);
 		}
 		content.append(BODY2);
 		content.append(
@@ -241,7 +233,7 @@ public class SendMailUtil {
 		StringBuilder content = new StringBuilder();
 		content.append(HEADERCANCEL);
 		for (HoaDonChiTiet oderDetail : listOrderDetails) {
-			SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietRepository.findById(oderDetail.getIdSanPhamChiTiet()).get();
+			SanPhamChiTiet sanPhamChiTiet = oderDetail.getSanPhamChiTiet();
 			content.append("<tr>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;text-align: center;\">\r\n"
 					+ "                                                        <img style=\"width: 85%;\" src="
@@ -250,10 +242,7 @@ public class SendMailUtil {
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
 					+ sanPhamChiTiet.getSanPham().getTenSanPham() + " " + sanPhamChiTiet.getRom() + " </td>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
-					+ oderDetail.getSoLuong() + " </td>\r\n"
-					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
-					+ format(String.valueOf(oderDetail.getSoLuong() * oderDetail.getGiaBan().doubleValue())) + " </td>\r\n"
-					+ "                                                </tr>");
+					);
 		}
 		content.append(BODY2);
 		content.append(
