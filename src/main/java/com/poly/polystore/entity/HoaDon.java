@@ -8,9 +8,7 @@ import org.hibernate.annotations.Nationalized;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,15 +25,11 @@ public class HoaDon {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_Khach_hang")
-    private KhachHang idKhachHang;
+    private KhachHang khachHang;
 
     @Nationalized
     @Column(name = "Ma_giam_gia")
     private String maGiamGia;
-
-    @Nationalized
-    @Column(name = "Ma")
-    private String ma;
 
     @Nationalized
     @Column(name = "Ten_nguoi_nhan")

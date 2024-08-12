@@ -1,7 +1,6 @@
 package com.poly.polystore.core.client.controller;
 
 
-import com.google.common.base.Strings;
 import com.poly.polystore.Constant.TRANGTHAIDONHANG;
 import com.poly.polystore.entity.*;
 import com.poly.polystore.repository.*;
@@ -22,7 +21,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/client")
@@ -163,8 +161,7 @@ public class CartController {
         }
         total -= Double.parseDouble(shipping);
         HoaDon hoaDon = new HoaDon();
-        hoaDon.setMa(UUID.randomUUID().toString());
-        hoaDon.setIdKhachHang(khachHang);
+        hoaDon.setKhachHang(khachHang);
         hoaDon.setMaGiamGia(code);
         hoaDon.setTenNguoiNhan(name);
         hoaDon.setSoDienThoai(phone);
