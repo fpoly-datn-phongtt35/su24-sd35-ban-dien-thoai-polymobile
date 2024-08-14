@@ -1615,7 +1615,6 @@ $(document).ready(() => {
                 <td><input type="checkbox"></td>
                 <td>${count++}</td>
                 <td>${mauSac.text}<span class="d-none ms-id">${mauSac.id}</span></td>
-                <td><input ms-id="${mauSac.id}" class="form-control form-control-sm giaNhap-input" type="text" placeholder="Giá nhập" aria-label=".form-control-sm example" required></td>
                 <td><input ms-id="${mauSac.id}" class="form-control form-control-sm giaBan-input" type="text" placeholder="Giá bán" aria-label=".form-control-sm example" required></td>
                 <td><select class="form-control w-100 sm" id="sp-trang-thai" required>
                                         <option value="IN_STOCK">Có sẵn</option>
@@ -1666,7 +1665,6 @@ $(document).ready(() => {
                                             <th><input type="checkbox" class="checkAll"></th>
                                             <th>Số thứ tự</th>
                                             <th>Màu sắc</th>
-                                            <th>Giá nhập</th>
                                             <th>Giá bán</th>
                                             <th>Trạng thái</th>
                                             <th>Thao tác</th>
@@ -1702,7 +1700,6 @@ $(document).ready(() => {
                                 <tr>
                                     <th>Tên phiên bản</th>
                                     <th>Màu sắc</th>
-                                    <th>Giá nhập</th>
                                     <th>Giá bán</th>
                                     <th>Thao tác</th>
 
@@ -1725,7 +1722,7 @@ $(document).ready(() => {
             <div class="card shadow m-2 w-100 ">
                 <div class="card-header py-3">
                     <div class="row">
-                        <h1 class="h3 text-gray-800">Chọn tối thiểu 3 hình ảnh tương ứng với màu sắc, ảnh đầu tiên được chọn là ảnh chính</h1>
+                        <h1 class="h3 text-gray-800">Chọn tối thiểu 3 hình ảnh tương ứng với màu sắc</h1>
                     </div>
                 </div>
                 <div class="card-body">
@@ -1768,9 +1765,9 @@ $(document).ready(() => {
                     $(e).text(i + 1);
                 })
             })
-            //Link sự kiện input giá bán, giá nhập
-            $('.giaBan-input,.giaNhap-input').off()
-            $('.giaBan-input,.giaNhap-input').on('blur', function () {
+            //Link sự kiện input giá bán
+            $('.giaBan-input').off()
+            $('.giaBan-input').on('blur', function () {
                 let value = $(this).val().replace(/[^0-9]/g, ''); // Loại bỏ tất cả ký tự không phải số
                 let formattedValue = numeral(value).format('0,0') + ' VND';
                 $(this).val(formattedValue.replace(/,/g, '.'));
@@ -1789,19 +1786,7 @@ $(document).ready(() => {
                         .val((formattedValue.replace(/,/g, '.')))
                 }
             });
-            $('.giaNhap-input').on('input paste', function () {
-                if ($(this).closest('tr').find('input[type="checkbox"]').first().prop('checked') == true) {
-                    let value = $(this).val().replace(/[^0-9]/g, ''); // Loại bỏ tất cả ký tự không phải số
-                    let formattedValue = numeral(value).format('0,0') + ' VND';
-                    console.log('i')
-                    $(this).closest('tbody')
-                        .find('tr input[type="checkbox"]:checked')
-                        .closest('tr')
-                        .find('input[type="text"]:first')
-                        .not($(this))
-                        .val((formattedValue.replace(/,/g, '.')))
-                }
-            });
+
 
             //Link sự kiện delete phiên bản
             $('.btn-delete').off()

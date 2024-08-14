@@ -15,6 +15,7 @@ import java.time.Instant;
 @Table(name = "THONG_TIN_BAO_HANH")
 public class ThongTinBaoHanh {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
@@ -36,4 +37,10 @@ public class ThongTinBaoHanh {
     @Column(name = "Trang_thai")
     private String trangThai;
 
+    public ThongTinBaoHanh(String imei, KhachHang idKhachHang, Instant thoiGianBaoHanh) {
+        this.imei = imei;
+        this.idKhachHang = idKhachHang;
+        this.thoiGianBaoHanh = thoiGianBaoHanh;
+        this.ngayBatDau = Instant.now();
+    }
 }

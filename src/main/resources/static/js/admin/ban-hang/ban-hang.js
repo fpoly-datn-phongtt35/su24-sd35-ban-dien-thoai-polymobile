@@ -676,7 +676,9 @@ $(document).ready(() => {
         checkout(_mapInvoice.get(_selectedInvoice));
     })
 })
-
+function currencyToNumb(currency){
+    return parseInt(currency.replace(/[^0-9]/g, ''))??0;
+}
 function checkout(invoice) {
     if (invoice.size == 0) {
         showErrToast("Lỗi", "Vui lòng chọn hóa đơn có sản phẩm")
@@ -986,16 +988,34 @@ $(document).ready(()=>{
         }
         form.addClass('was-validated')
         if(form.find('.is-invalid').length === 0){
-            let danhSachSanPham=[];
+            //Tạo đối tượng từ form
+            const lstImei = $('#tbl-imei input[spct-id]').map(function() {
+                return $(this).val();
+            }).get();
 
             let formData = {
-                ten: $('#add-ten').val(),
-                gpu: $('#add-gpu').val(),
-                link: $('#add-link').val()
+                "khachHang": {
+                    "id": $('#hd-khach-hang').val()[0]??null,
+                    "ten": $('#hd-kh-ten').val(),
+                    "soDienThoai": $('#hd-kh-sdt').val(),
+                    "email": $('#hd-kh-email').val()
+                },
+                "maGiamGiaId": $('#hd-voucher').val()[0],
+                "tenNguoiNhan": $('#hd-kh-ten').val(),
+                "soDienThoai": $('#hd-kh-sdt').val(),
+                "tongSanPham": parseInt($('#hd-tong-so-luong').text()),
+                "giamVoucher": currencyToNumb($('#hd-giam-gia').text()),
+                "phiGiaoHang": 0,
+                "tongTienHoaDon": currencyToNumb($('#hd-tong-so-tien').text()),
+                "note": $('#hd-ghi-chu').val(),
+                "email": $('#hd-kh-email').val(),
+                "hinhThucThanhToan": $('#hinhThucTT .active').text(),
+                "danhSachImei": lstImei
             }
+            console.log(formData)
             // Nếu form hợp lệ, gửi dữ liệu form lên server
             $.ajax({
-                url: apiURL, // Thay 'URL_API' bằng đường dẫn của API của bạn
+                url: '/admin/sale', // Thay 'URL_API' bằng đường dẫn của API của bạn
                 method: 'PUT', // Phương thức HTTP
                 data: JSON.stringify(formData),
                 contentType: 'application/json',

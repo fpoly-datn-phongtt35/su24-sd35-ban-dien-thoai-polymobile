@@ -35,24 +35,24 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer>, JpaS
     @Query(nativeQuery = true,name = "findAllSanPhamDataTable")
     public List<SanPhamDataTable> findAllSanPhamDataTable();
 
-    @Query("SELECT new SanPhamDataTableBanHang(sp.id, sp.anh.url, sp.tenSanPham, sp.trangThai,SUM(spct.soLuong)) " +
-            "FROM SanPham sp " +
-            "LEFT JOIN sp.sanPhamChiTiet spct " +
-            "GROUP BY sp.id, sp.tenSanPham, sp.anh.url, sp.trangThai")
-    public List<SanPhamDataTableBanHang> findAllSanPhamDataTableBanHang();
-
-    @Query("SELECT new SanPhamDataTableBanHang(sp.id, sp.anh.url, sp.tenSanPham, sp.trangThai, SUM(spct.soLuong)) " +
-            "FROM SanPham sp " +
-            "LEFT JOIN sp.sanPhamChiTiet spct " +
-            "WHERE (:searchKey IS NULL OR sp.tenSanPham LIKE %:searchKey%)" +
-            "GROUP BY sp.id, sp.tenSanPham, sp.anh.url, sp.trangThai")
-    public List<SanPhamDataTableBanHang> findAllSanPhamDataTableBanHang(@Param("searchKey") String searchKey);
-
-    @Query("SELECT new SanPhamDataTableBanHang(sp.id, sp.anh.url, sp.tenSanPham, sp.trangThai, SUM(spct.soLuong)) " +
-            "FROM SanPham sp " +
-            "LEFT JOIN sp.sanPhamChiTiet spct " +
-            "GROUP BY sp.id, sp.tenSanPham, sp.anh.url, sp.trangThai")
-    public List<SanPhamDetailBanHang> findAllSanPhamDataTableBanHang(Integer id);
+//    @Query("SELECT new SanPhamDataTableBanHang(sp.id, sp.anh.url, sp.tenSanPham, sp.trangThai,SUM(spct.soLuong)) " +
+//            "FROM SanPham sp " +
+//            "LEFT JOIN sp.sanPhamChiTiet spct " +
+//            "GROUP BY sp.id, sp.tenSanPham, sp.anh.url, sp.trangThai")
+//    public List<SanPhamDataTableBanHang> findAllSanPhamDataTableBanHang();
+//
+//    @Query("SELECT new SanPhamDataTableBanHang(sp.id, sp.anh.url, sp.tenSanPham, sp.trangThai, SUM(spct.soLuong)) " +
+//            "FROM SanPham sp " +
+//            "LEFT JOIN sp.sanPhamChiTiet spct " +
+//            "WHERE (:searchKey IS NULL OR sp.tenSanPham LIKE %:searchKey%)" +
+//            "GROUP BY sp.id, sp.tenSanPham, sp.anh.url, sp.trangThai")
+//    public List<SanPhamDataTableBanHang> findAllSanPhamDataTableBanHang(@Param("searchKey") String searchKey);
+//
+//    @Query("SELECT new SanPhamDataTableBanHang(sp.id, sp.anh.url, sp.tenSanPham, sp.trangThai, SUM(spct.soLuong)) " +
+//            "FROM SanPham sp " +
+//            "LEFT JOIN sp.sanPhamChiTiet spct " +
+//            "GROUP BY sp.id, sp.tenSanPham, sp.anh.url, sp.trangThai")
+//    public List<SanPhamDetailBanHang> findAllSanPhamDataTableBanHang(Integer id);
 
 
 

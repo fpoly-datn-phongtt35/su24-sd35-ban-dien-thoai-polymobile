@@ -96,36 +96,46 @@ Promise.all([cloneData('/api/v2/san-pham/' + id), documentReadyPromise]).then(()
 
             // khuyenMai
             {
-                let khuyenMaiHtml = '';
-                spct.khuyenMai.forEach(km => {
-                    if (!km.deleted && new Date() > textDD_MM_YYYYtoDate(km.thoiGianBatDau) && new Date() < textDD_MM_YYYYtoDate(km.thoiGianKetThuc)) {
-                        khuyenMaiHtml += `
-                            <li><h6 class="h6 d-inline text-light">${km.ten}</h6><a style="display: inline;font-size: 12px;" href="${km.link}" target="_blank"> (Xem chi tiết)</a></li>
-                        `
-                    }
-                })
-                if (khuyenMaiHtml == '') {
-                    $('.khuyen-mai-ap-dung').parent().hide();
-                } else {
-                    $('.khuyen-mai-ap-dung').parent().show();
-
-                    $('.khuyen-mai-ap-dung').html(khuyenMaiHtml);
+                let giaSanPhamHtml = '';
+                let giaBan=spct.giaBan;
+                if(spct.dotGiamGia && !spct.dotGiamGia.deleted){
+                    if(spct.dotGiamGia.donvi == '%')
+                        giaSanPhamHtml = `
+                                <div class="p-0 d-flex align-items-end">
+                                <h5 class="mr-2 p-0 m-0 font-weight-bold text-light">Giá gốc:</h5><del class="h5 mt-2 price text-15 text-th">${toCurrency(spct.giaBan)}
+                                    
+                                </del>
+                                <span class="ml-1 mb-2"> - ${ spct.dotGiamGia.giaTriGiam + '%'}</span>
+                                
+                                </div>
+                                 <div class="p-0 d-flex align-items-end">
+                                    <h5 class="mr-2 p-0 m-0 font-weight-bold text-light">Giá khuyến mại:</h5><div class="p-0"><span class="h5 mt-2 price font-weight-bold">${toCurrency(spct.giaBan - spct.giaBan * spct.dotGiamGia.giaTriGiam / 100)}</span></div>
+                                </div>
+                                 `
+                    else
+                        giaSanPhamHtml = `
+                                <div class="p-0 d-flex align-items-end">
+                                <h5 class="mr-2 p-0 m-0 font-weight-bold text-light">Giá gốc:</h5><del class="h5 mt-2 price text-15 text-th">${toCurrency(spct.giaBan)}
+                                    
+                                </del>
+                                <span class="ml-1 mb-2"> - ${toCurrency(spct.dotGiamGia.giaTriGiam)}</span>
+                                
+                                </div>
+                                 <div class="p-0 d-flex align-items-end">
+                                    <h5 class="mr-2 p-0 m-0 font-weight-bold text-light">Giá khuyến mại:</h5><div class="p-0"><span class="h5 mt-2 price font-weight-bold">${toCurrency(spct.giaBan - spct.dotGiamGia.giaTriGiam)}</span></div>
+                                </div>
+                                 `
+                }else{
+                    giaSanPhamHtml = `
+                            <div class="p-0 d-flex align-items-end">
+                           
+                             <div class="p-0 d-flex align-items-end">
+                                <h5 class="mr-2 p-0 m-0 font-weight-bold text-light mb-1">Giá:</h5><div class="p-0"><span class="h5 mt-2 price font-weight-bold">${toCurrency(spct.giaBan)}</span></div>
+                            </div>`
                 }
-            }
 
-            //dot giam gia
-            {
-                let giaSanPhamHtml='';
-                giaSanPhamHtml=`
-                    <div class="p-0 d-flex">
-                    <del class="text-white h-5 mt-2 price text-15 text-th">${toCurrency(spct.giaBan)}
-                        
-                    </del>
-                    <span class="ml-1"> - ${spct.dotGiamGia.donvi=='%'?spct.dotGiamGia.giaTriGiam+'%':toCurrency(spct.dotGiamGia.giaTriGiam)}</span>
-                    
-                    </div>
-                    <div class="p-0"><span class="text-white h-5 mt-2 price font-weight-bold">${toCurrency(spct.dotGiamGia.donvi=='%'?spct.giaBan-spct.giaBan*spct.dotGiamGia.giaTriGiam/100:spct.giaBan-spct.dotGiamGia.giaTriGiam)}</span></div>
-`
+
+
                 $('#sp-gia').html(giaSanPhamHtml)
             }
 

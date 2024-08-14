@@ -88,6 +88,11 @@ public class HoaDon {
     @Column(name = "TRANG_THAI_THANH_TOAN")
     private String trangThaiThanhToan;
 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="NHAN_VIEN_ID")
+    private NhanVien nhanVien;
+
     @ToString.Exclude
     @OneToMany(mappedBy = "hoaDon", orphanRemoval = true)
     private List<HoaDonChiTiet> hoaDonChiTiets = new ArrayList<>();
@@ -96,4 +101,7 @@ public class HoaDon {
     @OneToMany(mappedBy = "idHoaDon", orphanRemoval = true)
     private List<LichSuHoaDon> lichSuHoaDons = new ArrayList<>();
 
+    public HoaDon(Integer idHoaDon) {
+        this.id=idHoaDon;
+    }
 }

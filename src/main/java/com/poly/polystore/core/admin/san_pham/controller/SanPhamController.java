@@ -7,6 +7,7 @@ import com.poly.polystore.core.admin.san_pham.model.request.SanPhamEditRequest;
 import com.poly.polystore.core.common.image.service.ImageService;
 import com.poly.polystore.entity.*;
 import com.poly.polystore.repository.AnhRepository;
+import com.poly.polystore.repository.SanPhamChiTietRepository;
 import com.poly.polystore.repository.SanPhamRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -33,6 +34,7 @@ public class SanPhamController {
     private final SanPhamRepository sanPhamRepository;
     private final ImageService imageService;
     private final AnhRepository anhRepository;
+    private final SanPhamChiTietRepository sanPhamChiTietRepository;
 
     @GetMapping("/admin/san-pham")
     public String ui(Model model) {
@@ -271,122 +273,17 @@ public class SanPhamController {
             }
         });
         spEdit.getSanPhamChiTiet().forEach(spct -> {
-//            spct.setAnh(mapImgByMsId.get(spct.getMauSac().getId()));
+            var oldSpct=sanPhamChiTietRepository.findById(spct.getId()).orElse(spct);
             spct.setAnh(mapImgByMsId.get(spct.getMauSac().getId()));
             spct.setSanPham(sp);
+            spct.setDotGiamGia(oldSpct.getDotGiamGia());
+            spct.setSoLuong(oldSpct.getSoLuong());
         });
 
         sanPhamRepository.save(spEdit);
 
         return ResponseEntity.ok("Save success");
-//
-//        sp.getCameraTruoc().setTinhNangCameras(addRequest
-//                .getCameraTruocTinhNangCameraIds()
-//                .stream().map(id-> {
-//                    var tinhNangCamera=new TinhNangCamera();
-//                    tinhNangCamera.setId(id);
-//                    return tinhNangCamera;
-//                })
-//                .collect(Collectors.toSet())
-//        );
-//
-//        sp.getCameraSau().setTinhNangCameras(addRequest
-//                .getCameraSauTinhNangCameraIds()
-//                .stream().map(id-> {
-//                    var tinhNangCamera=new TinhNangCamera();
-//                    tinhNangCamera.setId(id);
-//                    return tinhNangCamera;
-//                })
-//                .collect(Collectors.toSet())
-//        );
-//        sp.getKetNoi().setBluetooth(addRequest
-//                .getKetNoiBluetoothIds()
-//                .stream().map(id-> {
-//                    var bluetooth=new Bluetooth();
-//                    bluetooth.setId(id);
-//                    return bluetooth;
-//                })
-//                .collect(Collectors.toSet())
-//
-//        );
-//        sp.getKetNoi().setWifi(addRequest
-//                .getKetNoiWifiIds()
-//                .stream().map(id-> {
-//                    var wifi=new Wifi();
-//                    wifi.setId(id);
-//                    return wifi;
-//                })
-//                .collect(Collectors.toSet())
-//
-//        );
-//        sp.getKetNoi().setGps(addRequest
-//                .getKetNoiGpsIds()
-//                .stream().map(id-> {
-//                    var gps=new Gps();
-//                    gps.setId(id);
-//                    return gps;
-//                })
-//                .collect(Collectors.toSet())
-//
-//        );
-//        sp.getPinVaSac().setCongNghePin(addRequest
-//                .getPinVaSacCongNghePinIds()
-//                .stream().map(id-> {
-//                    var congNghePin=new CongNghePin();
-//                    congNghePin.setId(id);
-//                    return congNghePin;
-//                })
-//                .collect(Collectors.toSet())
-//
-//        );
-//        sp.getThongTinChung().setTinhNangDacBiet(addRequest
-//                .getThongTinChungTinhNangDacBietIds()
-//                .stream().map(id-> {
-//                    var tinhNangDacBiet=new TinhNangDacBiet();
-//                    tinhNangDacBiet.setId(id);
-//                    return tinhNangDacBiet;
-//                })
-//                .collect(Collectors.toSet())
-//
-//        );
-//
-//        sp.getCameraSau().setDenFlash(addRequest.getCameraSauDenFlash());
-//
-//        //Đưa ảnh về container chính
-//        var anhSanPhamAddRquest=new Anh();
-//        anhSanPhamAddRquest.setName(addRequest.getAnhName());
-//        anhSanPhamAddRquest.setUrl(imageService.moveImageToPermanent(addRequest.getAnhName()));
-//        var anhSanPham = anhRepository.save(anhSanPhamAddRquest);
-//
-//        sp.setAnh(anhSanPham);
-//
-//
-//        var lstSPCT=addRequest.getSanPhamChiTiet().stream().map(spctAddRequest->{
-//            //Lưu ảnh trả về list Ảnh
-//            var lstAnh= spctAddRequest.getAnh().stream().map(imageName->{
-//                var newImage=new Anh();
-//                newImage.setName(imageName);
-//                newImage.setUrl(imageService.moveImageToPermanent(imageName));
-//                return anhRepository.save(newImage);
-//            }).collect(Collectors.toList());
-//
-//            //Chuyển lai list khuyến mãi
-//            var lstKhuyenMai=spctAddRequest.getKhuyenMaiIds().stream().map(khuyenMaiId->{
-//                var newKhuyenMai=new KhuyenMai();
-//                newKhuyenMai.setId(khuyenMaiId);
-//                return newKhuyenMai;
-//            }).collect(Collectors.toList());
-//
-//            var spct=modelMapper.map(spctAddRequest, SanPhamChiTiet.class);
-//            spct.setKhuyenMai(lstKhuyenMai);
-//            spct.setAnh(lstAnh);
-//            spct.setSanPham(sp);
-//            return spct;
-//        }).collect(Collectors.toSet());
-//
-//
-//        sp.setSanPhamChiTiet(lstSPCT);
-//        var spResponse=sanPhamRepository.save(sp);
+
 
     }
 

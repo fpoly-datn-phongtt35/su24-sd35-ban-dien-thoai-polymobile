@@ -3,6 +3,7 @@ package com.poly.polystore.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.Instant;
 
@@ -39,4 +40,11 @@ public class LichSuHoaDon {
     @Column(name = "Thoi_gian")
     private Instant thoiGian;
 
+    public LichSuHoaDon(Integer idHoaDon, String tieuDe, String noiDung) {
+        this.idTaiKhoan = (TaiKhoan) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        this.idHoaDon = new HoaDon(idHoaDon);
+        this.tieuDe = tieuDe;
+        this.noiDung = noiDung;
+        this.thoiGian = Instant.now();
+    }
 }

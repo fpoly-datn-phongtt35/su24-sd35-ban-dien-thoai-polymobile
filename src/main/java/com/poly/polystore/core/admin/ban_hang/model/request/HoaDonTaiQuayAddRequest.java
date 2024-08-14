@@ -23,29 +23,25 @@ import java.util.List;
 
 public class HoaDonTaiQuayAddRequest implements Serializable {
     KhachHangDto khachHang;
-    String maGiamGia;
+    String maGiamGiaId;
     String tenNguoiNhan;
     String soDienThoai;
     Integer tongSanPham;
     BigDecimal giamVoucher;
     BigDecimal phiGiaoHang;
-    TRANGTHAIDONHANG trangThai;
-    String hinhThucGiaoHang;
-    Instant createdAt;
-    Boolean deleted;
-    String lastModifiedBy;
     BigDecimal tongTienHoaDon;
     Instant thoiGianNhanHang;
     String note;
     String email;
     String hinhThucThanhToan;
-    String trangThaiThanhToan;
-    List<HoaDonChiTietDto> hoaDonChiTiets;
+    List<String> danhSachImei;
 
     /**
      * DTO for {@link KhachHang}
      */
-    @Value
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class KhachHangDto implements Serializable {
         Integer id;
         String ten;
@@ -53,15 +49,4 @@ public class HoaDonTaiQuayAddRequest implements Serializable {
         String email;
     }
 
-    /**
-     * DTO for {@link HoaDonChiTiet}
-     */
-    @Value
-    public static class HoaDonChiTietDto implements Serializable {
-        Integer id;
-        BigDecimal giaGoc;
-        BigDecimal giaBan;
-        Integer dotGiamGiaId;
-        String imeiImei;
-    }
 }

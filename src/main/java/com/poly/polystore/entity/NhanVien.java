@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -15,6 +19,9 @@ public class NhanVien {
     @Column(name = "ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @OneToMany(mappedBy = "nhanVien")
+    private List<HoaDon> hoaDons = new ArrayList<>();
 
     @OneToOne
     @JoinColumn(name = "Tai_khoan_ID", referencedColumnName = "ID")

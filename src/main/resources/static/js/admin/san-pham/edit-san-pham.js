@@ -369,7 +369,7 @@ $(document).ready(() => {
 
 //event tab nav
 $(document).ready(function () {
-    $(this).attr("title", "Thêm sản phẩm mới")
+    $(this).attr("title", "Chỉnh sửa sản phẩm")
 
 
     var navListItems = $('div.setup-panel div a'),
@@ -1679,7 +1679,6 @@ $(document).ready(() => {
                 <td><input type="checkbox"></td>
                 <td>${count++}</td>
                 <td>${mauSac.text}</td>
-                <td><input ms-id="${mauSac.id}" class="form-control form-control-sm giaNhap-input" type="text" placeholder="Giá nhập" aria-label=".form-control-sm example" required></td>
                 <td><input ms-id="${mauSac.id}" class="form-control form-control-sm giaBan-input" type="text" placeholder="Giá bán" aria-label=".form-control-sm example" required></td>
                 <td><select class="form-control w-100 sm" id="sp-trang-thai" required>
                                         <option value="IN_STOCK">Có sẵn</option>
@@ -1689,7 +1688,9 @@ $(document).ready(() => {
                                         <option value="DISCONTINUED">Không kinh doanh</option>
                                     </select></td>
                 
-                <td><button type="button" class="btn btn-danger btn-sm  delete-spct">Xóa</button></td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm  delete-spct">Xóa</button>
+                </td>
             </tr>
             `
 
@@ -1705,20 +1706,6 @@ $(document).ready(() => {
                                     <!-- Additional controls -->
                                     <div class="col-8 d-flex justify-content-sm-end align-items-center">
                                        
-                                        <button href="#" class="btn btn-primary btn-icon-split mr-2">
-                                        <span class="icon text-white-50">
-                                            <i class="fas fa-rotate-right"></i>
-                                        </span>
-                                            <span class="text">Làm lại</span>
-                                        </button>
-                                        <button href="#" class="btn btn-primary btn-icon-split mr-2 btn-delete">
-                                        <span class="icon text-white-50">
-                                            <i class="fas fa-trash"></i>
-                                        </span>
-                                            <span class="text">Xóa phiên bản</span>
-                                        </button>
-                                        
-
                                     </div>
                                 </div>
                             </div>
@@ -1730,7 +1717,6 @@ $(document).ready(() => {
                                             <th><input type="checkbox" class="checkAll"></th>
                                             <th>Số thứ tự</th>
                                             <th>Màu sắc</th>
-                                            <th>Giá nhập</th>
                                             <th>Giá bán</th>
                                             <th>Trạng thái</th>
                                             <th>Thao tác</th>
@@ -1766,7 +1752,6 @@ $(document).ready(() => {
                                 <tr>
                                     <th>Tên phiên bản</th>
                                     <th>Màu sắc</th>
-                                    <th>Giá nhập</th>
                                     <th>Giá bán</th>
                                     <th>Thao tác</th>
 
@@ -1782,13 +1767,13 @@ $(document).ready(() => {
             `
 
 
-                fieldsetContainer = `<div id="danhSachSanPhamChiTiet">${fieldsetContainer}</div>>`
+                fieldsetContainer = `<div id="danhSachSanPhamChiTiet">${fieldsetContainer}</div>`
 
                 let imageContainer = `
             <div class="card shadow m-2 w-100 ">
                 <div class="card-header py-3">
                     <div class="row">
-                        <h1 class="h3 text-gray-800">Chọn tối thiểu 3 hình ảnh tương ứng với màu sắc, ảnh đầu tiên được chọn là ảnh chính</h1>
+                        <h1 class="h3 text-gray-800">Chọn tối thiểu 3 hình ảnh tương ứng với màu sắc</h1>
                     </div>
                 </div>
                 <div class="card-body">
@@ -1832,8 +1817,8 @@ $(document).ready(() => {
                     })
                 })
                 //Link sự kiện input giá bán, giá nhập
-                $('.giaBan-input,.giaNhap-input').off()
-                $('.giaBan-input,.giaNhap-input').on('blur', function () {
+                $('.giaBan-input').off()
+                $('.giaBan-input').on('blur', function () {
                     let value = $(this).val().replace(/[^0-9]/g, ''); // Loại bỏ tất cả ký tự không phải số
                     let formattedValue = numeral(value).format('0,0') + ' VND';
                     $(this).val(formattedValue.replace(/,/g, '.'));
@@ -1852,19 +1837,7 @@ $(document).ready(() => {
                             .val((formattedValue.replace(/,/g, '.')))
                     }
                 });
-                $('.giaNhap-input').on('input paste', function () {
-                    if ($(this).closest('tr').find('input[type="checkbox"]').first().prop('checked') == true) {
-                        let value = $(this).val().replace(/[^0-9]/g, ''); // Loại bỏ tất cả ký tự không phải số
-                        let formattedValue = numeral(value).format('0,0') + ' VND';
-                        console.log('i')
-                        $(this).closest('tbody')
-                            .find('tr input[type="checkbox"]:checked')
-                            .closest('tr')
-                            .find('input[type="text"]:first')
-                            .not($(this))
-                            .val((formattedValue.replace(/,/g, '.')))
-                    }
-                });
+
 
                 //Link sự kiện delete phiên bản
                 $('.btn-delete').off()
@@ -1961,7 +1934,7 @@ function fillDataToStep2() {
     productEdit.sanPhamChiTiet.forEach(spct => {
         kmIds = new Set([...kmIds, ...(spct.khuyenMai.map(km => km.id))]);
         imgsUrlByIdMs.set(spct.mauSac.id, spct.anh);
-        $(`table[rom-id="${spct.rom}"] tr[ms-id="${spct.mauSac.id}"] .giaNhap-input`).val(spct.giaNhap).trigger('blur')
+        $(`table[rom-id="${spct.rom}"] tr[ms-id="${spct.mauSac.id}"] .delete-spct`).after(`<a class="btn btn-primary btn-sm nhap-hang" target="_blank" href="/admin/kho?nhap-hang=${spct.id}">Nhập hàng</a>`).remove();
         $(`table[rom-id="${spct.rom}"] tr[ms-id="${spct.mauSac.id}"] .giaBan-input`).val(spct.giaBan).trigger('blur')
         $(`table[rom-id="${spct.rom}"] tr[ms-id="${spct.mauSac.id}"] select`).val(spct.trangThai).trigger('blur')
         $(`table[rom-id="${spct.rom}"] tr[ms-id="${spct.mauSac.id}"]`).attr('spct-id', spct.id);

@@ -71,6 +71,10 @@ public class TaiKhoan implements UserDetails {
     @Column(name = "Trang_thai", length = 255)
     private Boolean trangthai;
 
+    public TaiKhoan(Integer idTaiKhoan) {
+        this.id=idTaiKhoan;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role==null?"ROLE_GUEST":role.name()));

@@ -1,34 +1,28 @@
 package com.poly.polystore.core.admin.ban_hang.controller;
 
+import com.poly.polystore.core.admin.ban_hang.model.request.HoaDonTaiQuayAddRequest;
 import com.poly.polystore.core.admin.ban_hang.model.response.*;
 import com.poly.polystore.core.admin.ban_hang.repository.impl.SanPhamRepositoryImpl;
+import com.poly.polystore.core.admin.ban_hang.service.IBanHangService;
 import com.poly.polystore.core.admin.san_pham.controller.SanPhamController;
 import com.poly.polystore.core.common.image.service.ImageService;
 import com.poly.polystore.entity.*;
 import com.poly.polystore.repository.*;
-import com.poly.polystore.utils.PageResponse;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -39,8 +33,8 @@ public class BanHangController {
     private final SanPhamChiTietRepository sanPhamChiTietRepository;
     private final KhachHangRepository khachHangRepository;
     private final SanPhamRepositoryImpl sanPhamRepositoryImpl;
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final IBanHangService banHangService;
+
     private static final Logger log = LoggerFactory.getLogger(SanPhamController.class);
     private final ModelMapper modelMapper;
     private final SanPhamRepository sanPhamRepository;
@@ -49,18 +43,28 @@ public class BanHangController {
 
     @GetMapping("/admin/sale")
     public String sale(Model model) {
-        model.addAttribute("username",SecurityContextHolder.getContext().getAuthentication().getName());
+        model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         return "admin/ban-hang/ban-hang";
+    }
+
+    @PutMapping("/admin/sale")
+    @ResponseBody
+    @Transactional
+    public ResponseEntity<?> newInvoice(@RequestBody HoaDonTaiQuayAddRequest req) {
+//        model.addAttribute("username",SecurityContextHolder.getContext().getAuthentication().getName());
+
+
+        return banHangService.save(req);
     }
 
     @GetMapping("/api/v1/sale/product")
     public ResponseEntity<?> getAll(
-            @RequestParam(required = false,defaultValue = "") String searchKey,
-            @RequestParam(required = false,defaultValue = "") Integer[] seriesFilter,
-            @RequestParam(required = false,defaultValue = "id:desc") String orderBy,
-            @RequestParam(required = false,defaultValue = "0") Integer pageNo
+            @RequestParam(required = false, defaultValue = "") String searchKey,
+            @RequestParam(required = false, defaultValue = "") Integer[] seriesFilter,
+            @RequestParam(required = false, defaultValue = "id:desc") String orderBy,
+            @RequestParam(required = false, defaultValue = "0") Integer pageNo
     ) {
-            return ResponseEntity.ok(sanPhamRepositoryImpl.findAllSanPhamDataTableBanHang(searchKey,seriesFilter,orderBy,PageRequest.of(pageNo,12)));
+        return ResponseEntity.ok(sanPhamRepositoryImpl.findAllSanPhamDataTableBanHang(searchKey, seriesFilter, orderBy, PageRequest.of(pageNo, 12)));
     }
 
     @GetMapping("/api/v1/sale/product/{id}")
@@ -74,14 +78,15 @@ public class BanHangController {
     @GetMapping("/api/v1/sale/promotion/{id}")
     @ResponseBody
     public ResponseEntity<?> getPromotion(
-            @PathVariable(name = "id",required = false) MaGiamGia promotion
+            @PathVariable(name = "id", required = false) MaGiamGia promotion
     ) {
-        if(promotion == null) {
+        if (promotion == null) {
             return ResponseEntity.ok(null);
         }
         var spResponse = modelMapper.map(promotion, MaGiamGiaDto.class);
         return ResponseEntity.ok(spResponse);
     }
+
     @GetMapping("/api/v1/sale/customer/{id}")
     @ResponseBody
     public ResponseEntity<?> getCustomer(
@@ -90,7 +95,6 @@ public class BanHangController {
         var spResponse = modelMapper.map(customer, CustomerDto.class);
         return ResponseEntity.ok(spResponse);
     }
-
 
 
     @GetMapping("/api/v1/sale/promotion")
@@ -124,7 +128,7 @@ public class BanHangController {
         Pageable pageAble = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "ten"));
         Page<KhachHang> customers;
         if (code.isPresent()) {
-            customers = khachHangRepository.findByEmailLikeOrSoDienThoaiLike("%" + code.get() + "%",code.get(), pageAble);
+            customers = khachHangRepository.findByEmailLikeOrSoDienThoaiLike("%" + code.get() + "%", code.get(), pageAble);
         } else {
             customers = khachHangRepository.findAll(pageAble);
         }
@@ -136,7 +140,6 @@ public class BanHangController {
     }
 
 
-
     @ResponseBody
     @GetMapping("/api/v1/sale/check-imei")
     public ResponseEntity<?> checkImei(
@@ -144,50 +147,51 @@ public class BanHangController {
             @RequestParam(name = "imei") Optional<String> ime,
             @RequestParam(name = "spctid") Integer spctId
     ) {
-        if(!ime.isPresent()||ime.get().equals("")) {
+        if (!ime.isPresent() || ime.get().equals("")) {
             return ResponseEntity.status(202).body("Vui lòng không để trống IMEI");
         }
         if (imei.isPresent()) {
-            if(imei.get().getTrangThai()== Imei.TrangThai.CHO_BAN){
-                if(imeiRepository.findFirstByTrangThaiLike(Imei.TrangThai.TRONG_KHO)==null){
+            if (imei.get().getTrangThai() == Imei.TrangThai.CHO_BAN) {
+                if (imeiRepository.findFirstByTrangThaiLike(Imei.TrangThai.TRONG_KHO) == null) {
                     return ResponseEntity.status(202).body("IMEI Sản phẩm đã bán");
-                }else{
-                    var newImei=imeiRepository.findFirstByTrangThaiLike(Imei.TrangThai.TRONG_KHO);
+                } else {
+                    var newImei = imeiRepository.findFirstByTrangThaiLike(Imei.TrangThai.TRONG_KHO);
                     newImei.setTrangThai(Imei.TrangThai.CHO_BAN);
                     imeiRepository.save(newImei);
-                    var imei2=imei.get();
+                    var imei2 = imei.get();
                     imei2.setTrangThai(Imei.TrangThai.TRONG_KHO);
                     imeiRepository.save(imei2);
                     return ResponseEntity.ok("Valid");
                 }
             }
-            if(Objects.equals(imei.get().getSanPhamChiTiet().getId(), spctId) && imei.get().getTrangThai()== Imei.TrangThai.TRONG_KHO){
+            if (Objects.equals(imei.get().getSanPhamChiTiet().getId(), spctId) && imei.get().getTrangThai() == Imei.TrangThai.TRONG_KHO) {
                 return ResponseEntity.ok("Valid");
             }
-            if(imei.get().getTrangThai()!= Imei.TrangThai.TRONG_KHO){
+            if (imei.get().getTrangThai() != Imei.TrangThai.TRONG_KHO) {
                 return ResponseEntity.status(202).body("IMEI Sản phẩm đã bán");
             }
-            if(!Objects.equals(imei.get().getSanPhamChiTiet().getId(), spctId)){
+            if (!Objects.equals(imei.get().getSanPhamChiTiet().getId(), spctId)) {
                 return ResponseEntity.status(202).body("IMEI Không thuộc sản phẩm này");
             }
         }
         return ResponseEntity.status(201).body("IMEI Không trùng khớp với sản phẩm nào");
     }
+
     @ResponseBody
     @GetMapping("/api/v1/sale/new-imei")
     public ResponseEntity<?> checkImei(
             @RequestParam(name = "imei") String newImei,
-            @RequestParam(name = "spctid") Integer spctId){
-        Imei imei=new Imei();
+            @RequestParam(name = "spctid") Integer spctId) {
+        Imei imei = new Imei();
         imei.setImei(newImei);
 
         imei.setTrangThai(Imei.TrangThai.TRONG_KHO);
-        var oldSPCT=sanPhamChiTietRepository.findById(spctId).get();
-        if(oldSPCT.getTrangThai()== SanPhamRepository.TrangThai.IN_STOCK){
-            oldSPCT.setSoLuong(oldSPCT.getSoLuong()+1);
-            SanPhamChiTiet spct= sanPhamChiTietRepository.save(oldSPCT);
+        var oldSPCT = sanPhamChiTietRepository.findById(spctId).get();
+        if (oldSPCT.getTrangThai() == SanPhamRepository.TrangThai.IN_STOCK) {
+            oldSPCT.setSoLuong(oldSPCT.getSoLuong() + 1);
+            SanPhamChiTiet spct = sanPhamChiTietRepository.save(oldSPCT);
             imei.setSanPhamChiTiet(spct);
-            var nImei= imeiRepository.save(imei);
+            var nImei = imeiRepository.save(imei);
             return ResponseEntity.ok(nImei);
         }
         return ResponseEntity.badRequest().build();

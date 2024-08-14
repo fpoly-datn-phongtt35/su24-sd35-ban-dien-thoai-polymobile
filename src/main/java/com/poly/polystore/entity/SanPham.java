@@ -43,57 +43,46 @@ import java.util.Set;
         name = "findAllSanPhamDataTable",
         query = """
                
-                WITH DistinctColors AS (
-                                       SELECT sp.ID AS San_Pham_ID, ms.MA AS MA_MAU, ms.TEN AS TEN_MAU
+                WITH DistinctColors AS (SELECT sp.ID AS San_Pham_ID, ms.MA AS MA_MAU, ms.TEN AS TEN_MAU
                                        FROM dbo.SAN_PHAM sp
-                                       LEFT JOIN dbo.SAN_PHAM_CHI_TIET spct ON sp.ID = spct.SAN_PHAM_ID
-                                       LEFT JOIN dbo.MAU_SAC ms ON spct.MAU_SAC_ID = ms.ID
+                                                LEFT JOIN dbo.SAN_PHAM_CHI_TIET spct ON sp.ID = spct.SAN_PHAM_ID
+                                                LEFT JOIN dbo.MAU_SAC ms ON spct.MAU_SAC_ID = ms.ID
                                        WHERE ms.TEN IS NOT NULL
-                                       GROUP BY sp.ID, ms.MA, ms.TEN
-                                   ),
-                                   DistinctROMs AS (
-                                       SELECT sp.ID AS San_Pham_ID, spct.ROM
-                                       FROM dbo.SAN_PHAM sp
-                                       JOIN dbo.SAN_PHAM_CHI_TIET spct ON sp.ID = spct.SAN_PHAM_ID
-                                       WHERE spct.ROM IS NOT NULL
-                                       GROUP BY sp.ID, spct.ROM
-                                   ),
-                                   ColorAggregates AS (
-                                       SELECT San_Pham_ID, STRING_AGG(CONCAT_WS(':',MA_MAU,TEN_MAU), ',') AS Danh_Sach_Mau_Sac
-                                       FROM DistinctColors
-                                       GROUP BY San_Pham_ID
-                                   ),
-                                   ROMAggregates AS (
-                                       SELECT San_Pham_ID, STRING_AGG(ROM, ',') AS Danh_Sach_ROM
-                                       FROM DistinctROMs
-                                       GROUP BY San_Pham_ID
-                                   )
-                                   SELECT
-                                       sp.ID AS id,
-                                       sp.TEN_SAN_PHAM AS tenSanPham,
-                                       sr.TEN as series,
-                                       anh.URL as anhSanPham,
-                                       ca.Danh_Sach_Mau_Sac as danhSachMauSac,
-                                       ra.Danh_Sach_ROM as danhSachRom,
-                                       COUNT(i.IMEI) AS soLuong,
-                                       sp.THOI_GIAN_BAO_HANH as thoiGianBaoHanh,
-                                       sp.TRANG_THAI as trangThai
-                                   FROM
-                                       dbo.SAN_PHAM sp
-                                   LEFT JOIN
-                                           ANH anh ON sp.ANH_ID = anh.ID
-                                   LEFT JOIN
-                                           SERIES sr ON sp.SERIES_ID = sr.ID
-                                   LEFT JOIN
-                                       dbo.SAN_PHAM_CHI_TIET spct ON sp.ID = spct.SAN_PHAM_ID
-                                   LEFT JOIN
-                                       ColorAggregates ca ON sp.ID = ca.San_Pham_ID
-                                   LEFT JOIN
-                                       ROMAggregates ra ON sp.ID = ra.San_Pham_ID
-                                   LEFT JOIN
-                                       dbo.IMEI i ON spct.ID = i.SAN_PHAM_CHI_TIET_ID AND i.TRANG_THAI NOT LIKE N'DA_BAN'
-                                   GROUP BY
-                                       sp.ID, sp.TEN_SAN_PHAM, ca.Danh_Sach_Mau_Sac, ra.Danh_Sach_ROM, THOI_GIAN_BAO_HANH, sp.TRANG_THAI, sr.TEN,anh.URL
+                                       GROUP BY sp.ID, ms.MA, ms.TEN),
+               DistinctROMs AS (SELECT sp.ID AS San_Pham_ID, spct.ROM
+                                     FROM dbo.SAN_PHAM sp
+                                              JOIN dbo.SAN_PHAM_CHI_TIET spct ON sp.ID = spct.SAN_PHAM_ID
+                                     WHERE spct.ROM IS NOT NULL
+                                     GROUP BY sp.ID, spct.ROM),
+               ColorAggregates AS (SELECT San_Pham_ID, STRING_AGG(CONCAT_WS(':', MA_MAU, TEN_MAU), ',') AS Danh_Sach_Mau_Sac
+                                        FROM DistinctColors
+                                        GROUP BY San_Pham_ID),
+               ROMAggregates AS (SELECT San_Pham_ID, STRING_AGG(ROM, ',') AS Danh_Sach_ROM
+                                      FROM DistinctROMs
+                                      GROUP BY San_Pham_ID)
+               SELECT sp.ID                 AS id,
+                      sp.TEN_SAN_PHAM       AS tenSanPham,
+                      sr.TEN                as series,
+                      anh.URL               as anhSanPham,
+                      ca.Danh_Sach_Mau_Sac  as danhSachMauSac,
+                      ra.Danh_Sach_ROM      as danhSachRom,
+                      SUM(spct.SO_LUONG)       AS soLuong,
+                      sp.THOI_GIAN_BAO_HANH as thoiGianBaoHanh,
+                      sp.TRANG_THAI         as trangThai
+               FROM dbo.SAN_PHAM sp
+                        LEFT JOIN
+                    ANH anh ON sp.ANH_ID = anh.ID
+                        LEFT JOIN
+                    SERIES sr ON sp.SERIES_ID = sr.ID
+                        LEFT JOIN
+                    dbo.SAN_PHAM_CHI_TIET spct ON sp.ID = spct.SAN_PHAM_ID
+                        LEFT JOIN
+                    ColorAggregates ca ON sp.ID = ca.San_Pham_ID
+                        LEFT JOIN
+                    ROMAggregates ra ON sp.ID = ra.San_Pham_ID
+               
+               GROUP BY sp.ID, sp.TEN_SAN_PHAM, ca.Danh_Sach_Mau_Sac, ra.Danh_Sach_ROM, THOI_GIAN_BAO_HANH, sp.TRANG_THAI, sr.TEN,
+                        anh.URL
                 """,
         resultSetMapping = "SanPhamDataTableMapping"
 )

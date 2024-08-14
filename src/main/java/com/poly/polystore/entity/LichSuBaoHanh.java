@@ -15,6 +15,7 @@ import java.time.Instant;
 @Table(name = "LICH_SU_BAO_HANH")
 public class LichSuBaoHanh {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
@@ -33,4 +34,10 @@ public class LichSuBaoHanh {
     @Column(name = "Deleted")
     private Boolean deleted;
 
+    public LichSuBaoHanh(ThongTinBaoHanh idThongTinBaoHanh, Instant thoiGian, String noiDung) {
+        this.idThongTinBaoHanh = idThongTinBaoHanh;
+        this.thoiGian = thoiGian;
+        this.noiDung = noiDung;
+
+    }
 }

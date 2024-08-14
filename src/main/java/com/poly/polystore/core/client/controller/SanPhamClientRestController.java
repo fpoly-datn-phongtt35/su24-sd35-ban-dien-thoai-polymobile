@@ -54,11 +54,7 @@ public class SanPhamClientRestController {
     public ResponseEntity<?> getSanPhamById(
             @PathVariable(name="id") SanPham sanPham
     ) {
-        var currentTime=new Date().getTime();
         var spResponse=modelMapper.map(sanPham, SanPhamProductResponse.class);
-        var excuteTime=new Date().getTime()-currentTime;
-
-        System.out.println(excuteTime);
         return ResponseEntity.ok(spResponse);
     }
 
