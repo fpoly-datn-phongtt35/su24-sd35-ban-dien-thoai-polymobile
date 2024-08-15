@@ -1,24 +1,56 @@
 package com.poly.polystore.core.admin.kho.model.response;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 /**
  * DTO for {@link com.poly.polystore.entity.LichSuKho}
  */
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter @Setter
 public class LichSuKhoResponse implements Serializable {
     Integer id;
-    Integer lichSuKhoId;
-    Integer sanPhamChiTietId;
-    private Instant thoiGian;
-    @NotNull
-    private Integer nhanVienId;
-    @Size(max = 1)
+    private String thoiGian;
     private String ghiChu;
     private Boolean deleted;
+    List<LichSuKhoChiTiet> lichSuKhoChiTiets;
+    private TaiKhoan taiKhoan;
+
+    public LichSuKhoResponse(Integer id, Instant thoiGian, String ghiChu, Boolean deleted, Integer taiKhoanId,String ten) {
+        this.id = id;
+        this.thoiGian = thoiGian.atZone(ZoneId.of("Asia/Ho_Chi_Minh")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
+        this.ghiChu = ghiChu;
+        this.deleted = deleted;
+        this.taiKhoan=new TaiKhoan(taiKhoanId,ten);
+    }
+
+
+
+    /**
+     * DTO for {@link com.poly.polystore.entity.ChiTietLichSuKho}
+     */
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter @Setter
+    public static class LichSuKhoChiTiet {
+        Integer idSanPham, soLuong;
+        String tenSanPham;
+
+    }
+    /**
+     * DTO for {@link com.poly.polystore.entity.TaiKhoan}
+     */
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter @Setter
+    public static class TaiKhoan {
+        Integer idTaiKhoan;
+        String ten;
+    }
 }

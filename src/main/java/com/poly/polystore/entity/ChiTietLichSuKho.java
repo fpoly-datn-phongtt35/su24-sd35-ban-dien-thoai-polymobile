@@ -17,12 +17,14 @@ public class ChiTietLichSuKho {
     @Column(name = "ID", nullable = false)
     private Integer id;
 
-
-    @Column(name = "SAN_PHAM_CHI_TIET_ID")
-    private Integer sanPhamChiTietId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SAN_PHAM_CHI_TIET_ID")
+    private SanPhamChiTiet sanPhamChiTiet;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "LICH_SU_KHO_ID")
     private LichSuKho lichSuKho;
 
+    @Column(name = "SO_LUONG", nullable = false)
+    private Integer soLuong;
 }

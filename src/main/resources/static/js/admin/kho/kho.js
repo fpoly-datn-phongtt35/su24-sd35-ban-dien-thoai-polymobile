@@ -32,15 +32,7 @@ function loadData() {
             }
         },
         "ajax": {
-            "url": apiURL,
-            "data": function (d) {
-                d.page = Math.floor(d.start / d.length); // Convert DataTables page index to page number
-                d.size = d.length; // Page size
-                d.sort = d.columns[d.order[0].column].data + ',' + d.order[0].dir; // Sort column and direction
-            },
-            "dataSrc": function (json) {
-                return json.content; // Adjust based on the API response
-            }
+            "url": apiURL
         },
         "columnDefs": [
             {width: 30, targets: 0},
@@ -55,13 +47,13 @@ function loadData() {
             },
             {
                 "data": "id",
-                "title":"ID",
-                "name":"id"
+                "title": "ID",
+                "name": "id"
             },
             {
                 "data": "thoiGian",
-                "title":"Thời gian",
-                "name":"thoiGian",
+                "title": "Thời gian",
+                "name": "thoiGian",
                 "render": function (data, type, row) {
                     if (data == null)
                         return ""
@@ -73,31 +65,20 @@ function loadData() {
             },
             {
                 "data": "deleted",
-                "render": function (data, type, row) {
-                    return (data) ? "Đã xóa" : "Hoạt động"
-                }
-            },
-            {
-                "data": "deleted",
-                "render": function (data, type, row) {
-                    if (data)
-                        return '<div class="d-flex justify-content-end"><button type="button" class="btn btn-sm btn-primary mr-3 btn-edit">Chỉnh sửa</button><button type="button" class="btn btn-sm btn-danger btn-revert">Khôi phục</button></div>';
-                    else
-                        return '<div class="d-flex justify-content-end"><button type="button" class="btn btn-sm btn-primary mr-3 btn-edit">Chỉnh sửa</button><button type="button" class="btn btn-sm btn-danger btn-delete">Xóa</button></div>';
-
-                },
-                "orderable": false
+                "title": "Trạng thái",
+                "name": "deleted"
 
             }
         ],
+        "order": [[1, 'asc']],
 
     });
     let selectedStatus = $('#statusFilter').val();
     if (selectedStatus) {
-        table.column(3).search('^' + selectedStatus + '$', true, false).draw();
+        table.column(0).search('^' + selectedStatus + '$', true, false).draw();
     } else {
         // Xóa bộ lọc nếu không có gì được chọn
-        table.column(3).search('').draw();
+        table.column(0).search('').draw();
     }
     ;
 }
@@ -107,7 +88,54 @@ const reloadDataTable = () => {
 }
 
 //config dataTable
-$(document).ready(loadData());
+function format(d) {
+    $.get("/api/v1/kho/"+d.id)
+        .then((data) => {
+            return `
+                ${data}
+            `
+        })
+    return ""
+
+}
+
+$(document).ready(() => {
+    loadData();
+//Add event detail
+// Array to track the ids of the details displayed rows
+    let detailRows = [];
+    let table=$('#dataTable').DataTable();
+
+    $('#dataTable tbody').on('click', 'tr td.dt-control', function () {
+        let tr = $(this).closest('tr');
+        let row = table.row(tr);
+        let idx = detailRows.indexOf(tr.attr('id'));
+
+        if (row.child.isShown()) {
+            tr.removeClass('details');
+            row.child.hide();
+
+            // Remove from the 'open' array
+            detailRows.splice(idx, 1);
+        } else {
+            tr.addClass('details');
+            row.child(format(row.data())).show();
+
+            // Add to the 'open' array
+            if (idx === -1) {
+                detailRows.push(tr.attr('id'));
+            }
+        }
+    });
+
+// On each draw, loop over the `detailRows` array and show any child rows
+    table.on('draw', function () {
+        detailRows.forEach(function (id, i) {
+            $('#' + id + ' td.dt-control').trigger('click');
+        });
+    });
+
+})
 
 //Reload event
 $(document).ready(() => {
@@ -364,8 +392,6 @@ $(document).ready(() => {
             });
 
 
-
-
         }
 
     });
@@ -384,10 +410,10 @@ $(document).ready(function () {
 
         if (selectedStatus) {
             // Áp dụng bộ lọc theo cột Status
-            table.column(3).search('^' + selectedStatus + '$', true, false).draw();
+            table.column(0).search('^' + selectedStatus + '$', true, false).draw();
         } else {
             // Xóa bộ lọc nếu không có gì được chọn
-            table.column(3).search('').draw();
+            table.column(0).search('').draw();
         }
     });
 });

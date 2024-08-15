@@ -1,7 +1,6 @@
 package com.poly.polystore.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -28,9 +27,9 @@ public class LichSuKho {
     @Column(name = "THOI_GIAN")
     private Instant thoiGian;
 
-    @NotNull
-    @Column(name = "NHAN_VIEN_ID", nullable = false)
-    private Integer nhanVienId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TAI_KHOAN_ID")
+    private TaiKhoan taiKhoan;
 
     @Size(max = 1)
     @Nationalized
@@ -43,6 +42,6 @@ public class LichSuKho {
 
     @ToString.Exclude
     @OneToMany(mappedBy = "lichSuKho", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ChiTietLichSuKho> chiTietLichSuKhoes = new ArrayList<>();
+    private List<ChiTietLichSuKho> chiTietLichSuKhos = new ArrayList<>();
 
 }

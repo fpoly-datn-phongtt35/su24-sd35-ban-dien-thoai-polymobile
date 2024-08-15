@@ -1,11 +1,14 @@
 package com.poly.polystore.core.admin.kho.controller;
 
+import com.poly.polystore.core.admin.kho.model.response.LichSuKhoResponse;
+import com.poly.polystore.core.admin.kho.repository.LichSuKhoRepositoryImpl;
 import com.poly.polystore.core.admin.san_pham_chi_tiet.cong_nghe_man_hinh.model.request.AddRequest;
 import com.poly.polystore.core.admin.san_pham_chi_tiet.cong_nghe_man_hinh.model.request.EditReq;
 import com.poly.polystore.core.admin.san_pham_chi_tiet.cong_nghe_man_hinh.model.request.ImportReq;
 import com.poly.polystore.core.admin.san_pham_chi_tiet.cong_nghe_man_hinh.model.response.Response;
 import com.poly.polystore.dto.DataTableResponse;
 import com.poly.polystore.entity.CongNgheManHinh;
+import com.poly.polystore.entity.LichSuKho;
 import com.poly.polystore.repository.CongNgheManHinhRepository;
 import com.poly.polystore.utils.ExportExcel;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,6 +33,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,6 +42,9 @@ import java.util.stream.Collectors;
 @Controller
 @RequiredArgsConstructor
 public class KhoController {
+    private final LichSuKhoRepositoryImpl lichSuKhoRepositoryImpl;
+    private final ModelMapper modelMapper;
+
     @GetMapping("/admin/kho")
     public String kho(Model model) {
         return "/admin/kho/kho";
@@ -51,6 +59,36 @@ public class KhoController {
         resp.setDraw(Integer.valueOf(params.get("draw")));
         resp.setRecordsTotal(10);
         resp.setData(null);
+        return ResponseEntity.ok(lichSuKhoRepositoryImpl.findAll(params));
+    }
+    @ResponseBody
+    @GetMapping("/api/v1/kho/{id}")
+    public ResponseEntity<?> getById(
+            @PathVariable(name="id") LichSuKho lichSuKho
+    ) {
+        var resp=new LichSuKhoResponse();
+        resp.setId(lichSuKho.getId());
+        resp.setDeleted(lichSuKho.getDeleted());
+        resp.setGhiChu(lichSuKho.getGhiChu());
+        resp.setThoiGian(lichSuKho.getThoiGian()
+                .atZone(ZoneId.of("Asia/Ho_Chi_Minh"))
+                .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")));
+        resp.setTaiKhoan(new LichSuKhoResponse.TaiKhoan(lichSuKho.getTaiKhoan().getId(),lichSuKho.getTaiKhoan().getTen()));
+        resp.setLichSuKhoChiTiets(lichSuKho.getChiTietLichSuKhos().stream()
+                .map(chiTietLichSuKho->{
+                    var ctlsk=new LichSuKhoResponse.LichSuKhoChiTiet();
+                    var tenSanPham=String.format(
+                            "%s %s %s",
+                            chiTietLichSuKho.getSanPhamChiTiet().getSanPham().getTenSanPham(),
+                            chiTietLichSuKho.getSanPhamChiTiet().getRom(),
+                            chiTietLichSuKho.getSanPhamChiTiet().getMauSac().getTen());
+                    ctlsk.setTenSanPham(tenSanPham);
+                    ctlsk.setSoLuong(chiTietLichSuKho.getSoLuong());
+                    ctlsk.setIdSanPham(chiTietLichSuKho.getSanPhamChiTiet().getId());
+                    return ctlsk;
+                })
+                .collect(Collectors.toList())
+        );
         return ResponseEntity.ok(resp);
     }
 
