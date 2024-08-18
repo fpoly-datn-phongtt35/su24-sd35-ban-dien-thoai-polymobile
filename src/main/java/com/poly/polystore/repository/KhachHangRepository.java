@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface KhachHangRepository extends JpaRepository<KhachHang, Integer> {
 
@@ -28,7 +29,7 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, Integer> {
                       """, nativeQuery = true)
     List<KhachHangRepose> getAllKhachHang();
 
-    @Query("Select KhachHang from KhachHang where idTaiKhoan.id = :idTaiKhoan")
+    @Query(value = "select * from KHACH_HANG kh where kh.ID_Tai_khoan is not null and kh.ID_Tai_khoan = ?1",nativeQuery = true)
     Optional<KhachHang> findByIdTaiKhoan(Integer idTaiKhoan);
 
     Page<KhachHang> findByEmailLikeOrSoDienThoaiLike(String s1,String s2, Pageable pageAble);

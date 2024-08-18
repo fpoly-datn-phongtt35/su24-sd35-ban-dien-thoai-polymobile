@@ -8,6 +8,7 @@ import com.poly.polystore.repository.SanPhamChiTietRepository;
 import com.poly.polystore.repository.TaiKhoanRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +18,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class GetDataFromCookie {
+public class CookieUlti {
     private final JwtService jwtService;
     private final TaiKhoanRepository taiKhoanRepository;
     private final SanPhamChiTietRepository sanPhamChiTietRepository;
@@ -64,5 +65,19 @@ public class GetDataFromCookie {
             list.add(gioHang);
         }
         return list;
+    }
+
+    public void removeCookie(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        for(Cookie item : cookies){
+            if("Cart".equals(item.getName())){
+                item.setValue(null);
+                item.setPath("/");
+                item.setMaxAge(0);
+                response.addCookie(item);
+                request.getSession().removeAttribute("Cart");
+                break;
+            }
+        }
     }
 }

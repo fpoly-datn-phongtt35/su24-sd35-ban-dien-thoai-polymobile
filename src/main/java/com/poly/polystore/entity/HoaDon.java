@@ -1,13 +1,14 @@
 package com.poly.polystore.entity;
 
+import com.poly.polystore.Constant.TRANGTHAIDONHANG;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,19 +20,16 @@ import java.util.Set;
 public class HoaDon {
     @Id
     @Column(name = "ID", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_Khach_hang")
-    private KhachHang idKhachHang;
+    private KhachHang khachHang;
 
     @Nationalized
     @Column(name = "Ma_giam_gia")
     private String maGiamGia;
-
-    @Nationalized
-    @Column(name = "Ma")
-    private String ma;
 
     @Nationalized
     @Column(name = "Ten_nguoi_nhan")
@@ -56,7 +54,7 @@ public class HoaDon {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "Trang_thai")
-    private TrangThai trangThai;
+    private TRANGTHAIDONHANG trangThai;
 
     @Nationalized
     @Column(name = "Hinh_thuc_giao_hang")
@@ -75,34 +73,30 @@ public class HoaDon {
     @Column(name = "tong_Tien_hoa_Don", precision = 38, scale = 2)
     private BigDecimal tongTienHoaDon;
 
-    @Column(name = "thoi_Gian_Mua_Hang")
-    private Instant thoiGianMuaHang;
+    @Column(name = "THOI_GIAN_NHAN_HANG")
+    private Instant thoiGianNhanHang;
 
-    public enum TrangThai {
-        MOI("Mới"),
-        XAC_NHAN("Xác nhận"),
-        DANG_CHUAN_BI_HANG("Đang chuẩn bị hàng"),
-        CHO_LAY_HANG("Chờ lấy hàng"),
-        LAY_HANG_THANH_CONG("Lấy hàng thành công"),
-        DANG_VAN_CHUYEN("Đang vận chuyển"),
-        GIAO_HANG_THANH_CONG("Giao hàng thành công"),
-        GIAO_HANG_THAT_BAI("Giao hàng thất bại"),
-        CHO_CHUYEN_HOAN("Chờ chuyển hoàn"),
-        THAT_LAC("Thất lạc"),
-        XAC_NHAN_HOAN_KHO("Xác nhận hoàn kho"),
-        XAC_NHAN_HOAN_KHO_MOT_PHAN("Xác nhận hoàn kho một phần");
+    @Column(name = "note")
+    private String note;
 
-        private final String displayName;
+    @Column(name = "Ma")
+    private String ma;
 
-        TrangThai(String displayName) {
-            this.displayName = displayName;
-        }
+    @Column(name = "email")
+    private String email;
 
-        public String getDisplayName() {
-            return displayName;
-        }
-    }
+    @Column(name = "Hinh_Thuc_Thanh_Toan")
+    private String hinhThucThanhToan;
 
+    @Column(name = "TRANG_THAI_THANH_TOAN")
+    private String trangThaiThanhToan;
 
+    @ToString.Exclude
+    @OneToMany(mappedBy = "hoaDon", orphanRemoval = true)
+    private List<HoaDonChiTiet> hoaDonChiTiets = new ArrayList<>();
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "idHoaDon", orphanRemoval = true)
+    private List<LichSuHoaDon> lichSuHoaDons = new ArrayList<>();
 
 }

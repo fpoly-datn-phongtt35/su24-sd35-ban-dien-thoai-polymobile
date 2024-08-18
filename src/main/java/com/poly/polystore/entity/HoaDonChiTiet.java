@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.Nationalized;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,39 +16,35 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "HOA_DON_CHI_TIET")
 public class HoaDonChiTiet {
+
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
-    @Column(name = "ID_Hoa_don")
-    private Integer idHoaDon;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "HOA_DON_ID")
+    @ToString.Exclude
+    private HoaDon hoaDon;
 
-    @Column(name = "ID_San_pham_chi_tiet")
-    private Integer idSanPhamChiTiet;
+    @Column(name = "GIA_GOC", precision = 18)
+    private BigDecimal giaGoc;// Là giá chưa áp dụng đợt giảm giá
 
-    @Column(name = "Gia_goc", precision = 18, scale = 2)
-    private BigDecimal giaGoc;
-
-    @Column(name = "Gia_ban", precision = 18, scale = 2)
-    private BigDecimal giaBan;
-
-    @Column(name = "Gia_khuyen_mai", precision = 18, scale = 2)
-    private BigDecimal giaKhuyenMai;
-
-    @Nationalized
-    @Column(name = "IMEI")
-    private String imei;
-
-    @Nationalized
-    @Column(name = "Trang_thai")
-    private String trangThai;
+    @Column(name = "GIA_BAN", precision = 18)
+    private BigDecimal giaBan;// Là giá sau khi áp dụng đợt giảm giá
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DOT_GIAM_GIA_ID")
     private PhieuGiamGia dotGiamGia;
 
-    @Size(max = 255)
-    @Column(name = "anh_San_Pham")
-    private String anhSanPham;
+    @ToString.Exclude
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "imei")
+    private Imei imei;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SAN_PHAM_CHI_TIET_ID")
+    private SanPhamChiTiet sanPhamChiTiet;
 
 }
