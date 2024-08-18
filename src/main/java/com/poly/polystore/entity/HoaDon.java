@@ -79,6 +79,9 @@ public class HoaDon {
     @Column(name = "note")
     private String note;
 
+    @Column(name = "Ma")
+    private String ma;
+
     @Column(name = "email")
     private String email;
 

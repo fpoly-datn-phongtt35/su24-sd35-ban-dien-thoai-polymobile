@@ -1,6 +1,7 @@
 package com.poly.polystore.core.client.controller;
 
 
+import com.google.common.base.Strings;
 import com.poly.polystore.Constant.TRANGTHAIDONHANG;
 import com.poly.polystore.core.client.api.request.DistrictReq;
 import com.poly.polystore.core.client.api.request.WardReq;
@@ -189,7 +190,7 @@ public class CartController {
         orderGhnReq.setTo_district_name(shippingService.getDistrictByDistrictID(new DistrictReq(Integer.parseInt(province)),Integer.parseInt(city)).getDistrictName());
         List<OrderGhnReq.Detail> items = new ArrayList<>();
         hoaDon.setMa(UUID.randomUUID().toString());
-        hoaDon.setIdKhachHang(khachHang);
+        hoaDon.setKhachHang(khachHang);
         hoaDon.setKhachHang(khachHang);
         hoaDon.setMaGiamGia(code);
         hoaDon.setTenNguoiNhan(name);
