@@ -114,3 +114,64 @@ const showConfirm = (title, message) => {
     });
 }
 
+$(document).ready(()=>{
+    $("body").append(`
+            <div class="toast-container position-fixed bottom-0 left-0 p-3" style="z-index: 99999; bottom: 0;">
+            <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+                <div class="toast-header">
+                    <img src="..." class="rounded me-2" alt="...">
+                    <strong class="me-auto">Bootstrap</strong>
+                    <small>11 mins ago</small>
+                    <button type="button" class="ms-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    Hello, world! This is a toast message.
+                </div>
+            </div>
+        </div>
+    
+    `)
+})
+
+function showSsToast(title, message) {
+    $('.toast-container').append(`
+       <div class="toast hide " role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+            <div class="toast-header bg-primary text-light">
+                <strong class="me-auto">${title}</strong>
+            </div>
+            <div class="toast-body ">
+                ${message}
+            </div>
+        </div>
+    `);
+    $('.toast-container').find('.toast').last().toast('show')
+}
+
+function showErToast(title, message) {
+    $('.toast-container').append(`
+       <div class="toast hide " role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+            <div class="toast-header bg-danger text-light">
+                <strong class="me-auto">${title}</strong>
+            </div>
+            <div class="toast-body ">
+                ${message}
+            </div>
+        </div>
+    `);
+    $('.toast-container').find('.toast').last().toast('show')
+}
+function showWnToast(title, message) {
+    $('.toast-container').append(`
+       <div class="toast hide " role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+            <div class="toast-header bg-warning text-light">
+                <strong class="me-auto">${title}</strong>
+            </div>
+            <div class="toast-body ">
+                ${message}
+            </div>
+        </div>
+    `);
+    $('.toast-container').find('.toast').last().toast('show')
+}

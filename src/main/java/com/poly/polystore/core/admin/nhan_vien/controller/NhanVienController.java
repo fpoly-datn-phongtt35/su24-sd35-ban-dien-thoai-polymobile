@@ -2,7 +2,7 @@ package com.poly.polystore.core.admin.nhan_vien.controller;
 
 import com.poly.polystore.core.admin.nhan_vien.dto.CreateNhanVienRequest;
 import com.poly.polystore.entity.NhanVien;
-import com.poly.polystore.entity.Role;
+import com.poly.polystore.Constant.ROLE;
 import com.poly.polystore.entity.TaiKhoan;
 import com.poly.polystore.repository.NhanVienRepository;
 import com.poly.polystore.repository.TaiKhoanRepository;
@@ -48,7 +48,7 @@ public class NhanVienController {
             throw new RuntimeException("Tên đăng nhập đã tồn tại");
         }
         TaiKhoan taiKhoan = new TaiKhoan();
-        taiKhoan.setRole(Role.ROLE_EMPLOYEE);
+        taiKhoan.setRole(ROLE.ROLE_EMPLOYEE);
         taiKhoan.setEmail(createNhanVienRequest.getEmail());
         taiKhoan.setTen(createNhanVienRequest.getName());
         taiKhoan.setMatKhau(passwordEncoder.encode("123456aA@"));

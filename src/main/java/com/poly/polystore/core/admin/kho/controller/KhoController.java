@@ -1,42 +1,25 @@
 package com.poly.polystore.core.admin.kho.controller;
 
+import com.poly.polystore.core.admin.ban_hang.repository.impl.SanPhamRepositoryImpl;
 import com.poly.polystore.core.admin.kho.model.response.LichSuKhoResponse;
 import com.poly.polystore.core.admin.kho.repository.LichSuKhoRepositoryImpl;
-import com.poly.polystore.core.admin.san_pham_chi_tiet.cong_nghe_man_hinh.model.request.AddRequest;
-import com.poly.polystore.core.admin.san_pham_chi_tiet.cong_nghe_man_hinh.model.request.EditReq;
-import com.poly.polystore.core.admin.san_pham_chi_tiet.cong_nghe_man_hinh.model.request.ImportReq;
-import com.poly.polystore.core.admin.san_pham_chi_tiet.cong_nghe_man_hinh.model.response.Response;
-import com.poly.polystore.dto.DataTableResponse;
-import com.poly.polystore.entity.CongNgheManHinh;
+import com.poly.polystore.dto.Select2Response;
 import com.poly.polystore.entity.LichSuKho;
-import com.poly.polystore.repository.CongNgheManHinhRepository;
-import com.poly.polystore.utils.ExportExcel;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
+import com.poly.polystore.repository.SanPhamRepository;
+import com.poly.polystore.repository.TaiKhoanRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.ui.Model;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -44,10 +27,17 @@ import java.util.stream.Collectors;
 public class KhoController {
     private final LichSuKhoRepositoryImpl lichSuKhoRepositoryImpl;
     private final ModelMapper modelMapper;
+    private final TaiKhoanRepository taiKhoanRepository;
+    private final SanPhamRepository sanPhamRepository;
+    private final SanPhamRepositoryImpl sanPhamRepositoryImpl;
 
     @GetMapping("/admin/kho")
     public String kho(Model model) {
         return "/admin/kho/kho";
+    }
+    @GetMapping("/admin/kho/nhap-hang")
+    public String nhapHang(Model model) {
+        return "/admin/kho/nhap-hang";
     }
 
     @ResponseBody
@@ -55,10 +45,6 @@ public class KhoController {
     public ResponseEntity<?> getAll(
            @RequestParam Map<String,String> params
             ) {
-        var resp=new DataTableResponse();
-        resp.setDraw(Integer.valueOf(params.get("draw")));
-        resp.setRecordsTotal(10);
-        resp.setData(null);
         return ResponseEntity.ok(lichSuKhoRepositoryImpl.findAll(params));
     }
     @ResponseBody
@@ -66,30 +52,47 @@ public class KhoController {
     public ResponseEntity<?> getById(
             @PathVariable(name="id") LichSuKho lichSuKho
     ) {
-        var resp=new LichSuKhoResponse();
-        resp.setId(lichSuKho.getId());
-        resp.setDeleted(lichSuKho.getDeleted());
-        resp.setGhiChu(lichSuKho.getGhiChu());
-        resp.setThoiGian(lichSuKho.getThoiGian()
-                .atZone(ZoneId.of("Asia/Ho_Chi_Minh"))
-                .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")));
-        resp.setTaiKhoan(new LichSuKhoResponse.TaiKhoan(lichSuKho.getTaiKhoan().getId(),lichSuKho.getTaiKhoan().getTen()));
-        resp.setLichSuKhoChiTiets(lichSuKho.getChiTietLichSuKhos().stream()
-                .map(chiTietLichSuKho->{
-                    var ctlsk=new LichSuKhoResponse.LichSuKhoChiTiet();
-                    var tenSanPham=String.format(
-                            "%s %s %s",
-                            chiTietLichSuKho.getSanPhamChiTiet().getSanPham().getTenSanPham(),
-                            chiTietLichSuKho.getSanPhamChiTiet().getRom(),
-                            chiTietLichSuKho.getSanPhamChiTiet().getMauSac().getTen());
-                    ctlsk.setTenSanPham(tenSanPham);
-                    ctlsk.setSoLuong(chiTietLichSuKho.getSoLuong());
-                    ctlsk.setIdSanPham(chiTietLichSuKho.getSanPhamChiTiet().getId());
-                    return ctlsk;
-                })
-                .collect(Collectors.toList())
-        );
-        return ResponseEntity.ok(resp);
+        return ResponseEntity.ok(lichSuKhoRepositoryImpl.findById(lichSuKho.getId()));
+    }
+
+    @GetMapping("/api/v1/select2/tai-khoan")
+    @ResponseBody
+    public ResponseEntity<?> getAllPromotion(
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "pageSize", required = false) Integer pageSize,
+            @RequestParam(name = "code", required = false) Optional<String> code
+    ) {
+        Pageable pageAble = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+        Page<LichSuKhoResponse.TaiKhoan> taiKhoans;
+        if (code.isPresent()) {
+
+            taiKhoans = taiKhoanRepository.findTaiKhoanNhanVienByCodeLike(code.get(), pageAble);
+        } else {
+            taiKhoans = taiKhoanRepository.findAllTaiKhoanRessp  (pageAble);
+        }
+        Select2Response response = new Select2Response();
+        response.setPagination(new Select2Response.Pagination(!taiKhoans.isLast()));
+        response.setResults(taiKhoans.getContent().stream().map(tk->new Select2Response.Result(tk.getIdTaiKhoan(),tk.getTen())).collect(Collectors.toList()));
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/api/v1/select2/san-pham")
+    @ResponseBody
+    public ResponseEntity<?> getAllEml(
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "pageSize", required = false) Integer pageSize,
+            @RequestParam(name = "searchKey", required = false) Optional<String> searchKey
+    ) {
+        Pageable pageAble = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+        Page<Select2Response.Result> sanPhams;
+        if (searchKey.isPresent()) {
+            sanPhams = sanPhamRepository.findAllSanPhamLike(searchKey.get(), pageAble);
+        } else {
+            sanPhams = sanPhamRepository.findAllSanPham(pageAble);
+        }
+        Select2Response response = new Select2Response();
+        response.setPagination(new Select2Response.Pagination(!sanPhams.isLast()));
+        response.setResults(sanPhams.getContent());
+        return ResponseEntity.ok(response);
     }
 
 //     private static final Logger log = LoggerFactory.getLogger(KhoController.class);

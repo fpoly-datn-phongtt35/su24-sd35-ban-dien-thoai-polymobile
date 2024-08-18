@@ -1,5 +1,6 @@
 package com.poly.polystore.entity;
 
+import com.poly.polystore.Constant.ROLE;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -25,7 +26,6 @@ public class TaiKhoan implements UserDetails {
     @Column(name = "ID", nullable = false)
     private Integer id;
 
-
     @Nationalized
     @Column(name = "So_dien_thoai")
     private String soDienThoai;
@@ -48,7 +48,7 @@ public class TaiKhoan implements UserDetails {
     private String tenDangNhap;
 
     @Enumerated(EnumType.STRING)
-    Role role;
+    ROLE role;
 
     @OneToOne(mappedBy = "idTaiKhoan")
     private NhanVien nhanVien;

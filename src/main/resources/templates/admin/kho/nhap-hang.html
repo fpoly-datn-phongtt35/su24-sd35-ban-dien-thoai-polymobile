@@ -28,49 +28,82 @@
 <!--            <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>-->
 
             <div class="row">
-                <h1 class="h3 text-gray-800 col-3">Lịch sử nhập hàng</h1>
-                <!-- Additional controls -->
-                <div class="col-9 d-flex justify-content-sm-end align-items-center">
-                    <form class="form-inline mr-3 d-flex align-items-center">
-                        <label class="mr-2" for="taiKhoanFilter">Lọc theo nhân viên</label>
-                        <select id="taiKhoanFilter" class="form-control-plaintext text-primary" multiple="multiple" style="width: 200px" required>
-                            <option></option>
-                        </select>
-                    </form>
-                    <a id="btn-reload" href="#" class="btn btn-primary btn-icon-split mr-2">
-                                        <span class="icon text-white-50">
-                                            <i class="fas fa-rotate-right"></i>
-                                        </span>
-                        <span class="text">Làm mới</span>
+                <div class="d-flex col-3" style="line-height: 40px">
+                    <a href="#" class="mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 1-.5.5H3.707l4.147 4.146a.5.5 0 0 1-.708.708l-5-5a.5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708.708L3.707 7.5H14.5A.5.5 0 0 1 15 8z"/>
+                        </svg>
                     </a>
-                    <a href="/admin/kho/nhap-hang" target="_blank" class="btn btn-primary btn-icon-split mr-2">
+                    <h3 style="line-height: 40px" class="mb-0">Nhập hàng</h3>
+                </div>
+                <!-- Additional controls -->
+                <div class="col-9 row justify-content-end">
+
+                    <select id="select-san-pham" class="form-control-plaintext text-primary col-7 mr-3" multiple="multiple" required>
+                        <option></option>
+                    </select>
+                    <div>
+                        <a id="btn-add" href="#" class="btn btn-primary btn-icon-split mr-2 w-auto">
                                         <span class="icon text-white-50">
                                             <i class="fas fa-plus"></i>
                                         </span>
-                        <span class="text">Nhập hàng</span>
-                    </a>
-                    <a href="#" class="btn btn-primary btn-icon-split mr-2" id="btn-import">
+                            <span style="line-height: 35px; padding: 0px 10px">Thêm</span>
+                        </a>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-8">
+                    <!-- Header Section -->
+
+                    <!-- Table Section -->
+                    <div class="table-responsive"style="max-height: 500px; overflow: auto" >
+                        <table id="table-san-pham" class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th scope="col">STT</th>
+                                <th scope="col">Mã hàng</th>
+                                <th scope="col">Tên hàng</th>
+                                <th scope="col">Số lượng nhập</th>
+                                <th scope="col">Chọn IMEI</th>
+                            </tr>
+                            </thead>
+                            <tbody >
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Add from Excel Section -->
+                    <div class="text-center mt-4">
+                        <p>Thêm sản phẩm từ file excel</p>
+                        <p>(Tải về file mẫu: <a href="#">Excel file</a>)</p>
+                        <a href="#" class="btn btn-success btn-icon-split mr-2" id="btn-import">
                                         <span class="icon text-white-50">
                                             <i class="fas fa-file-import"></i>
                                         </span>
 
 
-                        <span class="text">Import</span>
-                    </a>
-                    <input type="file" class="d-none" id="import-file"/>
-                    <a th:href="@{/admin/san-pham-chi-tiet/cong-nghe-man-hinh/export-excel}" class="btn btn-primary btn-icon-split" id="btn-export">
-                                        <span class="icon text-white-50">
-                                            <i class="fas fa-file-export"></i>
-                                        </span>
-                        <span class="text">Export</span>
-                    </a>
+                            <span class="text">Nhập file excel</span>
+                        </a>
+                        <input type="file" class="d-none" id="import-file"/>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable">
-                </table>
+                <div class="col-4">
+                    <table id="table-imei" class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th scope="col">IMEI</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -170,6 +203,6 @@
     <script src="/vendor/select2/select2.min.js"></script>
 
     <!-- Page level custom scripts -->
-    <script type="module" src="/js/admin/kho/kho.js"></script>
+    <script  src="/js/admin/kho/nhap-hang.js"></script>
 </th:block>
 </html>

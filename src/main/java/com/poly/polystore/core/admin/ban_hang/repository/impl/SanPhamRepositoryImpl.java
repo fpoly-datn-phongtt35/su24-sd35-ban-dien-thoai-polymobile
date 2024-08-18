@@ -2,7 +2,9 @@ package com.poly.polystore.core.admin.ban_hang.repository.impl;
 
 import com.azure.core.http.rest.PagedResponse;
 import com.poly.polystore.core.admin.ban_hang.model.response.SanPhamDataTableBanHang;
+import com.poly.polystore.dto.Select2Response;
 import com.poly.polystore.entity.HoaDonChiTiet;
+import com.poly.polystore.entity.MauSac;
 import com.poly.polystore.entity.SanPham;
 import com.poly.polystore.entity.SanPhamChiTiet;
 import com.poly.polystore.utils.PageResponse;
@@ -152,4 +154,18 @@ public class SanPhamRepositoryImpl {
         return resp;
 
     }
+
+//    public Page<Select2Response.Result> findTaiKhoanNhanVienByCodeLike(String searchKey, Pageable pageAble) {
+//        CriteriaBuilder cb = em.getCriteriaBuilder();
+//        CriteriaQuery<Select2Response.Result> query = cb.createQuery(Select2Response.Result.class);
+//        Root<SanPhamChiTiet> root = query.from(SanPhamChiTiet.class);
+//        Join<SanPhamChiTiet,SanPham> sp= root.join("sanPham",JoinType.LEFT);
+//        Join<SanPhamChiTiet, MauSac> ms=root.join("mauSac",JoinType.LEFT);
+//
+//        query.select()
+//
+//
+//
+//        return null;
+//    }
 }

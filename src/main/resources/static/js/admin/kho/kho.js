@@ -15,7 +15,10 @@ function loadData() {
         "processing": true,
         "serverSide": true,
         "language": {
-            "sProcessing": "Đang xử lý...",
+            "sProcessing": "<button class=\"btn btn-primary\" type=\"button\" disabled>\n" +
+                "  <span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span>\n" +
+                "  <span class=\"sr-only\">Đang xử lý...</span>\n" +
+                "</button>",
             "sLengthMenu": "Hiển thị _MENU_ bản ghi",
             "sZeroRecords": "Không tìm thấy dữ liệu",
             "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ bản ghi",
@@ -31,6 +34,7 @@ function loadData() {
                 "sLast": "Cuối"
             }
         },
+        "deferLoading": 57,
         "ajax": {
             "url": apiURL
         },
@@ -66,16 +70,24 @@ function loadData() {
             {
                 "data": "deleted",
                 "title": "Trạng thái",
-                "name": "deleted"
+                "name": "deleted",
+                "render": function (data, type, row) {
+
+                        return data? "Đã xóa":"Thành công"
+
+                }
 
             }
         ],
         "order": [[1, 'asc']],
+        "search": {
+            return: true
+        }
 
     });
-    let selectedStatus = $('#statusFilter').val();
-    if (selectedStatus) {
-        table.column(0).search('^' + selectedStatus + '$', true, false).draw();
+    let selectedTaiKhoan = $('#taiKhoanFilter').val();
+    if (selectedTaiKhoan) {
+        table.column(0).search(selectedTaiKhoan, true, false).draw();
     } else {
         // Xóa bộ lọc nếu không có gì được chọn
         table.column(0).search('').draw();
@@ -88,14 +100,88 @@ const reloadDataTable = () => {
 }
 
 //config dataTable
-function format(d) {
-    $.get("/api/v1/kho/"+d.id)
-        .then((data) => {
-            return `
-                ${data}
+async function getData(d) {
+    const data = await $.get("/api/v1/kho/" + d.id)
+    let soMatHang=0,tongSoLuong=0;
+    let rowData="";
+    data.forEach((ctlsk,index) => {
+        soMatHang++;
+        tongSoLuong+=ctlsk.soLuong;
+        rowData+=`
+           <tr>
+               <td>${index+1}</td>
+                 <td>${ctlsk.idSanPham}</td>
+                 <td>${ctlsk.tenSanPham}</td>
+                 <td>${ctlsk.soLuong}</td>
+            </tr>
+             
+        `
+    })
+
+    return `
+                 <div class="row">
+                    <div class="w-100">
+                      <div class="card">
+                        <div class="card-header" style="background-color: #E6F1FE" contenteditable="true"> Thông tin</div>
+                        <div class="card-body" style="">
+                          <div class="table-responsive">
+                            <table class="table">
+                              <thead class="thead-dark"></thead>
+                              <tbody>
+                                <tr>
+                                  <th class="w-25 h-25">Mã nhập hàng</th>
+                                  <td class="w-25 h-25">${d.id}</td>
+                                  <th class="w-25 h-25 border-bottom" style="">Trạng thái</th>
+                                  <td class="border-bottom">${d.deleted?"Đã hủy":"Thành công"}</td>
+                                </tr>
+                                <tr>
+                                  <th class="w-25 h-25">Thời gian</th>
+                                  <td>${d.thoiGian}</td>
+                                  <th scope="row" contenteditable="true" class="w-25 h-25">Tên Người tạo</th>
+                                  <td>${d.taiKhoan.ten}</td>
+                                </tr>
+                                <tr>
+                                  <th scope="row" contenteditable="true" class="w-25 h-25">ID Người tạo</th>
+                                  <td>${d.taiKhoan.idTaiKhoan}</td>
+                                  <th scope="row" contenteditable="true" class="w-25 h-25">
+                                  Tổng số mặt hàng: ${soMatHang}
+                                    </th>
+                                  <th scope="row">Tổng số lượng: ${tongSoLuong}</th>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="card mt-2">
+                        <div style="background-color: #E6F1FE" class="card-header"> Chi tiết lịch sử nhập</div>
+                        <div class="card-body" style="">
+                          <div class="table-responsive">
+                            <table class="table table-bordered">
+                              <thead>
+                              <tr>
+                                  <th>STT</th>
+                                  <th>Mã hàng</th>
+                                  <th class="w-25 h-25">Tên </th>
+                                  <th style="">Số lượng</th>
+                                </tr>
+                                </thead>
+                              <tbody>
+                                 ${rowData}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                      <div style="background-color: #E6F1FE" class="col-md-12 py-3 text-right text-light">
+                            <a class="btn btn-secondary"><i class="fa fa-barcode"></i> Tải xuống file nhập</a>
+                            <a class="btn btn-danger"><i class="fas fa-times"></i> Hủy bỏ</a>
+                      <div class="row">
+                      </div>
+                    </div>
+                    </div>    
             `
-        })
-    return ""
+
 
 }
 
@@ -104,7 +190,7 @@ $(document).ready(() => {
 //Add event detail
 // Array to track the ids of the details displayed rows
     let detailRows = [];
-    let table=$('#dataTable').DataTable();
+    let table = $('#dataTable').DataTable();
 
     $('#dataTable tbody').on('click', 'tr td.dt-control', function () {
         let tr = $(this).closest('tr');
@@ -119,7 +205,10 @@ $(document).ready(() => {
             detailRows.splice(idx, 1);
         } else {
             tr.addClass('details');
-            row.child(format(row.data())).show();
+            getData(row.data()).then((htmlResult) => {
+                row.child(htmlResult).show();
+            })
+
 
             // Add to the 'open' array
             if (idx === -1) {
@@ -404,13 +493,31 @@ $(document).ready(function () {
     // Khởi tạo DataTable
     let table = $('#dataTable').DataTable();
 
-    // Lắng nghe sự kiện thay đổi của select option
-    $('#statusFilter').on('change', function () {
-        let selectedStatus = $('#statusFilter').val();
+    $('#taiKhoanFilter').select2({
+        placeholder: "Chọn nhân viên",
+        ajax: {
+            url: '/api/v1/select2/tai-khoan',
+            delay: 500,
+            data: function (params) {
+                return {
+                    code: params.term,
+                    page: params.page || 0,
+                    pageSize: 10
+                };
+            }
 
-        if (selectedStatus) {
+        },
+
+
+
+    });
+    // Lắng nghe sự kiện thay đổi của select option
+    $('#taiKhoanFilter').on('change', function () {
+        let selectedTaiKhoan = $('#taiKhoanFilter').val();
+
+        if (selectedTaiKhoan) {
             // Áp dụng bộ lọc theo cột Status
-            table.column(0).search('^' + selectedStatus + '$', true, false).draw();
+            table.column(0).search(selectedTaiKhoan, true, false).draw();
         } else {
             // Xóa bộ lọc nếu không có gì được chọn
             table.column(0).search('').draw();
