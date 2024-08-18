@@ -2,6 +2,7 @@ package com.poly.polystore.core.admin.ban_hang.repository.impl;
 
 import com.azure.core.http.rest.PagedResponse;
 import com.poly.polystore.core.admin.ban_hang.model.response.SanPhamDataTableBanHang;
+import com.poly.polystore.entity.HoaDonChiTiet;
 import com.poly.polystore.entity.SanPham;
 import com.poly.polystore.entity.SanPhamChiTiet;
 import com.poly.polystore.utils.PageResponse;
@@ -38,6 +39,7 @@ public class SanPhamRepositoryImpl {
 
         // Join với thực thể SanPhamChiTiet
         Join<SanPham, SanPhamChiTiet> spct = sp.join("sanPhamChiTiet", JoinType.LEFT);
+
 
 
         //Tạo danh sách điều kiện lọc

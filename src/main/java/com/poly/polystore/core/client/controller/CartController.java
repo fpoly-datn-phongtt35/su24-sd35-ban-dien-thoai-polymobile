@@ -1,7 +1,6 @@
 package com.poly.polystore.core.client.controller;
 
 
-import com.google.common.base.Strings;
 import com.poly.polystore.Constant.TRANGTHAIDONHANG;
 import com.poly.polystore.core.client.api.request.DistrictReq;
 import com.poly.polystore.core.client.api.request.WardReq;
@@ -26,7 +25,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/client")
@@ -192,6 +190,7 @@ public class CartController {
         List<OrderGhnReq.Detail> items = new ArrayList<>();
         hoaDon.setMa(UUID.randomUUID().toString());
         hoaDon.setIdKhachHang(khachHang);
+        hoaDon.setKhachHang(khachHang);
         hoaDon.setMaGiamGia(code);
         hoaDon.setTenNguoiNhan(name);
         hoaDon.setSoDienThoai(phone);
@@ -208,13 +207,26 @@ public class CartController {
         hoaDon.setEmail(email);
         hoaDonRepository.save(hoaDon);
         for(GioHang gioHang : gioHangs) {
-            HoaDonChiTiet hoaDonChiTiet = new HoaDonChiTiet();
-            hoaDonChiTiet.setIdSanPhamChiTiet(gioHang.getIdSanPhamChiTiet().getId());
-            hoaDonChiTiet.setIdHoaDon(hoaDon.getId());
-            hoaDonChiTiet.setGiaGoc(gioHang.getIdSanPhamChiTiet().getGiaBan());
-            hoaDonChiTiet.setGiaBan(gioHang.getRealPrice());
-            hoaDonChiTiet.setSoLuong(gioHang.getSoLuong());
-            hoaDonChiTietRepository.save(hoaDonChiTiet);
+//            HoaDonChiTiet hoaDonChiTiet = new HoaDonChiTiet();
+//            hoaDonChiTiet.setIdSanPhamChiTiet(gioHang.getIdSanPhamChiTiet().getId());
+//            hoaDonChiTiet.setIdHoaDon(hoaDon.getId());
+//            hoaDonChiTiet.setGiaGoc(gioHang.getIdSanPhamChiTiet().getGiaBan());
+//            hoaDonChiTiet.setGiaBan(gioHang.getRealPrice());
+//            hoaDonChiTiet.setSoLuong(gioHang.getSoLuong());
+//            hoaDonChiTietRepository.save(hoaDonChiTiet);
+            //Loại bỏ số lượng vì đã có imei
+            for (int i = 0; i < gioHang.getSoLuong(); i++) {
+                HoaDonChiTiet hoaDonChiTiet = new HoaDonChiTiet();
+                var spct=new SanPhamChiTiet();
+                spct.setId(gioHang.getIdSanPhamChiTiet().getId());
+                hoaDonChiTiet.setSanPhamChiTiet(spct);
+                var hd=new HoaDon();
+                hoaDonChiTiet.setHoaDon(hoaDon);
+                hoaDonChiTiet.setGiaGoc(gioHang.getIdSanPhamChiTiet().getGiaBan());
+                hoaDonChiTiet.setGiaBan(gioHang.getRealPrice());
+                hoaDonChiTietRepository.save(hoaDonChiTiet);
+            }
+
         }
         sendMailUtil.sendMailOrder(hoaDon,email);
         if(payment.equals("offline")){

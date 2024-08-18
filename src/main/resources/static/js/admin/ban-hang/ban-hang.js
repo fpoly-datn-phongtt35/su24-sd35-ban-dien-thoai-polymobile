@@ -384,12 +384,19 @@ function loadToOffcanvas(idSp) {
     $.get('/api/v1/sale/product/' + idSp).then(function (sanPham) {
         _uniqueProductRoms = new Map();
         sanPham.sanPhamChiTiet.forEach(spct => {
+            let giaBan=spct.giaBan;
+            if(spct.dotGiamGia && !spct.dotGiamGia.deleted){
+                if(spct.dotGiamGia.donvi == '%')
+                    giaBan =spct.giaBan - spct.giaBan * spct.dotGiamGia.giaTriGiam / 100;
+                else
+                    spct.giaBan - spct.dotGiamGia.giaTriGiam
+            }
 
             _mapProductDetail.set(spct.id.toString(), {
                 sanPhamChiTietId: spct.id,
                 sanPhamTen: sanPham.tenSanPham + " " + spct.rom + " " + spct.mauSac.ten,
                 soLuong: spct.soLuong - (danhSachSanPhamDaThem.get(spct.id.toString()) || 0),
-                giaBan: spct.dotGiamGia.donvi == '%' ? spct.giaBan - spct.giaBan * spct.dotGiamGia.giaTriGiam / 100 : spct.giaBan - spct.dotGiamGia.giaTriGiam,
+                giaBan: giaBan,
                 rom: spct.rom,
                 mauSacTen: spct.mauSac.ten
             });
@@ -460,18 +467,45 @@ function loadToOffcanvas(idSp) {
                 //dot giam gia
                 {
                     let giaSanPhamHtml = '';
-                    giaSanPhamHtml = `
-                    <div class="p-0 d-flex align-items-end">
-                    <h5 class="me-3">Giá gốc:</h5><del class="h5 mt-2 price text-15 text-th">${toCurrency(spct.giaBan)}
-                        
-                    </del>
-                    <span class="ml-1"> - ${spct.dotGiamGia.donvi == '%' ? spct.dotGiamGia.giaTriGiam + '%' : toCurrency(spct.dotGiamGia.giaTriGiam)}</span>
-                    
-                    </div>
-                     <div class="p-0 d-flex align-items-end">
-                        <h5 class="me-3 p-0 m-0">Giá khuyến mại:</h5><div class="p-0"><span class="h5 mt-2 price font-weight-bold">${toCurrency(spct.dotGiamGia.donvi == '%' ? spct.giaBan - spct.giaBan * spct.dotGiamGia.giaTriGiam / 100 : spct.giaBan - spct.dotGiamGia.giaTriGiam)}</span></div>
-                    </div>
-`
+                    let giaBan=spct.giaBan;
+                    if(spct.dotGiamGia && !spct.dotGiamGia.deleted){
+                        if(spct.dotGiamGia.donvi == '%')
+                            giaSanPhamHtml = `
+                                <div class="p-0 d-flex align-items-end">
+                                <h5 class="me-3">Giá gốc:</h5><del class="h5 mt-2 price text-15 text-th">${toCurrency(spct.giaBan)}
+                                    
+                                </del>
+                                <span class="ml-1"> - ${ spct.dotGiamGia.giaTriGiam + '%'}</span>
+                                
+                                </div>
+                                 <div class="p-0 d-flex align-items-end">
+                                    <h5 class="me-3 p-0 m-0">Giá khuyến mại:</h5><div class="p-0"><span class="h5 mt-2 price font-weight-bold">${toCurrency(spct.giaBan - spct.giaBan * spct.dotGiamGia.giaTriGiam / 100)}</span></div>
+                                </div>
+                                 `
+                        else
+                            giaSanPhamHtml = `
+                                <div class="p-0 d-flex align-items-end">
+                                <h5 class="me-3">Giá gốc:</h5><del class="h5 mt-2 price text-15 text-th">${toCurrency(spct.giaBan)}
+                                    
+                                </del>
+                                <span class="ml-1"> - ${toCurrency(spct.dotGiamGia.giaTriGiam)}</span>
+                                
+                                </div>
+                                 <div class="p-0 d-flex align-items-end">
+                                    <h5 class="me-3 p-0 m-0">Giá khuyến mại:</h5><div class="p-0"><span class="h5 mt-2 price font-weight-bold">${toCurrency(spct.giaBan - spct.dotGiamGia.giaTriGiam)}</span></div>
+                                </div>
+                                 `
+                    }else{
+                        giaSanPhamHtml = `
+                            <div class="p-0 d-flex align-items-end">
+                           
+                             <div class="p-0 d-flex align-items-end">
+                                <h5 class="me-3 p-0 m-0">Giá:</h5><div class="p-0"><span class="h5 mt-2 price font-weight-bold">${toCurrency(spct.giaBan)}</span></div>
+                            </div>`
+                    }
+
+
+
                     $('#sp-gia').html(giaSanPhamHtml)
                 }
 
@@ -685,11 +719,13 @@ function checkout(invoice) {
     })
 
     $offcv.find('.offcanvas-title').text(tenHoaDon)
+    $('#hd-giam-gia').text('')
     $('#hd-tong-so-luong').text(tongSoSanPham);
     $('#tbl-imei').html(imeiRow);
     $('#hd-tong-so-tien').text(toCurrency(tongTien));
     $('#hd-khach-tra').text(toCurrency(tongTien));
     updateBillStep2(tongTien);
+
     $('#hd-voucher').val([]).trigger('change');
 
     $offcv.find('input[spct-id]').on('focus', function ()  {
@@ -950,7 +986,40 @@ $(document).ready(()=>{
         }
         form.addClass('was-validated')
         if(form.find('.is-invalid').length === 0){
-            alert('OK')
+            let danhSachSanPham=[];
+
+            let formData = {
+                ten: $('#add-ten').val(),
+                gpu: $('#add-gpu').val(),
+                link: $('#add-link').val()
+            }
+            // Nếu form hợp lệ, gửi dữ liệu form lên server
+            $.ajax({
+                url: apiURL, // Thay 'URL_API' bằng đường dẫn của API của bạn
+                method: 'PUT', // Phương thức HTTP
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+                success: function (response) {
+                    Toast.fire({
+                        icon: "success",
+                        title: "Thêm mới thành công"
+                    })
+                    $('#modal-add').modal('hide');
+                    reloadDataTable();
+                    console.log(response);
+                },
+                error: function (xhr, status, error) {
+                    Toast.fire({
+                        icon: "error",
+                        title: "Thêm mới thất bại"
+                    });
+                    reloadDataTable();
+                    console.log(response);
+                    console.error(xhr.responseText);
+                }
+            });
+
+
 
         }
     });
