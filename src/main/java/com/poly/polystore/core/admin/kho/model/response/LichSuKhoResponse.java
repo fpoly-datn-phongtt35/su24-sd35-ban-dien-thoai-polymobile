@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter @Setter
 public class LichSuKhoResponse implements Serializable {
-    Integer id;
+    private Integer id;
     private String thoiGian;
     private String ghiChu;
     private Boolean deleted;

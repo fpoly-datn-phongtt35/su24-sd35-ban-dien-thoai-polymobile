@@ -64,6 +64,20 @@ const clearForm = (selector) => {
 
 }
 
+function showSpinner($rootContainer){
+    $rootContainer.css({"position":"relative"});
+    $rootContainer.append(`
+        <div class="text-center text-light ultil-spinner-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; z-index: 9999;">
+          <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+    `)
+}
+function hideSpinner($rootContainer){
+    $rootContainer.find('.ultil-spinner-overlay').remove();
+}
+
 function dataToJson(event) {
     return new Promise((resolve, reject) => {
         const file = event.target.files[0];
@@ -115,6 +129,12 @@ const showConfirm = (title, message) => {
 }
 
 $(document).ready(()=>{
+
+
+
+
+
+    //Toast
     $("body").append(`
             <div class="toast-container position-fixed bottom-0 left-0 p-3" style="z-index: 99999; bottom: 0;">
             <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
@@ -174,4 +194,16 @@ function showWnToast(title, message) {
         </div>
     `);
     $('.toast-container').find('.toast').last().toast('show')
+}
+function printDiv($document,$div,title){
+    var divContents = $div.html();
+    var printWindow = window.open('', '', `height=${$div.height()},width=1200`);
+    var head=$document.find('head').html();
+    printWindow.document.write('<html>'+head);
+    printWindow.document.write('<body>');
+    printWindow.document.write(`<div><h1>${title}</h1></div>`);
+    printWindow.document.write(divContents);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
 }

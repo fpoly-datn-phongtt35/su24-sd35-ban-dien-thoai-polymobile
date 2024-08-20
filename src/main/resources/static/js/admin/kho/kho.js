@@ -79,7 +79,7 @@ function loadData() {
 
             }
         ],
-        "order": [[1, 'asc']],
+        "order": [[1, 'desc']],
         "search": {
             return: true
         }
@@ -121,11 +121,12 @@ async function getData(d) {
     return `
                  <div class="row">
                     <div class="w-100">
+                      <div class="print-content">
                       <div class="card">
-                        <div class="card-header" style="background-color: #E6F1FE" contenteditable="true"> Thông tin</div>
+                        <div class="card-header" style="background-color: #E6F1FE"> Thông tin</div>
                         <div class="card-body" style="">
                           <div class="table-responsive">
-                            <table class="table">
+                            <table class="table" style="text-align: left">
                               <thead class="thead-dark"></thead>
                               <tbody>
                                 <tr>
@@ -173,8 +174,12 @@ async function getData(d) {
                           </div>
                         </div>
                       </div>
+                      <div class="card mt-2 ${d.ghiChu.length===0?'d-none':''}">
+                            Ghi chú: ${d.ghiChu}
+                        </div>
+                        </div>
                       <div style="background-color: #E6F1FE" class="col-md-12 py-3 text-right text-light">
-                            <a class="btn btn-secondary"><i class="fa fa-barcode"></i> Tải xuống file nhập</a>
+                            <a onclick="printDiv($(document),$(this).closest('tr').find('.print-content'),'Phiếu nhập kho')" class="btn btn-secondary"><i class="fa fa-print"></i> In</a>
                             <a class="btn btn-danger"><i class="fas fa-times"></i> Hủy bỏ</a>
                       <div class="row">
                       </div>
@@ -602,4 +607,3 @@ $(document).ready(function () {
     }
 
 });
-

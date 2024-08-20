@@ -104,4 +104,7 @@ public class SanPhamChiTiet implements Serializable {
     private List<HoaDonChiTiet> hoaDonChiTiet;
 
 
+    public SanPhamChiTiet(Integer id) {
+        this.id = id;
+    }
 }

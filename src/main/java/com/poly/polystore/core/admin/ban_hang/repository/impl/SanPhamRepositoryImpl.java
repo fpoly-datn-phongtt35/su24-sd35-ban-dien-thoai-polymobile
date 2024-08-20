@@ -23,6 +23,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -153,6 +154,21 @@ public class SanPhamRepositoryImpl {
 
         return resp;
 
+    }
+
+    public List<Object[]> findAllByIds(Set<Integer> ids) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Object[]> query = cb.createQuery(Object[].class);
+        Root<SanPhamChiTiet> spct = query.from(SanPhamChiTiet.class);
+        query.multiselect(spct.get("id"),
+            cb.concat(
+                cb.concat(cb.concat(
+                        cb.concat(spct.get("sanPham").get("tenSanPham")," "),
+                        spct.get("rom"))," "),
+            spct.get("mauSac").get("ten"))
+        ).where(spct.get("id").in(ids));
+        TypedQuery<Object[]> typedQuery = em.createQuery(query);
+        return typedQuery.getResultList();
     }
 
 //    public Page<Select2Response.Result> findTaiKhoanNhanVienByCodeLike(String searchKey, Pageable pageAble) {

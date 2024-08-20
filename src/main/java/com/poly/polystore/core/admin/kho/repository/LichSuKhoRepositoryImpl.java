@@ -1,6 +1,7 @@
 package com.poly.polystore.core.admin.kho.repository;
 
 import com.google.common.base.Strings;
+import com.poly.polystore.core.admin.kho.model.request.NhapHangRequest;
 import com.poly.polystore.core.admin.kho.model.response.LichSuKhoResponse;
 import com.poly.polystore.dto.DataTableResponse;
 import com.poly.polystore.entity.*;
@@ -25,6 +26,8 @@ public class LichSuKhoRepositoryImpl {
     @PersistenceContext
     private final EntityManager entityManager;
 
+
+
     public DataTableResponse findAll(Map<String, String> params) {
         var resp = new DataTableResponse();
         resp.setData(null);
@@ -41,7 +44,7 @@ public class LichSuKhoRepositoryImpl {
 
         //Lọc theo search key
         if (!Strings.isNullOrEmpty(params.get("search[value]"))) {
-            var predicate = cb.equal(cb.toString(lsk.get("id")), "%" + params.get("search[value]") + "%");
+            var predicate = cb.equal(cb.toString(lsk.get("id")),  params.get("search[value]") );
             predicates.add(predicate);
         }
 
@@ -156,7 +159,6 @@ public class LichSuKhoRepositoryImpl {
     }
 
     public List<?> findById(Integer id) {
-        var lichSuKhoResponse = new LichSuKhoResponse();
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<LichSuKhoResponse.LichSuKhoChiTiet> query = cb.createQuery(LichSuKhoResponse.LichSuKhoChiTiet.class);
         Root<LichSuKho> lsk=query.from(LichSuKho.class);
@@ -180,6 +182,7 @@ public class LichSuKhoRepositoryImpl {
                 .where(cb.equal(lsk.get("id"),id));
         query.orderBy(cb.desc(sp.get("tenSanPham")),cb.desc(spct.get("rom")));
         var typeQuery=entityManager.createQuery(query);
+
 
 
         return typeQuery.getResultList();

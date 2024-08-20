@@ -15,6 +15,8 @@ public class Imei {
         TRONG_KHO,DA_BAN,CHO_BAN
     }
 
+
+
     @Id
     @Column(name = "IMEI", nullable = false)
     private String imei;
@@ -27,5 +29,8 @@ public class Imei {
     @Column(name = "TRANG_THAI")
     private TrangThai trangThai;
 
+    @ManyToOne
+    @JoinColumn(name="CHI_TIET_LICH_SU_KHO_ID")
+    private ChiTietLichSuKho chiTietLichSuKho;
 
 }

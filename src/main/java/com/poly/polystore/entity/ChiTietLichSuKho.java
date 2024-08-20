@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
+@Builder
 @Table(name = "CHI_TIET_LICH_SU_KHO")
 public class ChiTietLichSuKho {
     @Id
@@ -27,4 +29,8 @@ public class ChiTietLichSuKho {
 
     @Column(name = "SO_LUONG", nullable = false)
     private Integer soLuong;
+
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "chiTietLichSuKho",cascade = CascadeType.ALL)
+    private List<Imei> imeis;
+
 }

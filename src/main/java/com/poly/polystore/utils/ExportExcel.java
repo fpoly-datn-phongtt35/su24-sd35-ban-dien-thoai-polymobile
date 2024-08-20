@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ExportExcel<Type> {
     public ByteArrayInputStream export(List<Type> lstObj) throws IOException {
-        if (lstObj == null || lstObj.size() == 0) return null;
+        if (lstObj == null || lstObj.isEmpty()) return null;
 
 
         Class<?> clazz = lstObj.get(0).getClass();

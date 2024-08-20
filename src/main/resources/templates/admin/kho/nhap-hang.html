@@ -29,7 +29,7 @@
 
             <div class="row">
                 <div class="d-flex col-3" style="line-height: 40px">
-                    <a href="#" class="mr-3">
+                    <a href="/admin/kho" class="mr-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M15 8a.5.5 0 0 1-.5.5H3.707l4.147 4.146a.5.5 0 0 1-.708.708l-5-5a.5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708.708L3.707 7.5H14.5A.5.5 0 0 1 15 8z"/>
                         </svg>
@@ -39,9 +39,11 @@
                 <!-- Additional controls -->
                 <div class="col-9 row justify-content-end">
 
-                    <select id="select-san-pham" class="form-control-plaintext text-primary col-7 mr-3" multiple="multiple" required>
-                        <option></option>
-                    </select>
+                    <div class=" col-5 mr-3">
+                        <select id="select-san-pham" class="form-control-plaintext text-primary" multiple="multiple" required>
+                            <option></option>
+                        </select>
+                    </div>
                     <div>
                         <a id="btn-add" href="#" class="btn btn-primary btn-icon-split mr-2 w-auto">
                                         <span class="icon text-white-50">
@@ -78,121 +80,63 @@
                         </table>
                     </div>
 
-                    <!-- Add from Excel Section -->
+
+                </div>
+                <div class="col-4">
+                    <div class="table-responsive"style="max-height: 500px; overflow: auto" >
+                        <form id="form-imei">
+                            <table id="table-imei" class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th scope="col">STT</th>
+                                    <th scope="col">IMEI</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </form>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-8">
+
                     <div class="text-center mt-4">
                         <p>Thêm sản phẩm từ file excel</p>
-                        <p>(Tải về file mẫu: <a href="#">Excel file</a>)</p>
-                        <a href="#" class="btn btn-success btn-icon-split mr-2" id="btn-import">
+                        <p>(Tải về file mẫu: <a href="/api/v1/kho/export_IMEI_TEMPLATE">Excel file</a>)</p>
+                        <label for="import-file" class="btn btn-success btn-icon-split mr-2" id="btn-import">
                                         <span class="icon text-white-50">
                                             <i class="fas fa-file-import"></i>
                                         </span>
 
 
                             <span class="text">Nhập file excel</span>
-                        </a>
+                        </label>
                         <input type="file" class="d-none" id="import-file"/>
                     </div>
                 </div>
                 <div class="col-4">
-                    <table id="table-imei" class="table table-bordered">
-                        <thead>
-                        <tr>
-                            <th scope="col">IMEI</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+
+                    <div class="mt-4">
+                        <div class="form-group">
+                            <label for="note">Ghi chú</label>
+                            <textarea class="form-control" id="note" rows="3"></textarea>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
+
+    </div>
+    <div class="col-12 text-right p-0 py-2" style="background-color: #f8f9fc">
+        <button type="button" onclick="nhapHang()" class="btn btn-primary">Nhập hàng</button>
     </div>
 </div>
-<!--modal edit-->
-<div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="EditModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="EditModalLabel">Chỉnh sửa công nghệ màn hình</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
 
-                <form id="form-edit" class="needs-validation" novalidate>
-                    <div class="form-group">
-                        <label for="edit-id">ID công nghệ màn hình:</label>
-                        <input type="text" class="form-control" id="edit-id" placeholder="ID" readonly>
-                        <div class="invalid-feedback">ID không được để trống</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-ten">Tên công nghệ màn hình:</label>
-                        <input type="text" class="form-control" id="edit-ten" placeholder="Tên công nghệ màn hình" required>
-                        <div class="invalid-feedback">Tên công nghệ màn hình đã tồn tại hoặc không hợp lệ</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-link">Đường dẫn chi tiết:</label>
-                        <input type="text" class="form-control" id="edit-link" placeholder="Đường dẫn chi tiết" pattern="^$|^((https?:\/\/)?([a-zA-Z0-9\-\_]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?$">
-                        <div class="invalid-feedback">Đường dẫn không hợp lệ</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-deleted" class="form-label">Trạng thái</label>
-                        <select class="form-control" id="edit-deleted" required>
-                        </select>
-                        <div class="invalid-feedback">
-                            Vui lòng chọn trạng thái
-                        </div>
-                    </div>
-                    <div class="form-group justify-content-end ">
-                        <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Hủy</button>
-
-                        <button type="submit" class="btn btn-primary">Cập nhật</button>
-                    </div>
-
-                </form>
-            </div>
-
-
-        </div>
-    </div>
-</div>
-<!--add modal-->
-<div class="modal fade" id="modal-add" tabindex="-1" role="dialog" aria-labelledby="modal-addLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modal-addLabel">Thêm mới</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-
-                <form id="form-add" class="needs-validation" novalidate>
-                    <div class="form-group">
-                        <label for="add-ten">Tên công nghệ:</label>
-                        <input type="text" class="form-control " id="add-ten" placeholder="Tên công nghệ màn hình" required>
-                        <div class="invalid-feedback">Tên đã tồn tại hoặc không hợp lệ</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="add-link">Đường dẫn chi tiết:</label>
-                        <input type="text" class="form-control" id="add-link" placeholder="Đường dẫn chi tiết" pattern="^$|^((https?:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,})(:[0-9]{1,5})?(\/[^\s]*)?$">
-                        <div class="invalid-feedback">Đường dẫn không hợp lệ</div>
-                    </div>
-                    <div class="form-group justify-content-end ">
-                        <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal">Hủy</button>
-
-                        <button type="submit" class="btn btn-primary">Xác nhận</button>
-                    </div>
-
-                </form>
-            </div>
-
-
-        </div>
-    </div>
-</div>
 
 </body>
 
@@ -201,6 +145,8 @@
     <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
     <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
     <script src="/vendor/select2/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
 
     <!-- Page level custom scripts -->
     <script  src="/js/admin/kho/nhap-hang.js"></script>
