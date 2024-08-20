@@ -174,7 +174,7 @@ async function getData(d) {
                           </div>
                         </div>
                       </div>
-                      <div class="card mt-2 ${d.ghiChu.length===0?'d-none':''}">
+                      <div class="card mt-2 ${d.ghiChu.length===0?'d-none'ap:''}">
                             Ghi chú: ${d.ghiChu}
                         </div>
                         </div>
