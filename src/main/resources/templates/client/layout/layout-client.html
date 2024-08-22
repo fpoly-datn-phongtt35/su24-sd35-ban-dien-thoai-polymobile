@@ -121,7 +121,7 @@
                     <div class="header__nav__option">
                         <a href="#" class="search-switch"><img src="/img/img/icon/search.png" alt=""></a>
                         <a href="#"><img src="/img/img/icon/heart.png" alt=""></a>
-                        <a th:href="@{/client/checkout}"><img th:src="@{/img/img/icon/cart.png}" alt=""> <span id="cart-number" class="position-absolute translate-middle badge rounded-pill bg-danger" style="top: -5px;" ></span></a>
+                        <a onclick="validation()" th:href="@{/client/checkout}"><img th:src="@{/img/img/icon/cart.png}" alt=""> <span id="cart-number" class="position-absolute translate-middle badge rounded-pill bg-danger" style="top: -5px;" ></span></a>
                     </div>
                 </div>
 
@@ -261,6 +261,14 @@
                 }
             )
         })
+
+        function validation(){
+            let html = $('#cart-number').html();
+            if(html == ''){
+                showErrorToast("Bạn cần có sản phẩm trong giỏ hàng trước khi giao!");
+                event.preventDefault();
+            }
+        }
     </script>
 </body>
 

@@ -137,7 +137,7 @@
                     </div>
                     <div class="form-group">
                         <label for="street">Phường/Xã</label>
-                        <select class="form-control" name="street" id="street" required>
+                        <select class="form-control" name="street" id="street" onchange="shippingfee()" required>
 
                         </select>
                     </div>
@@ -174,7 +174,7 @@
                                              aria-controls="private" th:onclick="collapse([[${item.id}]])">
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="iddiachi" id="private_sector"
-                                                       th:value="${item.id}" th:checked="${item.laDiaChiMacDinh}">
+                                                       th:value="${item.id}" th:checked="${item.laDiaChiMacDinh}" th:onclick="shippingfeeDiachi([[${item.ward}]],[[${item.street}]])">
                                                 <label class="form-check-label" for="private_sector" th:text="${item.diaChi}"></label>
                                             </div>
                                         </div>
@@ -239,7 +239,6 @@
                         <label for="discount-code">Phí giao hàng</label>
                         <div class="row">
                             <input type="text" class="form-control col-6" id="shipping" name="shipping" readonly required>
-                            <button type="button" class="form-control col-4" style="margin-left: 6%" onclick="shippingfee()">Phí shipping</button>
                         </div>
                     </div>
                 </div>
@@ -265,6 +264,10 @@
 <script type="text/javascript">
     $().ready(function () {
         var checked = "[[${isChecked}]]";
+        var error = "[[${error}]]";
+        if(error != ''){
+            toastr.error(error);
+        }
         if(checked == '')
         {
             $.ajax(
@@ -340,6 +343,7 @@
                         // Add the new option to the select element
                         document.getElementById("street").add(option);
                     })
+                    shippingfee();
                 }
             }
         )
@@ -419,6 +423,45 @@
                 }),
                 success: function (data, textStatus, jqXHR) {
                     window.location.href='/client/checkout';
+                }
+            }
+        )
+    }
+
+    function shippingfeeDiachi(ward,street){
+        let streetCode = street;
+        let city = ward;
+        if(streetCode == '' || city == ''){
+            toastr.error('Bạn quên chọn địa điểm nhận hàng rồi');
+            return;
+        }
+        let feeRequest = {
+            to_ward_code : streetCode,
+            to_district_id : city,
+            serviceID : '53320',
+            weight : '1000'
+        }
+        $.ajax(
+            {
+                url: "/client/shipping/shipping-fee",
+                contentType: 'application/json',
+                type: 'Post',
+                data: JSON.stringify(
+                    {
+                        to_ward_code : streetCode,
+                        to_district_id : city,
+                        service_type_id : '5',
+                        weight : '1000',
+                        name : 'abc',
+                        quantity : [[${gioHangs.size()}]],
+                    }
+                ),
+                success: function (data, textStatus, jqXHR) {
+                    const formatter = new Intl.NumberFormat('en-US');
+                    $('#shipping').val(data.data.total);
+                    let totalPrice = [[${total}]];
+                    $('#total-price').html(formatter.format(Number(totalPrice) - Number(data.data.total)));
+                    toastr.success('Phí ship hàng đã được áp dụng');
                 }
             }
         )

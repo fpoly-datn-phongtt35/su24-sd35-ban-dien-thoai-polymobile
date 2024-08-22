@@ -56,6 +56,9 @@ public class CartController {
         else {
             gioHangs = cookieUlti.getDataFromCart(request);
         }
+        if(gioHangs.isEmpty()){
+            return "redirect:/iphone";
+        }
         List<PhieuGiamGia> list = phieuGiamGiaRepository.findAll().stream().filter(n -> n.getThoiGianBatDau().isBefore(Instant.now()) &&
                 n.getThoiGianKetThuc().isAfter(Instant.now()) && !n.getDeleted()).toList();
         if(!list.isEmpty()){
@@ -92,13 +95,12 @@ public class CartController {
                            @RequestParam(value = "street",required = false) String street, HttpServletRequest request,
                            @RequestParam(value = "email",required = false) String email, @RequestParam("shipping") String shipping,
                            @RequestParam(value = "iddiachi",required = false) String iddiachi,@RequestParam(value = "defaultAddress",required = false) String defaultAddress,
-                           HttpServletResponse response) throws MessagingException, IOException {
+                           HttpServletResponse response,Model model) throws MessagingException, IOException {
         TaiKhoan taiKhoan = cookieUlti.getTaiKhoan(request);
         List<GioHang> gioHangs = new ArrayList<>();
         KhachHang khachHang = new KhachHang();
         if(taiKhoan != null) {
             gioHangs = gioHangRepository.findByIdTaiKhoan(taiKhoan.getId());
-            gioHangRepository.deleteAll(gioHangs);
             Optional<KhachHang> optionalKhachHang = khachHangRepository.findByIdTaiKhoan(taiKhoan.getId());
             if(!optionalKhachHang.isPresent()){
                 khachHang = new KhachHang();
@@ -135,9 +137,20 @@ public class CartController {
             diaChiGiaoHang.setLaDiaChiMacDinh(false);
             diaChiGiaoHangRepository.save(diaChiGiaoHang);
             gioHangs = cookieUlti.getDataFromCart(request);
+        }
+        for(GioHang item : gioHangs){
+            if(item.getSoLuong() > item.getIdSanPhamChiTiet().getSoLuong()){
+                model.addAttribute("error","Số lượng sản phẩm mua không được lớn hơn số lượng trong kho");
+                return checkout(request,model);
+            }
+        }
+        if(taiKhoan != null){
+            gioHangRepository.deleteAll(gioHangs);
+        }
+        else {
             cookieUlti.removeCookie(request,response);
         }
-        List<PhieuGiamGia> list = phieuGiamGiaRepository.findAll().stream().filter(n -> n.getThoiGianBatDau().isBefore(Instant.now()) &&
+            List<PhieuGiamGia> list = phieuGiamGiaRepository.findAll().stream().filter(n -> n.getThoiGianBatDau().isBefore(Instant.now()) &&
                 n.getThoiGianKetThuc().isAfter(Instant.now()) && !n.getDeleted()).toList();
         if(!list.isEmpty()){
             PhieuGiamGia phieuGiamGia = list.get(0);
