@@ -18,4 +18,11 @@ public class TaiKhoanService {
     public TaiKhoan save(TaiKhoan taiKhoan) {
         return taiKhoanRepository.save(taiKhoan);
     }
+
+    public boolean existsBySoDienThoai(String phoneNumber) {
+        return taiKhoanRepository.existsBySoDienThoai(phoneNumber);
+    }
+    public boolean existsByEmail(String email) {
+        return taiKhoanRepository.existsByEmail(email);
+    }
 }

@@ -1,6 +1,7 @@
 package com.poly.polystore.config;
 
 import com.poly.polystore.config.jwt.JwtAuthenticationFilter;
+import com.poly.polystore.core.common.login.service.CustomOauth2UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -63,7 +64,11 @@ public class SecurityConfig {
             "/iphone/**",
             "/client/**",
             "/img/**",
-            "/api/v2/san-pham/**"
+            "/api/v2/san-pham/**",
+            "/home",
+            "/verify-account",
+            "/reset-otp"
+
     };
     String[] adminURL = {
 
@@ -104,7 +109,7 @@ public class SecurityConfig {
 
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomOauth2UserService customOauth2UserService) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
@@ -121,14 +126,24 @@ public class SecurityConfig {
                         .requestMatchers(adminURL).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
                 .authenticationProvider(authenticationProvider())
+                .oauth2Login(httpSecurityOAuth2ClientConfigurer -> httpSecurityOAuth2ClientConfigurer
+                        .loginPage("/sign-in")
+                        .defaultSuccessUrl("/home")
+                        .failureUrl("/sign-in?error=800")
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
+                                .userService(customOauth2UserService)
+                        )
+
+                )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/sign-in")
                         .invalidateHttpSession(true)
                         .deleteCookies("Authorization")
-                );
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

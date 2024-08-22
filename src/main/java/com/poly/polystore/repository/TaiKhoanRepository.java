@@ -17,4 +17,8 @@ public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, Integer> {
     Page<LichSuKhoResponse.TaiKhoan> findTaiKhoanNhanVienByCodeLike(String searchKey, Pageable pageAble);
     @Query("SELECT new com.poly.polystore.core.admin.kho.model.response.LichSuKhoResponse$TaiKhoan(tk.id,tk.ten) FROM TaiKhoan tk WHERE tk.role != 'ROLE_GUEST' AND tk.role != 'ROLE_CUSTOMER'")
     Page<LichSuKhoResponse.TaiKhoan> findAllTaiKhoanRessp(Pageable pageAble);
+
+    boolean existsBySoDienThoai(String soDienThoai);
+
+    boolean existsByEmail(String email);
 }

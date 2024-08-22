@@ -63,6 +63,9 @@ public class TaiKhoan implements UserDetails {
     @Column(name = "Ten", length = 50)
     private String ten;
 
+    @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL)
+    private List<Oauth> oauths;
+
     @Nationalized
     @Column(name = "Loai_tai_khoan", length = 255)
     private String loaiTaikhoan;

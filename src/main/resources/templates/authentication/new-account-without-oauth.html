@@ -35,7 +35,7 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
             position: relative;
             overflow: hidden;
-            width: 768px;
+            width: 550px;
             max-width: 100%;
             min-height: 480px;
         }
@@ -84,7 +84,6 @@
             justify-content: center;
             flex-direction: column;
             padding: 0 40px;
-            height: 100%;
         }
 
         .container input {
@@ -230,62 +229,32 @@
 <body>
 
 <div class="container" id="container">
-    <div class="form-container sign-up">
-        <form id="registForm">
-            <h1>Tạo tài khoản mới</h1>
-            <div class="social-icons">
-                <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
-                <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
-                <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
+    <div class="text-center"><h3 class="p-1 py-4 h4">Chỉ còn một bước trước khi bắt đầu</h3></div>
+    <form th:object="${newTaiKhoan}">
+        <div class="row w-100">
+            <div class="form-group w-100">
+                <label for="ten">Họ và tên</label>
+                <input th:value="*{ten}" type="text" class="form-control is-invalid" id="ten" placeholder="Tên khách hàng" required>
+                <div class="invalid-feedback">Tên khách hàng không được để trống</div>
             </div>
-            <span th:if="${message!=null}" th:text="${message}" class="text-danger"></span>
-            <span th:unless="${message!=null}">hoặc đăng ký tài khoản mới với email và mật khẩu</span>
-            <input type="text" name="ten" class="form-control" required placeholder="Tên tài khoản">
-            <input type="email" name="email" class="form-control" required placeholder="Email">
-            <input type="tel" name="soDienThoai" class="form-control" required placeholder="Số điện thoại" pattern="(84|0[3|5|7|8|9])+([0-9]{8})">
-            <input type="password" name="matKhau" class="form-control" required placeholder="Mật khẩu" pattern="\\w{6-12}">
-            <button>Đăng ký</button>
-        </form>
-    </div>
-    <div class="form-container sign-in">
-        <form id="loginForm">
-            <h1>Đăng nhập</h1>
-            <div class="social-icons">
-                <a href="/oauth2/authorization/google" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
-                <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
-                <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
+            <div class="form-group w-100">
+                <label for="email">Địa chỉ email</label>
+                <input type="email" class="form-control" id="email" th:value="*{email}" disabled>
             </div>
-            <span th:if="${message!=null}" th:text="${message}" class="text-danger"></span>
-            <span th:unless="${message!=null}">hoặc đăng ký tài khoản mới với email và mật khẩu</span>
-            <input type="email" class="form-control" id="email" placeholder="Email" required>
-            <div class="invalid-feedback">
-                Vui lòng nhập chính xác địa chỉ email của bạn
+            <div class="form-group w-100">
+                <label for="sdt">Số điện thoại</label>
+                <input type="tel" class="form-control" id="sdt" th:value="*{soDienThoai}" pattern="(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})">
+                <div class="invalid-feedback">Vui lòng kiểm tra số điện thoại</div>
+
             </div>
-            <input type="password" class="form-control" id="password" placeholder="Password" required>
-            <div class="invalid-feedback">
-                Vui lòng nhập mật khẩu
-            </div>
-            <a href="#">Quên mật khẩu?</a>
-            <button>Đăng nhập</button>
-        </form>
-    </div>
-    <div class="toggle-container">
-        <div class="toggle">
-            <div class="toggle-panel toggle-left">
-                <h1>Chào Mừng Quay Lại!</h1>
-                <p>Đăng Nhập Ngay Để Khám Phá Ưu Đãi Hấp Dẫn!</p>
-                <button class="hidden" id="login">Đăng nhập</button>
+            <div class="form-group w-100">
+                <label for="sdt">Số điện thoại</label>
+                <input type="tel" class="form-control" id="code"  pattern="/d{4}">
+                <div class="invalid-feedback">Vui lòng kiểm tra số điện thoại</div>
             </div>
 
-            <div class="toggle-panel toggle-right">
-                <h1>Tham Gia Ngay! </h1>
-                <p>Đăng Ký Để Nhận Ưu Đãi Hấp Dẫn và Tin Tức Mới Nhất!</p>
-                <button class="hidden" id="register">Đăng ký</button>
-            </div>
         </div>
-    </div>
+    </form>
 </div>
 <script src="/vendor/jquery/jquery.min.js"></script>
 
@@ -347,7 +316,7 @@
                         // Chuyển hướng người dùng đến trang chính hoặc trang trước đó (nếu có)
                         let successUrl=new URLSearchParams(window.location.href).get('successUrl')
                         if(successUrl)
-                        window.location.href = successUrl;
+                            window.location.href = successUrl;
 
                     },
                     error: function (response) {
@@ -356,7 +325,6 @@
                 });
             }
         });
-
     });
 </script>
 </body>

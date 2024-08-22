@@ -9,7 +9,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -39,11 +41,9 @@ public class AuthenticationService {
     }
 
 
-    public JwtAuthenticationResponse signin(String email, String password) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(email,password));
-        var taiKhoan = taiKhoanService.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid phone number or password."));
+    public JwtAuthenticationResponse signin(String email, String password) throws BadCredentialsException {
+        var taiKhoan =(TaiKhoan) authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email,password)).getPrincipal();
 
         var jwt = jwtService.generateToken(taiKhoan);
 

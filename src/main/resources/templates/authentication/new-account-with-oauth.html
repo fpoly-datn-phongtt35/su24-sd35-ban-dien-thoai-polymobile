@@ -35,9 +35,9 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
             position: relative;
             overflow: hidden;
-            width: 768px;
+            width: 550px;
             max-width: 100%;
-            min-height: 480px;
+            min-height: 530px;
         }
 
         .container p {
@@ -84,7 +84,6 @@
             justify-content: center;
             flex-direction: column;
             padding: 0 40px;
-            height: 100%;
         }
 
         .container input {
@@ -224,68 +223,68 @@
         .container.active .toggle-right {
             transform: translateX(200%);
         }
+
+        .form-group {
+            label {
+                margin-bottom: 0px;
+            }
+
+            input {
+                margin-top: 0px;
+            }
+        }
     </style>
 </head>
 
 <body>
 
 <div class="container" id="container">
-    <div class="form-container sign-up">
-        <form id="registForm">
-            <h1>Tạo tài khoản mới</h1>
-            <div class="social-icons">
-                <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
-                <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
-                <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
+    <div class="text-center"><h3 class="p-1 py-4 h4">Xác nhận thông tin tài khoản</h3></div>
+    <form id="verifyForm" th:object="${newTaiKhoan}" novalidate>
+        <div class="row w-100">
+            <div class="form-group w-100">
+                <label>Họ và tên</label>
+                <input th:value="*{ten}" type="text" class="form-control" name="ten"
+                       placeholder="Tên khách hàng" required>
+                <div class="invalid-feedback">Tên khách hàng không được để trống</div>
             </div>
-            <span th:if="${message!=null}" th:text="${message}" class="text-danger"></span>
-            <span th:unless="${message!=null}">hoặc đăng ký tài khoản mới với email và mật khẩu</span>
-            <input type="text" name="ten" class="form-control" required placeholder="Tên tài khoản">
-            <input type="email" name="email" class="form-control" required placeholder="Email">
-            <input type="tel" name="soDienThoai" class="form-control" required placeholder="Số điện thoại" pattern="(84|0[3|5|7|8|9])+([0-9]{8})">
-            <input type="password" name="matKhau" class="form-control" required placeholder="Mật khẩu" pattern="\\w{6-12}">
-            <button>Đăng ký</button>
-        </form>
-    </div>
-    <div class="form-container sign-in">
-        <form id="loginForm">
-            <h1>Đăng nhập</h1>
-            <div class="social-icons">
-                <a href="/oauth2/authorization/google" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
-                <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
-                <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
+            <div class="form-group w-100">
+                <label>Địa chỉ email</label>
+                <input type="email" class="form-control" name="email" th:value="*{email}" disabled>
             </div>
-            <span th:if="${message!=null}" th:text="${message}" class="text-danger"></span>
-            <span th:unless="${message!=null}">hoặc đăng ký tài khoản mới với email và mật khẩu</span>
-            <input type="email" class="form-control" id="email" placeholder="Email" required>
-            <div class="invalid-feedback">
-                Vui lòng nhập chính xác địa chỉ email của bạn
+            <div class="form-group w-100">
+                <label>Số điện thoại</label>
+                <input type="tel" class="form-control" name="sdt" th:value="*{soDienThoai}" placeholder="Số điện thoại"
+                       pattern="0[0-9]{9}" required>
+                <div class="invalid-feedback">Vui lòng kiểm tra số điện thoại</div>
+
             </div>
-            <input type="password" class="form-control" id="password" placeholder="Password" required>
-            <div class="invalid-feedback">
-                Vui lòng nhập mật khẩu
+            <div class="form-group w-100">
+
+                <label>Mã xác thực</label>
+                <div class="row">
+                    <div class="col-8">
+                        <input type="tel" class="form-control" name="otp" pattern="\d{4}" placeholder="Mã xác thực" required>
+                        <div class="invalid-feedback">Vui lòng nhập mã xác thực 4 chữ số</div>
+                    </div>
+                    <div class="col-4">
+                        <a id="reset-otp" class="btn btn-success m-0 ml-3 text-nowrap text-light disabled">
+                            <span id="count-down">120</span>
+                            Gửi lại mã</a>
+
+                    </div>
+                </div>
+
             </div>
-            <a href="#">Quên mật khẩu?</a>
-            <button>Đăng nhập</button>
-        </form>
-    </div>
-    <div class="toggle-container">
-        <div class="toggle">
-            <div class="toggle-panel toggle-left">
-                <h1>Chào Mừng Quay Lại!</h1>
-                <p>Đăng Nhập Ngay Để Khám Phá Ưu Đãi Hấp Dẫn!</p>
-                <button class="hidden" id="login">Đăng nhập</button>
+            <div class="form-group mt-3 w-100">
+                <button type="submit" class="w-100 py-3">Hoàn tất</button>
+                <div class="invalid-feedback">Vui lòng kiểm tra số điện thoại</div>
+
             </div>
 
-            <div class="toggle-panel toggle-right">
-                <h1>Tham Gia Ngay! </h1>
-                <p>Đăng Ký Để Nhận Ưu Đãi Hấp Dẫn và Tin Tức Mới Nhất!</p>
-                <button class="hidden" id="register">Đăng ký</button>
-            </div>
         </div>
-    </div>
+
+    </form>
 </div>
 <script src="/vendor/jquery/jquery.min.js"></script>
 
@@ -309,55 +308,66 @@
     });
 
     $(document).ready(function () {
-        $('#loginForm').on('submit', function (event) {
+        $('#verifyForm').on('submit', function (event) {
             event.preventDefault();
-
-            var isValid = true;
-            $('#loginForm input').each(function () {
-                if (!this.checkValidity()) {
-                    isValid = false;
-                    $(this).addClass('is-invalid');
-                } else {
-                    $(this).removeClass('is-invalid');
-                }
-            });
+            let isValid = this.checkValidity();
+            if (!isValid) {
+                event.preventDefault();
+                event.stopPropagation();
+                this.classList.add('was-validated');
+            }
 
             if (isValid) {
-                var username = $('#email').val();
-                var password = $('#password').val();
+                let data={
+                    ten:$(this).find('input[name="ten"]').val(),
+                    email:$(this).find('input[name="email"]').val(),
+                    otp:$(this).find('input[name="otp"]').val(),
+                    soDienThoai:$(this).find('input[name="sdt"]').val()
+                }
 
                 $.ajax({
                     type: 'POST',
-                    url: '/sign-in',
-                    data: JSON.stringify( {
-                        email: username,
-                        password: password
-                    }),
+                    url: '/sign-up',
+                    data: JSON.stringify(data),
                     contentType: 'application/json',
 
                     success: function (response) {
-                        // Lưu token vào localStorage nếu cần
-                        if (response.token) {
-                            localStorage.setItem('Authorization',"Bearer "+ response.token);
-                            Toast.fire({
-                                icon:"success",
-                                title:"Đăng nhập thành công"
-                            })
-                        }
-                        // Chuyển hướng người dùng đến trang chính hoặc trang trước đó (nếu có)
-                        let successUrl=new URLSearchParams(window.location.href).get('successUrl')
-                        if(successUrl)
-                        window.location.href = successUrl;
-
+                        window.location.href="/verify-user";
                     },
                     error: function (response) {
-                        $('#loginForm span.text-danger').text('Tên đăng nhập hoặc mật khẩu không chính xác.');
+                        console.log("err",response)
+                        $('#registForm');
                     }
                 });
             }
         });
 
+
     });
+    $(document).ready(() => {
+        let $countDown = $("#count-down");
+        let restTime = 1;
+        let interval = setInterval(countDown, 1000);
+
+        $('#reset-otp').click(function (){
+            if(!$(this).hasClass("disabled")){
+               $.get("/reset-otp").then(()=>{
+                   $(this).addClass("disabled");
+                   restTime=120;
+                   interval= setInterval(countDown, 1000);
+               })
+            }
+        })
+
+
+        function countDown() {
+            if (restTime-- <= 0) {
+                $countDown.closest("a").removeClass("disabled")
+                clearInterval(interval);
+            } else
+                $countDown.text(restTime)
+        }
+    })
 </script>
 </body>
 

@@ -8,6 +8,8 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +22,9 @@ public class SendMailService {
     JavaMailSender sender;
 
     List<MailInfo> list = new ArrayList<>();
+    @Autowired
+    private SpringTemplateEngine templateEngine;
+
     public void send(MailInfo mail) throws MessagingException, IOException {
         // Tạo message
         MimeMessage message = sender.createMimeMessage();
@@ -39,5 +44,30 @@ public class SendMailService {
         // Gửi message đến SMTP server
         sender.send(message);
 
+    }
+
+    public void send(String from,String to, String subject, String body, String attachment) throws MessagingException, IOException {
+        MimeMessage message = sender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8");
+        helper.setFrom(from);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(body, true);
+        helper.setReplyTo(from);
+
+        if (attachment!= null) {
+            FileSystemResource file = new FileSystemResource(new File(attachment));
+            helper.addAttachment(attachment, file);
+        }
+
+        sender.send(message);
+
+    }
+    public void send(String to, String subject, String body, String attachment) throws MessagingException, IOException {
+        send("nbchuc@hotmail.com", to, subject, body, attachment);
+    }
+    public void send(String to, String subject, String tempalte, Context context, String attachment) throws MessagingException, IOException {
+        String htmlContent = templateEngine.process(tempalte, context);
+        send("nbchuc@hotmail.com", to, subject, htmlContent, attachment);
     }
 }
