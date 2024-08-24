@@ -49,6 +49,11 @@ public class AuthenticationController {
         }
         return "authentication/authentication";
     }
+    @GetMapping("/sign-up")
+    public String signin(Model model) {
+        model.addAttribute("signin_req", new SignInRequest());
+        return "authentication/authentication";
+    }
 
 
 

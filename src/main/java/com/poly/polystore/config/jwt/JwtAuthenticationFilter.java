@@ -48,11 +48,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authorization = "";
         final Cookie[] cookies = request.getCookies();
         String requestUri = request.getRequestURI();
-        // Kiểm tra xem đường dẫn có nằm trong danh sách không yêu cầu xác thực
-        if (Arrays.stream(SecurityConfig.unAuthURL).anyMatch(pattern -> antPathMatcher.match(pattern, requestUri))) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+//        // Kiểm tra xem đường dẫn có nằm trong danh sách không yêu cầu xác thực
+//        if (Arrays.stream(SecurityConfig.unAuthURL).anyMatch(pattern -> antPathMatcher.match(pattern, requestUri))) {
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
 
         authorization = request.getHeader("Authorization");
         final String jwt;

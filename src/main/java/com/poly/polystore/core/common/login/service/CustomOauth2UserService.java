@@ -54,7 +54,9 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
             cookie.setPath("/");
             cookie.setMaxAge(expiration); // 10 giờ
             httpServletResponse.addCookie(cookie);
+            httpSession.removeAttribute("newTaiKhoan");
         } else {
+            httpServletResponse.addCookie(new Cookie("Authorization", ""));
             TaiKhoan tk=new TaiKhoan();
             List<Oauth> oauth=new ArrayList<>();
             oauth.add(new Oauth(providerId, Oauth.Provider.valueOf(provider.toUpperCase()) ,tk));

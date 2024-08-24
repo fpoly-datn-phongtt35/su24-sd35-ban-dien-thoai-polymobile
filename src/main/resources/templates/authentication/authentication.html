@@ -231,10 +231,10 @@
 
 <div class="container" id="container">
     <div class="form-container sign-up">
-        <form id="registForm">
-            <h1>Tạo tài khoản mới</h1>
+        <form id="registForm" novalidate>
+            <h1 class="h2">Tạo tài khoản mới</h1>
             <div class="social-icons">
-                <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
+                <a href="/oauth2/authorization/google" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
                 <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
                 <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
                 <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
@@ -243,8 +243,8 @@
             <span th:unless="${message!=null}">hoặc đăng ký tài khoản mới với email và mật khẩu</span>
             <input type="text" name="ten" class="form-control" required placeholder="Tên tài khoản">
             <input type="email" name="email" class="form-control" required placeholder="Email">
-            <input type="tel" name="soDienThoai" class="form-control" required placeholder="Số điện thoại" pattern="(84|0[3|5|7|8|9])+([0-9]{8})">
-            <input type="password" name="matKhau" class="form-control" required placeholder="Mật khẩu" pattern="\\w{6-12}">
+            <input type="tel" name="soDienThoai" class="form-control" required placeholder="Số điện thoại" pattern="0[0-9]{9}">
+            <input type="password" name="matKhau" class="form-control" required placeholder="Mật khẩu" pattern=".{6,12}">
             <button>Đăng ký</button>
         </form>
     </div>
@@ -259,6 +259,7 @@
             </div>
             <span th:if="${message!=null}" th:text="${message}" class="text-danger"></span>
             <span th:unless="${message!=null}">hoặc đăng ký tài khoản mới với email và mật khẩu</span>
+            <span  class="text-danger"></span>
             <input type="email" class="form-control" id="email" placeholder="Email" required>
             <div class="invalid-feedback">
                 Vui lòng nhập chính xác địa chỉ email của bạn
@@ -287,78 +288,14 @@
         </div>
     </div>
 </div>
-<script src="/vendor/jquery/jquery.min.js"></script>
+<div class="toast-container position-fixed bottom-0 p-3" style="z-index: 99999; bottom: 0; left: 0"></div>
 
 
-<script>
-
-    const container = $('#container');
-    const registerBtn = $('#register');
-    const loginBtn = $('#login');
-
-
-    registerBtn.on('click', () => {
-        console.log(container)
-        container.addClass("active");
-        $('title').html("Đăng ký")
-    });
-
-    loginBtn.on('click', () => {
-        container.removeClass("active");
-        $('title').html("Đăng nhập")
-    });
-
-    $(document).ready(function () {
-        $('#loginForm').on('submit', function (event) {
-            event.preventDefault();
-
-            var isValid = true;
-            $('#loginForm input').each(function () {
-                if (!this.checkValidity()) {
-                    isValid = false;
-                    $(this).addClass('is-invalid');
-                } else {
-                    $(this).removeClass('is-invalid');
-                }
-            });
-
-            if (isValid) {
-                var username = $('#email').val();
-                var password = $('#password').val();
-
-                $.ajax({
-                    type: 'POST',
-                    url: '/sign-in',
-                    data: JSON.stringify( {
-                        email: username,
-                        password: password
-                    }),
-                    contentType: 'application/json',
-
-                    success: function (response) {
-                        // Lưu token vào localStorage nếu cần
-                        if (response.token) {
-                            localStorage.setItem('Authorization',"Bearer "+ response.token);
-                            Toast.fire({
-                                icon:"success",
-                                title:"Đăng nhập thành công"
-                            })
-                        }
-                        // Chuyển hướng người dùng đến trang chính hoặc trang trước đó (nếu có)
-                        let successUrl=new URLSearchParams(window.location.href).get('successUrl')
-                        if(successUrl)
-                        window.location.href = successUrl;
-
-                    },
-                    error: function (response) {
-                        $('#loginForm span.text-danger').text('Tên đăng nhập hoặc mật khẩu không chính xác.');
-                    }
-                });
-            }
-        });
-
-    });
-</script>
 </body>
+<script src="/vendor/jquery/jquery.min.js"></script>
+<script src="/js/sb-admin-2.min.js"></script>
+<script src="/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+<script src="/js/ultil.js"></script>
+<script src="/js/auth/auth.js"></script>
 
 </html>

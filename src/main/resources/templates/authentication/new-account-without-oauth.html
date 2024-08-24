@@ -37,7 +37,7 @@
             overflow: hidden;
             width: 550px;
             max-width: 100%;
-            min-height: 480px;
+            min-height: 350px;
         }
 
         .container p {
@@ -223,109 +223,127 @@
         .container.active .toggle-right {
             transform: translateX(200%);
         }
+
+        .form-group {
+            label {
+                margin-bottom: 0px;
+            }
+
+            input {
+                margin-top: 0px;
+            }
+        }
     </style>
 </head>
 
 <body>
 
 <div class="container" id="container">
-    <div class="text-center"><h3 class="p-1 py-4 h4">Chỉ còn một bước trước khi bắt đầu</h3></div>
-    <form th:object="${newTaiKhoan}">
+    <div class="text-center"><h3 class="p-1 py-4 h4">Xác nhận thông tin tài khoản</h3></div>
+    <form id="verifyForm" th:object="${newTaiKhoan}" novalidate>
         <div class="row w-100">
             <div class="form-group w-100">
-                <label for="ten">Họ và tên</label>
-                <input th:value="*{ten}" type="text" class="form-control is-invalid" id="ten" placeholder="Tên khách hàng" required>
-                <div class="invalid-feedback">Tên khách hàng không được để trống</div>
+                <label>Địa chỉ email</label>
+                <input type="email" class="form-control" name="email" th:value="*{email}" disabled>
             </div>
             <div class="form-group w-100">
-                <label for="email">Địa chỉ email</label>
-                <input type="email" class="form-control" id="email" th:value="*{email}" disabled>
-            </div>
-            <div class="form-group w-100">
-                <label for="sdt">Số điện thoại</label>
-                <input type="tel" class="form-control" id="sdt" th:value="*{soDienThoai}" pattern="(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})">
-                <div class="invalid-feedback">Vui lòng kiểm tra số điện thoại</div>
+
+                <label>Mã xác thực</label>
+                <div class="row">
+                    <div class="col-8">
+                        <input type="tel" class="form-control" name="otp" pattern="\d{4}" placeholder="Mã xác thực" required>
+                        <div class="invalid-feedback">Vui lòng nhập mã xác thực 4 chữ số</div>
+                    </div>
+                    <div class="col-4">
+                        <a id="reset-otp" class="btn btn-success m-0 ml-3 text-nowrap text-light disabled">
+                            <span id="count-down">120</span>
+                            Gửi lại mã</a>
+
+                    </div>
+                </div>
 
             </div>
-            <div class="form-group w-100">
-                <label for="sdt">Số điện thoại</label>
-                <input type="tel" class="form-control" id="code"  pattern="/d{4}">
+            <div class="form-group mt-3 w-100">
+                <button type="submit" class="w-100 py-3">Hoàn tất</button>
                 <div class="invalid-feedback">Vui lòng kiểm tra số điện thoại</div>
+
             </div>
 
         </div>
+
     </form>
 </div>
+<div class="toast-container position-fixed bottom-0 p-3" style="z-index: 99999; bottom: 0; left: 0"></div>
 <script src="/vendor/jquery/jquery.min.js"></script>
-
+<script src="/js/sb-admin-2.min.js"></script>
+<script src="/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+<script src="/js/ultil.js"></script>
 
 <script>
 
-    const container = $('#container');
-    const registerBtn = $('#register');
-    const loginBtn = $('#login');
-
-
-    registerBtn.on('click', () => {
-        console.log(container)
-        container.addClass("active");
-        $('title').html("Đăng ký")
-    });
-
-    loginBtn.on('click', () => {
-        container.removeClass("active");
-        $('title').html("Đăng nhập")
-    });
 
     $(document).ready(function () {
-        $('#loginForm').on('submit', function (event) {
+        $('#verifyForm').on('submit', function (event) {
             event.preventDefault();
+            let isValid = this.checkValidity();
+            $(this).find('input').each((i,e)=>{
+                if (!e.checkValidity()) {
+                    e.classList.add('is-invalid');
+                    isValid =false;
+                }else{
+                    e.classList.add('is-valid');
+                    e.classList.remove('is-invalid');
 
-            var isValid = true;
-            $('#loginForm input').each(function () {
-                if (!this.checkValidity()) {
-                    isValid = false;
-                    $(this).addClass('is-invalid');
-                } else {
-                    $(this).removeClass('is-invalid');
                 }
-            });
+            })
 
             if (isValid) {
-                var username = $('#email').val();
-                var password = $('#password').val();
+                let formData=new FormData(this)
 
                 $.ajax({
                     type: 'POST',
-                    url: '/sign-in',
-                    data: JSON.stringify( {
-                        email: username,
-                        password: password
-                    }),
-                    contentType: 'application/json',
+                    url: '/api/v2/verify-account-without-oauth',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
 
                     success: function (response) {
-                        // Lưu token vào localStorage nếu cần
-                        if (response.token) {
-                            localStorage.setItem('Authorization',"Bearer "+ response.token);
-                            Toast.fire({
-                                icon:"success",
-                                title:"Đăng nhập thành công"
-                            })
-                        }
-                        // Chuyển hướng người dùng đến trang chính hoặc trang trước đó (nếu có)
-                        let successUrl=new URLSearchParams(window.location.href).get('successUrl')
-                        if(successUrl)
-                            window.location.href = successUrl;
-
+                        window.location.href="/unauth-home";
                     },
-                    error: function (response) {
-                        $('#loginForm span.text-danger').text('Tên đăng nhập hoặc mật khẩu không chính xác.');
+                    error: function (xhr) {
+                            showErToast("Lỗi",xhr.responseText)
+                        
                     }
                 });
             }
         });
+
+
     });
+    $(document).ready(() => {
+        let $countDown = $("#count-down");
+        let restTime = 120;
+        let interval = setInterval(countDown, 1000);
+
+        $('#reset-otp').click(function (){
+            if(!$(this).hasClass("disabled")){
+               $.get("/reset-otp").then(()=>{
+                   $(this).addClass("disabled");
+                   restTime=120;
+                   interval= setInterval(countDown, 1000);
+               })
+            }
+        })
+
+
+        function countDown() {
+            if (restTime-- <= 0) {
+                $countDown.closest("a").removeClass("disabled")
+                clearInterval(interval);
+            } else
+                $countDown.text(restTime)
+        }
+    })
 </script>
 </body>
 

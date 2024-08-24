@@ -97,7 +97,7 @@ public class SanPham {
     @Column(name = "ID", nullable = false)
     private Integer id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "ANH_ID")
     private Anh anh;
 
@@ -105,7 +105,7 @@ public class SanPham {
     @Column(name = "Ten_san_pham")
     private String tenSanPham;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "BINH_LUAN_ID")
     private BinhLuan binhLuan;
 
