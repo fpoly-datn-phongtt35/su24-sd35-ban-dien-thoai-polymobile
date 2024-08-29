@@ -16,6 +16,6 @@ public class UniquePhoneNumberValidator implements ConstraintValidator<UniquePho
         if (phoneNumber == null || phoneNumber.isEmpty()) {
             return true;
         }
-        return !taikhoanService.existsByEmail(phoneNumber);
+        return !taikhoanService.existsBySoDienThoai(phoneNumber);
     }
 }

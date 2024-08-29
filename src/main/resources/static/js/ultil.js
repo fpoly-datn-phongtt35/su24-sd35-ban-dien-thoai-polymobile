@@ -131,13 +131,11 @@ const showConfirm = (title, message) => {
 $(document).ready(()=>{
 
 
-
-
-
-    //Toast
-    $("body").append(`
+    let toastContainer=$(".toast-container");
+    if(toastContainer.length===0){
+        $("body").append(`
             <div class="toast-container position-fixed bottom-0 left-0 p-3" style="z-index: 99999; bottom: 0;">
-            <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+            <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
                 <div class="toast-header">
                     <img src="..." class="rounded me-2" alt="...">
                     <strong class="me-auto">Bootstrap</strong>
@@ -153,6 +151,29 @@ $(document).ready(()=>{
         </div>
     
     `)
+    }else{
+        toastContainer.html(`
+           
+            <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+                <div class="toast-header">
+                    <img src="..." class="rounded me-2" alt="...">
+                    <strong class="me-auto">Bootstrap</strong>
+                    <small>11 mins ago</small>
+                    <button type="button" class="ms-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    Hello, world! This is a toast message.
+                </div>
+            </div>
+        
+    
+    `)
+    }
+
+
+
 })
 
 function showSsToast(title, message) {

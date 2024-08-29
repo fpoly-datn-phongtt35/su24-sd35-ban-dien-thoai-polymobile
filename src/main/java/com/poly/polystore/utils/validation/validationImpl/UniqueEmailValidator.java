@@ -13,10 +13,10 @@ public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, St
     private final TaiKhoanService taikhoanService;
 
     @Override
-    public boolean isValid(String phoneNumber, ConstraintValidatorContext constraintValidatorContext) {
-        if (phoneNumber == null || phoneNumber.isEmpty()) {
+    public boolean isValid(String email, ConstraintValidatorContext constraintValidatorContext) {
+        if (email == null || email.isEmpty()) {
             return true;
         }
-        return !taikhoanService.existsBySoDienThoai(phoneNumber);
+        return !taikhoanService.existsByEmail(email);
     }
 }

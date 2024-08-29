@@ -60,12 +60,12 @@ public class SecurityConfig {
             "/img/**",
             "/api/v1/admin/data-list-add-san-pham/**",
             "/api/v2/san-pham/**",
-            "/api/v2/san-pham",
+            "/api/v2/**",
             "/iphone/**",
             "/client/**",
             "/img/**",
             "/api/v2/san-pham/**",
-            "/home",
+            "/unauth-home",
             "/verify-account",
             "/reset-otp"
 
@@ -130,7 +130,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .oauth2Login(httpSecurityOAuth2ClientConfigurer -> httpSecurityOAuth2ClientConfigurer
                         .loginPage("/sign-in")
-                        .defaultSuccessUrl("/home")
+                        .defaultSuccessUrl("/unauth-home")
                         .failureUrl("/sign-in?error=800")
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
                                 .userService(customOauth2UserService)

@@ -246,7 +246,7 @@
                 <label>Họ và tên</label>
                 <input th:value="*{ten}" type="text" class="form-control" name="ten"
                        placeholder="Tên khách hàng" required>
-                <div class="invalid-feedback">Tên khách hàng không được để trống</div>
+                <div class="invalid-feedback"> Tên khách hàng không được để trống</div>
             </div>
             <div class="form-group w-100">
                 <label>Địa chỉ email</label>
@@ -286,36 +286,30 @@
 
     </form>
 </div>
+<div class="toast-container position-fixed bottom-0 p-3" style="z-index: 99999; bottom: 0; left: 0"></div>
 <script src="/vendor/jquery/jquery.min.js"></script>
-
+<script src="/js/sb-admin-2.min.js"></script>
+<script src="/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+<script src="/js/ultil.js"></script>
 
 <script>
 
-    const container = $('#container');
-    const registerBtn = $('#register');
-    const loginBtn = $('#login');
 
-
-    registerBtn.on('click', () => {
-        console.log(container)
-        container.addClass("active");
-        $('title').html("Đăng ký")
-    });
-
-    loginBtn.on('click', () => {
-        container.removeClass("active");
-        $('title').html("Đăng nhập")
-    });
 
     $(document).ready(function () {
         $('#verifyForm').on('submit', function (event) {
             event.preventDefault();
             let isValid = this.checkValidity();
-            if (!isValid) {
-                event.preventDefault();
-                event.stopPropagation();
-                this.classList.add('was-validated');
-            }
+            $(this).find('input').each((i,e)=>{
+                if (!e.checkValidity()) {
+                    e.classList.add('is-invalid');
+                    isValid =false;
+                }else{
+                    e.classList.add('is-valid');
+                    e.classList.remove('is-invalid');
+
+                }
+            })
 
             if (isValid) {
                 let data={
@@ -327,16 +321,21 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: '/sign-up',
+                    url: '/api/v2/verify-account-with-oauth',
                     data: JSON.stringify(data),
                     contentType: 'application/json',
 
                     success: function (response) {
-                        window.location.href="/verify-user";
+                        window.location.href="/unauth-home";
                     },
-                    error: function (response) {
-                        console.log("err",response)
-                        $('#registForm');
+                    error: function (xhr) {
+                        xhr.responseJSON.forEach(err=>{
+                            let fieldName=err.field;
+                            let messageErr=err.defaultMessage;
+                            $(`#verifyForm input[name='${fieldName}']`).addClass('is-invalid')
+                            showErToast("Lỗi",messageErr)
+                        })
+
                     }
                 });
             }
@@ -346,7 +345,7 @@
     });
     $(document).ready(() => {
         let $countDown = $("#count-down");
-        let restTime = 1;
+        let restTime = 120;
         let interval = setInterval(countDown, 1000);
 
         $('#reset-otp').click(function (){
