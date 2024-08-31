@@ -62,7 +62,7 @@
 
     // Tự động chọn năm đầu tiên và load dữ liệu
     if (yearSelect.options.length > 0) {
-        yearSelect.selectedIndex = 0;
+        yearSelect.selectedIndex = yearSelect.options.length -1;
         updateChart();
     }
     // Khởi tạo đối tượng biểu đồ trống
@@ -161,9 +161,8 @@
                         <th>Tên màu</th>
                         <th>Bộ nhớ</th>
                         <th>Số lượng</th>
-                        <th>Thời gian bảo hành</th>
                         <th>Trạng thái</th>
-                        <th>Chỉnh sửa</th>
+                        <th>Doanh thu</th>
 
                     </tr>
                     </thead>
@@ -187,6 +186,7 @@
     <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
     <script src="/vendor/select2/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/js/ion.rangeSlider.min.js"></script>
-    <script src="/js/admin/san-pham/san-pham.js"></script>
+    <script src="/js/admin/thong-ke/statistic.js"></script>
+<!--    <script src="/js/admin/thong-ke/statistic.js"></script>-->
 </th:block>
 </html>
