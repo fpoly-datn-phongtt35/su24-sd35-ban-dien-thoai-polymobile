@@ -48,6 +48,7 @@
 <script th:inline="javascript">
     var ctx = document.getElementById('revenueChart').getContext('2d');
     var revenueData = /*[[${revenueData}]]*/ {};
+    debugger
     var yearSelect = document.getElementById('yearSelect');
 
     // Điền các năm vào select box
@@ -62,9 +63,10 @@
 
     // Tự động chọn năm đầu tiên và load dữ liệu
     if (yearSelect.options.length > 0) {
-        yearSelect.selectedIndex = yearSelect.options.length -1;
+        yearSelect.selectedIndex = 0;
         updateChart();
     }
+    debugger
     // Khởi tạo đối tượng biểu đồ trống
     var myChart = new Chart(ctx, {
         type: 'bar',
@@ -88,6 +90,7 @@
     });
 
     function updateChart() {
+        debugger
         var selectedYear = yearSelect.value;
 
         var labels = [];
@@ -106,8 +109,10 @@
                 data.push(monthlyData[month]);  // Giá trị của doanh thu
             }
         }
+        debugger
         // Kiểm tra xem myChart có hợp lệ không trước khi cập nhật
         console.log("mychart: ", myChart)
+        debugger
         if (myChart && myChart.data) {
             myChart.data.labels = labels;
             myChart.data.datasets[0].data = data;
@@ -116,7 +121,7 @@
             myChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: labels,  // Khởi tạo nhãn trống
+                    labels: [],  // Khởi tạo nhãn trống
                     datasets: [{
                         label: 'Revenue',
                         data: data,  // Khởi tạo dữ liệu trống
@@ -136,47 +141,7 @@
         }
     }
 </script>
-<div class="row">
-    <!--    Table-->
 
-    <div class="card shadow m-2 w-100 ">
-        <div class="card-header py-3">
-            <!--            <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>-->
-
-            <div class="row">
-                <h1 class="h3 text-gray-800 col-4">Top sản phẩm bán chạy</h1>
-                <!-- Additional controls -->
-            </div>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Hình ảnh</th>
-                        <th>Tên</th>
-                        <th>Series</th>
-                        <th>Màu sắc</th>
-                        <th>Tên màu</th>
-                        <th>Bộ nhớ</th>
-                        <th>Số lượng</th>
-                        <th>Trạng thái</th>
-                        <th>Doanh thu</th>
-
-                    </tr>
-                    </thead>
-                    <tfoot>
-                    </tfoot>
-                    <tbody>
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-<!--modal edit-->
 
 </body>
 
@@ -186,7 +151,6 @@
     <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
     <script src="/vendor/select2/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/js/ion.rangeSlider.min.js"></script>
-    <script src="/js/admin/thong-ke/statistic.js"></script>
-<!--    <script src="/js/admin/thong-ke/statistic.js"></script>-->
+    <script src="/js/admin/san-pham/san-pham.js"></script>
 </th:block>
 </html>

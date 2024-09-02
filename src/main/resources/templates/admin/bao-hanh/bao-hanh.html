@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/admin/layout-dashboard/layout.html"
+>
+<head>
+    <!--    Custom link-->
+    <th:block layout:fragment="head_link">
+        <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+        <script src="/vendor/sweetalert2/sweetalert2.min.js"></script>
+        <link href="/vendor/select2/select2.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/css/ion.rangeSlider.min.css" rel="stylesheet">
+    </th:block>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        .warning {
+            background-color: #ffcccc; /* Màu cảnh báo */
+        }
+
+        /* Form tìm kiếm */
+        .search-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .search-form input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .search-form input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .search-form button {
+            padding: 10px 20px;
+            background-color: #377bbe;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .info-title {
+            text-align: center;
+        }
+
+        .contact-info {
+            text-align: center;
+        }
+
+        .item-radio {
+            display: flex;
+            justify-content: space-between;
+            align-content: center;
+        }
+
+        .search-btn {
+            margin-top: 20px;
+            margin-right: 10px;
+            display: flex;
+        }
+    </style>
+</head>
+
+<body layout:fragment="content">
+<div class="container" style="margin-bottom: 50px">
+    <h1 class="info-title" style="margin-top: 40px">Tra cứu thông tin bảo hành</h1>
+    <div class="search-form">
+        <form th:action="@{/admin/baohanhv2/search}" method="POST" id="searchForm">
+            <input type="hidden" name="searchType" id="searchType">
+            <div class="item-radio">
+                <div>
+                    <input type="radio" name="searchTypeRadio" value="phone" id="radioPhone" onclick="updateSearchType('phone')"> Tra theo số điện thoại
+                </div>
+                <div>
+                    <input type="radio" name="searchTypeRadio" value="imei" id="radioImei" onclick="updateSearchType('imei')"> Tra theo IMEI
+                </div>
+                <div>
+                    <input type="radio" name="searchTypeRadio" value="jobcard" id="radioJobcard" onclick="updateSearchType('jobcard')"> Tra theo mã jobcard
+                </div>
+            </div>
+            <div class="search-btn">
+                <div style="margin-right: 10px">
+                    <input type="text" name="searchValue" placeholder="Nhập thông tin tìm kiếm" id="searchValue">
+                    <button type="submit">Kiểm tra</button>
+                </div>
+                <div class="contact-info" style="margin-top: 10px">
+                    Tổng đài hỗ trợ bảo hành (8:00 - 21:00): 1900 232 464
+                </div>
+            </div>
+        </form>
+    </div>
+    <table class="table" id="resultTable">
+        <thead>
+        <tr>
+            <th>Sản phẩm</th>
+            <th>Ngày mua</th>
+            <th>Trạng thái</th>
+            <th>Thời gian bảo hành</th>
+            <th>Ngày bắt đầu</th>
+            <th>Ngày kết thúc</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="warranty : ${danhSachBaoHanh}" th:fragment="tableBody">
+            <td th:text="${warranty.TENSP}"></td>
+            <td th:text="${#dates.format(warranty.ngayBD, 'dd/MM/yyyy')}"></td>
+            <td th:text="${warranty.trangThai}" th:class="${warranty.trangThai == 'Chưa bảo hành' ? 'warning' : ''}"></td>
+            <td th:text="${warranty.diffTime}" style="color: #0F9E5E"></td>
+            <td th:text="${#dates.format(warranty.ngayBD, 'dd/MM/yyyy')}"></td>
+            <td th:text="${#dates.format(warranty.ngayBD, 'dd/MM/yyyy')}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <script th:inline="javascript">
+        function updateSearchType(type) {
+            document.getElementById('searchType').value = type;
+        }
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#searchForm').submit(function(event) {
+                event.preventDefault(); // Ngăn chặn hành vi mặc định của format
+                var formData = $(this).serializeArray();
+                var data = {};
+                $.each(formData, function(key, val) {
+                    data[val.name] = val.value;
+                });
+
+                console.log(data); // Log the JSON object for debugging
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data), // Chuyển đổi thành JSON
+                    success: function(response) {
+                        $('#resultTable tbody').html(response);
+                    }
+                });
+            });
+        });
+    </script>
+</div>
+</body>
+
+<th:block layout:fragment="bottom_link">
+    <!-- Page level plugins -->
+    <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="/vendor/select2/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/js/ion.rangeSlider.min.js"></script>
+    <!-- Page level custom scripts -->
+</th:block>
+</html>
