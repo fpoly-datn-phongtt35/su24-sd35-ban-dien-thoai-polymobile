@@ -131,7 +131,7 @@
                                 <a th:href="${#authentication.name.equals('anonymousUser')?'/sign-in':'/ho-so'}" id="login"> <span th:text="${#authentication.name.equals('anonymousUser')?'Đăng nhập':#authentication.principal.ten}"></span></a>
                                 <ul class="dropdown" th:class="${#authentication.name.equals('anonymousUser')?'d-none':'dropdown'}">
                                     <li><a href="/ho-so">Tài khoản</a></li>
-                                    <li><a href="/don-mua">Đơn mua</a></li>
+                                    <li><a href="/client/don-mua">Đơn mua</a></li>
                                     <li><a href="/logout">Đăng xuất</a></li>
                                 </ul>
                                 
