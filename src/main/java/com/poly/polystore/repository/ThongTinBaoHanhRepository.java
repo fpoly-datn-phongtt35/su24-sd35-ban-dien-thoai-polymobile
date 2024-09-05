@@ -23,6 +23,7 @@ public interface ThongTinBaoHanhRepository extends JpaRepository<ThongTinBaoHanh
         String getTENSP();
         String getTenKH();
         String getSdt();
+        String getImei();
     }
     @Query(value = """
 select
@@ -34,7 +35,8 @@ select
     SP.id AS SANPHAMID,
     SP.tenSanPham as TENSP,
     KH.ten as tenKH,
-    KH.soDienThoai as sdt
+    KH.soDienThoai as sdt,
+    TTBH.imei as imei
 from ThongTinBaoHanh TTBH
 JOIN Imei IM
 ON TTBH.imei = IM.imei
@@ -44,10 +46,10 @@ JOIN SanPham SP
 ON SPCT.sanPham.id = SP.id
 JOIN KhachHang KH
 ON TTBH.idKhachHang.id = KH.id
-WHERE ((:IDKH IS NULL OR TTBH.idKhachHang = :IDKH) 
-AND (:EMEI IS NULL OR IM.imei = :EMEI)
+WHERE ((:IDKH IS NULL OR TTBH.idKhachHang.id = :IDKH) 
+AND (COALESCE(:EMEI, '') = '' OR IM.imei = :EMEI)
 AND (:PHONE IS NULL OR KH.soDienThoai = :PHONE))
 
 """)
-    List<WarrantyProjection> thongTinBaoHanh(@Param("IDKH") Long IDKH, @Param("EMEI") String EMEI , @Param("PHONE") String PHONE);
+    List<WarrantyProjection> thongTinBaoHanh(@Param("IDKH") Integer IDKH, @Param("EMEI") String EMEI , @Param("PHONE") String PHONE);
 }

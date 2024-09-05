@@ -18,7 +18,7 @@ public class BaoHanhServiceImpl implements BaoHanhService {
     @Autowired
     private ThongTinBaoHanhRepository thongTinBaoHanhRepository;
     @Override
-    public List<WarrantyDTO> thongTinBaoHanh(String imei, Long idKH, String phoneNumber) {
+    public List<WarrantyDTO> thongTinBaoHanh(String imei, Integer idKH, String phoneNumber) {
         List<ThongTinBaoHanhRepository.WarrantyProjection> projections = thongTinBaoHanhRepository.thongTinBaoHanh(idKH, imei, phoneNumber);
 
         // Chuyển đổi từ WarrantyProjection sang WarrantyDTO (nếu cần)
@@ -32,6 +32,8 @@ public class BaoHanhServiceImpl implements BaoHanhService {
                     dto.setTrangThai(p.getTrangThai());
                     dto.setSANPHAMID(p.getSANPHAMID());
                     dto.setTENSP(p.getTENSP());
+                    dto.setSdt(p.getSdt());
+                    dto.setImei(p.getImei());
                     return dto;
                 })
                 .collect(Collectors.toList());

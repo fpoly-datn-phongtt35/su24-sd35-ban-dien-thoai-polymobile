@@ -18,5 +18,6 @@ public class WarrantyDTO {
     private String TENSP;
     private String tenKH;
     private String sdt;
+    private String imei;
     private String diffTime;
 }
