@@ -33,7 +33,10 @@ public class BaoHanhController {
         TaiKhoan taiKhoan = (TaiKhoan) authentication.getPrincipal();
         Integer idKH = taiKhoan == null ? null : taiKhoan.getId();
         List<WarrantyDTO> danhSachBaoHanh = baoHanhService.thongTinBaoHanh(null, idKH, null);
-        danhSachBaoHanh.forEach(w -> w.setDiffTime(FunctionUtil.compareDate(w.getThoiGianBH(),w.getNgayBD())));
+        danhSachBaoHanh.forEach(w -> {
+            w.setDiffTime(FunctionUtil.compareDate(w.getThoiGianBH(),w.getNgayBD()));
+            w.setTrangThai(FunctionUtil.getStatus(w));
+        });
         model.addAttribute("danhSachBaoHanh", danhSachBaoHanh);
 //        model.addAttribute("totalPages", danhSachBaoHanh.getTotalPages());
         return "/client/page/baohanh";
@@ -53,7 +56,10 @@ public class BaoHanhController {
             phone = searchForm.getSearchValue();
         }
         List<WarrantyDTO> danhSachBaoHanh = baoHanhService.thongTinBaoHanh(imei, idKH, phone);
-        danhSachBaoHanh.forEach(w -> w.setDiffTime(FunctionUtil.compareDate(w.getThoiGianBH(),w.getNgayBD())));
+        danhSachBaoHanh.forEach(w -> {
+            w.setDiffTime(FunctionUtil.compareDate(w.getThoiGianBH(),w.getNgayBD()));
+            w.setTrangThai(FunctionUtil.getStatus(w));
+        });
         model.addAttribute("danhSachBaoHanh", danhSachBaoHanh);
         return "/client/page/baohanh :: tableBody";
     }

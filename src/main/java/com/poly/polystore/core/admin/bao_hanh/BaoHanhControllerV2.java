@@ -23,7 +23,10 @@ public class BaoHanhControllerV2 {
     @GetMapping("/baohanhv2")
     public String get(Model model) {
         List<WarrantyDTO> danhSachBaoHanh = baoHanhService.thongTinBaoHanh(null, null, null);
-        danhSachBaoHanh.forEach(w -> w.setDiffTime(FunctionUtil.compareDate(w.getThoiGianBH(),w.getNgayBD())));
+        danhSachBaoHanh.forEach(w -> {
+            w.setDiffTime(FunctionUtil.compareDate(w.getThoiGianBH(),w.getNgayBD()));
+            w.setTrangThai(FunctionUtil.getStatus(w));
+        });
         model.addAttribute("danhSachBaoHanh", danhSachBaoHanh);
         return "/admin/bao-hanh/bao-hanh";
     }
@@ -38,7 +41,10 @@ public class BaoHanhControllerV2 {
             phone = searchForm.getSearchValue();
         }
         List<WarrantyDTO> danhSachBaoHanh = baoHanhService.thongTinBaoHanh(imei, null, phone);
-        danhSachBaoHanh.forEach(w -> w.setDiffTime(FunctionUtil.compareDate(w.getThoiGianBH(),w.getNgayBD())));
+        danhSachBaoHanh.forEach(w -> {
+            w.setDiffTime(FunctionUtil.compareDate(w.getThoiGianBH(),w.getNgayBD()));
+            w.setTrangThai(FunctionUtil.getStatus(w));
+        });
         model.addAttribute("danhSachBaoHanh", danhSachBaoHanh);
         return "/admin/bao-hanh/bao-hanh :: tableBody";
     }

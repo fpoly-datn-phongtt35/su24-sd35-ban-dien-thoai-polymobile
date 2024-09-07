@@ -111,7 +111,7 @@
             <th>SDT</th>
             <th>Thời gian bảo hành</th>
             <th>Imei</th>
-            <th>Ngày kết thúc</th>
+            <th>Ngày bắt đầu</th>
             <th>Ngày kết thúc</th>
         </tr>
         </thead>
@@ -119,12 +119,15 @@
         <tr th:each="warranty : ${danhSachBaoHanh}" th:fragment="tableBody">
             <td th:text="${warranty.TENSP}"></td>
             <td th:text="${#dates.format(warranty.ngayBD, 'dd/MM/yyyy')}"></td>
-            <td th:text="${warranty.trangThai}" th:class="${warranty.trangThai == 'Chưa bảo hành' ? 'warning' : ''}"></td>
+            <td th:switch="${warranty.trangThai}">
+                <span th:case="'Chưa bảo hành'" class="alert-warning">Chưa bảo hành</span>
+                <span th:case="'Hết hạn bảo hành'" class="alert-danger">Hết hạn bảo hành</span>
+                <span th:case="*" class ="alert-success">[[${warranty.trangThai}]]</span> </td>
             <td th:text="${warranty.sdt}" style="color: rgba(15,103,158,0.76)"></td>
             <td th:text="${warranty.diffTime}" style="color: #0F9E5E"></td>
             <td th:text="${warranty.imei}" style="color: #c42484"></td>
             <td th:text="${#dates.format(warranty.ngayBD, 'dd/MM/yyyy')}"></td>
-            <td th:text="${#dates.format(warranty.ngayBD, 'dd/MM/yyyy')}"></td>
+            <td th:text="${#dates.format(warranty.thoiGianBH, 'dd/MM/yyyy')}"></td>
         </tr>
         </tbody>
     </table>
