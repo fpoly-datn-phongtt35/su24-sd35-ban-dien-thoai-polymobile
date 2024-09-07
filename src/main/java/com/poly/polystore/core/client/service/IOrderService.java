@@ -6,5 +6,5 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 public interface IOrderService {
-    List<HoaDonDTO> findOrderByUser(Authentication authentication, String startDate, String endDate, String status);
+    List<HoaDonDTO> findOrderByUser(Authentication authentication, String startDate, String endDate, String status, String maDH);
 }

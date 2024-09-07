@@ -30,7 +30,7 @@ public class OrderServiceImpl implements IOrderService {
     private ModelMapper modelMapper;
 
     @Override
-    public List<HoaDonDTO> findOrderByUser(Authentication authentication, String startDate, String endDate, String status) {
+    public List<HoaDonDTO> findOrderByUser(Authentication authentication, String startDate, String endDate, String status, String maDH) {
         TaiKhoan taiKhoan = (TaiKhoan) authentication.getPrincipal();
         Integer idKhachHang = taiKhoan.getId();
 
@@ -40,7 +40,7 @@ public class OrderServiceImpl implements IOrderService {
             fromDate = LocalDate.parse(startDate);
         if (!ObjectUtils.isEmpty(endDate))
             toDate = LocalDate.parse(endDate);
-        List<HoaDon> hoaDons = hoaDonRepository.getOrderByKHID(idKhachHang, "ALL".equals(status) ? null : status, fromDate, toDate);
+        List<HoaDon> hoaDons = hoaDonRepository.getOrderByKHID(idKhachHang, "ALL".equals(status) ? null : status, fromDate, toDate, maDH);
         List<HoaDonDTO> hoaDonDTOS = hoaDons.stream()
                 .map(f -> modelMapper.map(f, HoaDonDTO.class))
                 .collect(Collectors.toList());

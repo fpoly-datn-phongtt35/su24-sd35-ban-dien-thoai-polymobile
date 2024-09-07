@@ -87,7 +87,8 @@ public class HoaDon {
 
     @Column(name = "TRANG_THAI_THANH_TOAN")
     private String trangThaiThanhToan;
-
+    @Column(name = "Ma")
+    private String ma;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="NHAN_VIEN_ID")

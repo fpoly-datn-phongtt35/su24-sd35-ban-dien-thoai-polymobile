@@ -22,9 +22,10 @@ public class OrderHistoryController {
     public String getOrderHistory(@RequestParam(value = "status", required = false) String status,
                                   @RequestParam(value = "startDate", required = false) String startDate,
                                   @RequestParam(value = "endDate", required = false) String endDate,
+                                  @RequestParam(value = "maDH", required = false) String maDH,
                                   Authentication authentication,
                                   Model model) {
-        List<HoaDonDTO> hoaDonDTOS = iOrderService.findOrderByUser(authentication, startDate, endDate, status);
+        List<HoaDonDTO> hoaDonDTOS = iOrderService.findOrderByUser(authentication, startDate, endDate, status, maDH);
         model.addAttribute("orders", hoaDonDTOS);
         return "/client/page/donmua";
     }
@@ -33,9 +34,10 @@ public class OrderHistoryController {
     public String getOrderHistoryV2(@RequestParam(value = "status", required = false) String status,
                                     @RequestParam(value = "startDate", required = false) String startDate,
                                     @RequestParam(value = "endDate", required = false) String endDate,
+                                    @RequestParam(value = "maDH", required = false) String maDH,
                                     Authentication authentication,
                                     Model model) {
-        List<HoaDonDTO> hoaDonDTOS = iOrderService.findOrderByUser(authentication, startDate, endDate, status);
+        List<HoaDonDTO> hoaDonDTOS = iOrderService.findOrderByUser(authentication, startDate, endDate, status, maDH);
         model.addAttribute("orders", hoaDonDTOS);
         return "/client/page/donmua:: #orderList";
     }

@@ -80,6 +80,9 @@
             <input type="date" id="endDate" class="form-control d-inline-block w-auto" />
         </div>
         <div>
+           Mã đơn hàng: <input type="text" id="searchOrder" class="form-control d-inline-block w-auto" />
+        </div>
+        <div>
             <button id="applyDateFilter" class="btn btn-primary" onclick="search()">Thay đổi</button>
         </div>
     </div>
@@ -98,7 +101,7 @@
             <div class="order-container">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <span class="order-title" th:text="'Đơn hàng: ' + ${order.id}">#84770619</span>
+                        <span class="order-title" th:text="'Đơn hàng: ' + ${order.ma}">#84770619</span>
                         <span class="order-date" th:text="'Nhận Trước ' + ${order.thoiGianNhanHang}">Nhận Trước 17:46 - Chủ Nhật (25/08)</span>
                     </div>
                     <div class="order-status"
@@ -133,7 +136,7 @@
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="orderItemsModalLabel">Chi tiết đơn hàng</h5>
+                            <h5 class="modal-title" id="orderItemsModalLabel" th:text="'Chi tiết đơn hàng' + ${order.ma}">Chi tiết đơn hàng</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -179,8 +182,9 @@
     let selectedStatus = 'ALL';
     let startDate;
     let endDate;
+    let MaDH;
     function loadOrders(status) {
-        const url = `/client/don-muav2?status=${selectedStatus}&startDate=${startDate}&endDate=${endDate}`;
+        const url = `/client/don-muav2?status=${selectedStatus}&startDate=${startDate}&endDate=${endDate}&maDH=${MaDH}`;
         $.get(url, function(data) {
             $('#orderList').html(data);
         });
@@ -188,6 +192,9 @@
 
     function filterOrders(status) {
         selectedStatus = status;
+        startDate = $('#startDate').val();
+        endDate = $('#endDate').val();
+        MaDH = $('#searchOrder').val();
         search();
         loadOrders(status);
     }

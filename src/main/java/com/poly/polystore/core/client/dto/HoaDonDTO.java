@@ -51,6 +51,7 @@ public class HoaDonDTO {
     private String note;
     private String email;
     private String hinhThucThanhToan;
+    private String ma;
 
     private String trangThaiThanhToan;
     private String leadingItem;

@@ -17,6 +17,11 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
     AND (:status IS NULL OR hd.TRANG_THAI =:status)
     AND (:startDate IS NULL OR hd.Created_at >=:startDate)
     AND (:endDate IS NULL OR hd.Created_at <=:endDate)
+    AND (:maDH IS NULL OR hd.Ma like concat( :maDH, '%'))
 """, nativeQuery = true)
-    List<HoaDon> getOrderByKHID(@Param("IDKH") Integer IDKH, @Param("status") String status, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    List<HoaDon> getOrderByKHID(@Param("IDKH") Integer IDKH,
+                                @Param("status") String status,
+                                @Param("startDate") LocalDate startDate,
+                                @Param("endDate") LocalDate endDate,
+                                @Param("maDH") String maDH);
 }
