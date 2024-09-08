@@ -12,14 +12,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class SendMailServiceTest {
-
     @Autowired
+
     private SendMailService sendMailService;
 
     @Test
     void send() {
         try {
-            sendMailService.send("doanhtkcg@gmail.com","Test","Test subject",null);
+            sendMailService.send("tranquangvinh4793@gmail.com","Test","Test subject",null);
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
