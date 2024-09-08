@@ -8,6 +8,7 @@ import com.poly.polystore.core.client.service.IOrderService;
 import com.poly.polystore.entity.HoaDon;
 import com.poly.polystore.entity.TaiKhoan;
 import com.poly.polystore.repository.HoaDonRepository;
+import com.poly.polystore.repository.KhachHangRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +28,14 @@ public class OrderServiceImpl implements IOrderService {
     @Autowired
     private HoaDonRepository hoaDonRepository;
     @Autowired
+    private KhachHangRepository khachHangRepository;
+    @Autowired
     private ModelMapper modelMapper;
 
     @Override
     public List<HoaDonDTO> findOrderByUser(Authentication authentication, String startDate, String endDate, String status, String maDH) {
         TaiKhoan taiKhoan = (TaiKhoan) authentication.getPrincipal();
-        Integer idKhachHang = taiKhoan.getId();
+        Integer idKhachHang = khachHangRepository.findByIdTaiKhoan(taiKhoan.getId()).get().getId();
 
         // convert date
         LocalDate fromDate = null, toDate = null;
@@ -42,6 +45,7 @@ public class OrderServiceImpl implements IOrderService {
             toDate = LocalDate.parse(endDate);
         List<HoaDon> hoaDons = hoaDonRepository.getOrderByKHID(idKhachHang, "ALL".equals(status) ? null : status, fromDate, toDate, maDH);
         List<HoaDonDTO> hoaDonDTOS = hoaDons.stream()
+                .filter(hd -> hd.getHoaDonChiTiets().size()>0)
                 .map(f -> modelMapper.map(f, HoaDonDTO.class))
                 .collect(Collectors.toList());
         //retrive ten san pham
