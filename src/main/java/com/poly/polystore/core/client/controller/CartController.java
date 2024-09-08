@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -56,7 +57,7 @@ public class CartController {
         else {
             gioHangs = cookieUlti.getDataFromCart(request);
         }
-        if(gioHangs.isEmpty()){
+        if(ObjectUtils.isEmpty(gioHangs)){
             return "redirect:/iphone";
         }
         List<PhieuGiamGia> list = phieuGiamGiaRepository.findAll().stream().filter(n -> n.getThoiGianBatDau().isBefore(Instant.now()) &&
@@ -90,7 +91,7 @@ public class CartController {
     @PostMapping("/checkout")
     public String checkout(@RequestParam(value = "name",required = false) String name, @RequestParam(value = "phone",required = false) String phone,
                            @RequestParam(value = "address",required = false) String address, @RequestParam(value = "note",required = false) String note,
-                           @RequestParam("payment") String payment, @RequestParam("discount-code") String code,
+                           @RequestParam("payment") String payment, @RequestParam("discount-code") String code, @RequestParam("discount") String discount,
                            @RequestParam(value =  "province",required = false) String province, @RequestParam(value = "city",required = false) String city,
                            @RequestParam(value = "street",required = false) String street, HttpServletRequest request,
                            @RequestParam(value = "email",required = false) String email, @RequestParam("shipping") String shipping,
@@ -109,17 +110,49 @@ public class CartController {
                 khachHang.setTen(name);
                 khachHang.setIdTaiKhoan(taiKhoan);
                 khachHang.setDeleted(0);
-                khachHangRepository.save(khachHang);
+//                khachHangRepository.save(khachHang);
                 DiaChiGiaoHang diaChiGiaoHang = new DiaChiGiaoHang();
                 diaChiGiaoHang.setProvince(province);
                 diaChiGiaoHang.setWard(city);
                 diaChiGiaoHang.setStreet(street);
                 diaChiGiaoHang.setIdKhachHang(khachHang);
                 diaChiGiaoHang.setLaDiaChiMacDinh("1".equals(defaultAddress));
-                diaChiGiaoHangRepository.save(diaChiGiaoHang);
+//                diaChiGiaoHangRepository.save(diaChiGiaoHang);
             }
             else {
                 khachHang = optionalKhachHang.get();
+                // case khach hang chưa có địa chỉ nào
+                if("1".equals(defaultAddress)){
+                    khachHang.getIdDiaChi().forEach(dc -> dc.setLaDiaChiMacDinh(false));
+                    DiaChiGiaoHang diaChiGiaoHang = new DiaChiGiaoHang();
+                    diaChiGiaoHang.setProvince(province);
+                    diaChiGiaoHang.setWard(city);
+                    diaChiGiaoHang.setTenNguoiNhan(khachHang.getTen());
+                    diaChiGiaoHang.setSoDienThoai(khachHang.getSoDienThoai());
+                    diaChiGiaoHang.setStreet(street);
+                    diaChiGiaoHang.setIdKhachHang(khachHang);
+                    diaChiGiaoHang.setLaDiaChiMacDinh(true);
+//                    diaChiGiaoHangRepository.save(diaChiGiaoHang);
+                }else{
+                    DiaChiGiaoHang diaChiGiaoHang = new DiaChiGiaoHang();
+                    diaChiGiaoHang.setProvince(province);
+                    diaChiGiaoHang.setWard(city);
+                    diaChiGiaoHang.setStreet(street);
+                    diaChiGiaoHang.setTenNguoiNhan(khachHang.getTen());
+                    diaChiGiaoHang.setSoDienThoai(khachHang.getSoDienThoai());
+                    diaChiGiaoHang.setIdKhachHang(khachHang);
+                    diaChiGiaoHang.setLaDiaChiMacDinh(false);
+//                    diaChiGiaoHangRepository.save(diaChiGiaoHang);
+                }
+                // case có nhiều địa chỉ và chọn lấy một cái set nó là địa chỉ mặc định
+                if(!ObjectUtils.isEmpty(iddiachi)){
+                    DiaChiGiaoHang diaChiGiaoHang = diaChiGiaoHangRepository.findById(Integer.parseInt(iddiachi)).get();
+                    diaChiGiaoHang.setLaDiaChiMacDinh(true);
+                    khachHang.getIdDiaChi()
+                            .stream()
+                            .filter(dc -> dc.getId() != Integer.parseInt(iddiachi))
+                            .forEach(dc ->dc.setLaDiaChiMacDinh(false));
+                }
             }
         }
         else {
@@ -128,14 +161,14 @@ public class CartController {
             khachHang.setSoDienThoai(phone);
             khachHang.setTen(name);
             khachHang.setDeleted(0);
-            khachHangRepository.save(khachHang);
+//            khachHangRepository.save(khachHang);
             DiaChiGiaoHang diaChiGiaoHang = new DiaChiGiaoHang();
             diaChiGiaoHang.setProvince(province);
             diaChiGiaoHang.setWard(city);
             diaChiGiaoHang.setStreet(street);
             diaChiGiaoHang.setIdKhachHang(khachHang);
             diaChiGiaoHang.setLaDiaChiMacDinh(false);
-            diaChiGiaoHangRepository.save(diaChiGiaoHang);
+//            diaChiGiaoHangRepository.save(diaChiGiaoHang);
             gioHangs = cookieUlti.getDataFromCart(request);
         }
         for(GioHang item : gioHangs){
@@ -145,7 +178,7 @@ public class CartController {
             }
         }
         if(taiKhoan != null){
-            gioHangRepository.deleteAll(gioHangs);
+//            gioHangRepository.deleteAll(gioHangs);
         }
         else {
             cookieUlti.removeCookie(request,response);
@@ -172,7 +205,16 @@ public class CartController {
         for (GioHang gioHang : gioHangs) {
             total += gioHang.getSoLuong() * gioHang.getRealPrice().doubleValue();
         }
-        total -= Double.parseDouble(shipping);
+        Double shippingValue = shipping == "" ? 0 : Double.parseDouble(shipping);
+        Double giamVoucher = discount == "" ? 0 : Double.parseDouble(discount);
+
+        if(ObjectUtils.isEmpty(address) && !ObjectUtils.isEmpty(iddiachi)){
+            address = diaChiGiaoHangRepository.findById(Integer.parseInt(iddiachi)).get().getDiaChi();
+        }
+        if(ObjectUtils.isEmpty(email)){
+            email = khachHang.getEmail();
+        }
+        total = total + shippingValue - giamVoucher;
         HoaDon hoaDon = new HoaDon();
         hoaDon.setKhachHang(khachHang);
         hoaDon.setMaGiamGia(code);
@@ -180,12 +222,13 @@ public class CartController {
         hoaDon.setSoDienThoai(phone);
         hoaDon.setDiaChi(address);
         hoaDon.setTongSanPham(gioHangs.size());
-        hoaDon.setPhiGiaoHang(new BigDecimal(shipping));
+        hoaDon.setPhiGiaoHang(new BigDecimal(shippingValue));
         hoaDon.setTrangThai(payment.equals("offline")? TRANGTHAIDONHANG.CHO_XAC_NHAN : TRANGTHAIDONHANG.CHO_THANH_TOAN);
         hoaDon.setHinhThucGiaoHang("Giao tận nơi");
         hoaDon.setCreatedAt(Instant.now());
         hoaDon.setTongTienHoaDon(new BigDecimal(total));
         hoaDon.setHinhThucThanhToan(payment);
+        hoaDon.setGiamVoucher(new BigDecimal(giamVoucher));
         hoaDon.setTrangThaiThanhToan("Chưa thanh toán");
         hoaDon.setNote(note);
         hoaDon.setEmail(email);
@@ -218,7 +261,7 @@ public class CartController {
             lichSuHoaDon.setIdHoaDon(hoaDon);
             lichSuHoaDon.setThoiGian(Instant.now());
             lichSuHoaDon.setTieuDe("Chờ xác nhận");
-            lichSuHoaDonRepository.save(lichSuHoaDon);
+//            lichSuHoaDonRepository.save(lichSuHoaDon);
             return "redirect:/iphone";
         }
         else {
@@ -228,7 +271,7 @@ public class CartController {
             lichSuHoaDon.setIdHoaDon(hoaDon);
             lichSuHoaDon.setThoiGian(Instant.now());
             lichSuHoaDon.setTieuDe("Chờ Thanh Toán");
-            lichSuHoaDonRepository.save(lichSuHoaDon);
+//            lichSuHoaDonRepository.save(lichSuHoaDon);
             return "redirect:" + vnpayUrl;
         }
     }

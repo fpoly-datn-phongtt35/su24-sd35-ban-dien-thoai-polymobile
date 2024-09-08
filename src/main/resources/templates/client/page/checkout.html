@@ -92,35 +92,29 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <input type="number" class="form-control" th:value="${item.soLuong}" min="1" th:max="${item.idSanPhamChiTiet.soLuong}"
+                        <input type="number" class="form-control" th:value="${item.soLuong}" min="1"
+                               th:max="${item.idSanPhamChiTiet.soLuong}"
                                th:onchange="updateCart(this,[[${item.idSanPhamChiTiet.id}]])">
                     </div>
                     <div class="col-md-2 text-right">
-                        <button type="button" class="form-control" th:onclick="deleteSP([[${item.idSanPhamChiTiet.id}]])">Delete</button>
+                        <button type="button" class="form-control"
+                                th:onclick="deleteSP([[${item.idSanPhamChiTiet.id}]])">Delete
+                        </button>
                     </div>
                 </div>
             </div>
-            <!-- Total Section -->
-            <div class="row mt-4">
-                <div class="col-md-12 text-right total">
-                    Tổng cộng: <span id="total-price"
-                                     th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT')}"></span>
-                </div>
-            </div>
-            <form th:action="@{/client/checkout}" method="post" >
+            <form th:action="@{/client/checkout}" id="myForm" method="post" onsubmit="return validateForm()">
                 <!-- Customer Information -->
                 <div class="form-section" id="customerinfo" th:if="${khachHang == null}">
                     <h5>Thông tin khách hàng</h5>
                     <div class="form-group">
                         <label>Họ và Tên</label>
                         <input type="text" class="form-control" name="name"
-                               th:value="${khachHang != null && khachHang.idDiaChi != null && khachHang.idDiaChi.laDiaChiMacDinh ? khachHang.idDiaChi.tenNguoiNhan : ''}"
                                placeholder="Họ và Tên" required>
                     </div>
                     <div class="form-group">
                         <label>Số điện thoại</label>
                         <input type="text" class="form-control" name="phone"
-                               th:value="${khachHang != null && khachHang.idDiaChi != null && khachHang.idDiaChi.laDiaChiMacDinh ? khachHang.idDiaChi.soDienThoai : ''}"
                                placeholder="Số điện thoại" required>
                     </div>
                     <div class="form-group">
@@ -144,13 +138,11 @@
                     <div class="form-group">
                         <label>Địa chỉ cụ thể</label>
                         <input type="text" class="form-control" name="address"
-                               th:value="${khachHang != null && khachHang.idDiaChi != null && khachHang.idDiaChi.laDiaChiMacDinh ? khachHang.idDiaChi.soDienThoai : ''}"
                                placeholder="Địa chỉ cụ thể" required>
                     </div>
                     <div class="form-group">
                         <label>Địa chỉ Email</label>
                         <input type="text" class="form-control" name="email"
-                               th:value="${khachHang != null && khachHang.email != null ? khachHang.email : ''}"
                                placeholder="Email" required>
                     </div>
                     <div class="form-group">
@@ -161,11 +153,25 @@
                         <label class="form-check-label" for="defaultCheck1">
                             Đặt làm địa chỉ mặc định
                         </label>
-                        <input style="margin-left: 3%" class="form-check-input" name="defaultAddress" type="checkbox" value="1" id="defaultCheck1">
+                        <input style="margin-left: 3%" class="form-check-input" name="defaultAddress" type="checkbox"
+                               value="1" id="defaultCheck1">
                     </div>
                 </div>
                 <div id="accordionExample" class="form-section accordion" th:if="${khachHang != null}">
-                    <th:block th:if="${khachHang.idDiaChi != null}">
+                    <h5>Thông tin khách hàng</h5>
+                    <div class="form-group">
+                        <label>Họ và Tên</label>
+                        <input type="text" class="form-control" name="name"
+                               th:value="${khachHang.getTen()}"
+                               placeholder="Họ và Tên" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại</label>
+                        <input type="text" class="form-control" name="phone"
+                               th:value="${khachHang.getSoDienThoai()}"
+                               placeholder="Số điện thoại" required>
+                    </div>
+                    <th:block th:if="${khachHang.idDiaChi.size()>0}">
                         <div th:each="item : ${khachHang.idDiaChi}" >
                             <div class="card">
                                 <div class="card-header" id="headingOne">
@@ -174,7 +180,7 @@
                                              aria-controls="private" th:onclick="collapse([[${item.id}]])">
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="iddiachi" id="private_sector"
-                                                       th:value="${item.id}" th:checked="${item.laDiaChiMacDinh}" th:onclick="shippingfeeDiachi([[${item.ward}]],[[${item.street}]])">
+                                                       th:value="${item.id}" th:checked="${item.laDiaChiMacDinh}">
                                                 <label class="form-check-label" for="private_sector" th:text="${item.diaChi}"></label>
                                             </div>
                                         </div>
@@ -197,16 +203,51 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="address">Địa chỉ cụ thể</label>
-                                            <input id="address" type="text" class="form-control" name="address"
+                                            <input id="address" type="text" class="form-control" name="address" required
                                                    th:value="${item.diaChi}"
                                                    placeholder="Địa chỉ cụ thể" disabled>
+                                        </div>
+                                        <div >
+                                            <button type="button" value="Tính phí giao hàng" class="btn btn-warning" th:onclick="shippingfeeDiachi([[${item.ward}]],[[${item.street}]])"> Xem phí giao hàng
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </th:block>
+                    <th:block th:if="${khachHang.idDiaChi.size()==0}">
+                        <div>Xác nhận thông tin giao hàng</div>
+                        <div class="form-group">
+                            <label for="province">Tỉnh/Thành Phố</label>
+                            <select class="form-control" name="province" id="province1" onchange="getCity()" required>
 
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="city">Quận/Huyện</label>
+                            <select class="form-control" name="city" id="city1" onchange="getStreet()" required>
+
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="street">Phường/Xã</label>
+                            <select class="form-control" name="street" id="street1" onchange="shippingfee()" required>
+
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="notes">Nhập ghi chú (nếu có)</label>
+                            <textarea id="notes2" class="form-control" rows="3" name="note"></textarea>
+                        </div>
+                        <div class="form-group" th:if="${checked}">
+                            <label class="form-check-label" for="defaultCheck1">
+                                Đặt làm địa chỉ mặc định
+                            </label>
+                            <input style="margin-left: 3%" class="form-check-input" name="defaultAddress" type="checkbox"
+                                   value="1" id="defaultCheck2">
+                        </div>
+                    </th:block>
                 </div>
                 <!-- Delivery Method -->
                 <div class="form-section">
@@ -238,7 +279,13 @@
                     <div class="form-group">
                         <label for="discount-code">Phí giao hàng</label>
                         <div class="row">
-                            <input type="text" class="form-control col-6" id="shipping" name="shipping" readonly required>
+                            <input type="text" class="form-control col-6" id="shipping" name="shipping" readonly
+                                   required>
+<!--                            <th:block th:if="${khachHang != null} && ${khachHang.idDiaChi.size()}> 0 ">-->
+<!--                                <div th:each="item : ${khachHang.getIdDiaChi().stream().filter(f -> f.isLaDiaChiMacDinh().equals(true))}" >-->
+<!--                                <button onclick="viewShippingFee()"-->
+<!--                                type="text" value = "Xem phí giao hàng" class="btn btn-warning" id="view-shipping-fee" name="shipping" />-->
+<!--                            </th:block>-->
                         </div>
                     </div>
                 </div>
@@ -252,7 +299,22 @@
                         </div>
                     </div>
                 </div>
-
+                <!-- Total Section -->
+                <div class="row mt-4">
+                    <div class="col-md-12 text-right total">
+                        Giá trị đơn hàng: <span id="total-price"
+                                                th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT')} + ' VND'"></span>
+                    </div>
+                    <div class="col-md-12 text-right total">
+                        <span id="total-shipping"></span>
+                    </div>
+                    <div class="col-md-12 text-right total">
+                        <span id="total-discount" name="discount"></span>
+                    </div>
+                    <div class="col-md-12 text-right total">
+                        <span id="total" name = "totalOrder"></span>
+                    </div>
+                </div>
                 <!-- Checkout Button -->
                 <button class="btn-checkout" type="submit">Thanh toán</button>
             </form>
@@ -262,115 +324,225 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script type="text/javascript">
+
     $().ready(function () {
-        var checked = "[[${isChecked}]]";
+        // shipping fee
+        let shippingFee = 0;
+        function calculateTotal() {
+            const totalPrice = parseFloat($('#total-price').text().replace(',', '.'));
+            const total = totalPrice + shippingFee;
+            $('#total-shipping').text("Phí giao hàng: " + shippingFee.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+            $('#total').text("Tổng hoá đơn: " + total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+        }
+        if(document.getElementById("street")!=null && $('#shipping').val() != null )
+        {
+            $('#street').on('change', function() {
+                // Lấy phí ship từ một nguồn dữ liệu nào đó (ví dụ: API)
+                // Giả sử ở đây chúng ta lấy phí ship từ một input ẩn
+                shippingFee = parseFloat($('#shipping').val());
+                calculateTotal();
+            });
+        }else{
+            $('#street1').on('change', function() {
+                // Lấy phí ship từ một nguồn dữ liệu nào đó (ví dụ: API)
+                // Giả sử ở đây chúng ta lấy phí ship từ một input ẩn
+                shippingFee = parseFloat($('#shipping').val());
+                calculateTotal();
+            });
+        }
+        var checked = "";
+        // var checked = "[[${isChecked}]]";
         var error = "[[${error}]]";
-        if(error != ''){
+        if (error != '') {
             toastr.error(error);
         }
-        if(checked == '')
-        {
+        if (checked == '') {
             $.ajax(
                 {
                     url: "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province",
                     headers: {
-                        token : 'bb276e96-3944-11ef-8e53-0a00184fe694'
+                        token: 'bb276e96-3944-11ef-8e53-0a00184fe694'
                     },
                     contentType: 'application/json',
                     type: 'GET',
                     success: function (data, textStatus, jqXHR) {
-                        data.data.forEach(function (element,index){
+                        data.data.forEach(function (element, index) {
                             var option = document.createElement("option");
                             option.text = element.NameExtension[0];
                             option.value = element.ProvinceID;
                             // Add the new option to the select element
-                            document.getElementById("province").add(option);
+                            if(document.getElementById("province")!=null)
+                                document.getElementById("province").add(option);
+                            if(document.getElementById("province1")!=null)
+                                document.getElementById("province1").add(option);
                         })
                     }
                 }
             )
         }
     })
+    function validateForm() {
+        // Lấy tất cả các radio button có tên "payment"
+        const paymentOptions = document.getElementsByName("payment");
 
-    function getCity(){
-        var i = document.getElementById("city");
-        i.options.length = 0;
-        var id = $('#province').val();
+        // Kiểm tra xem có radio button nào được chọn không
+        let isOptionSelected = false;
+        for (let i = 0; i < paymentOptions.length; i++) {
+            if (paymentOptions[i].checked) {
+                isOptionSelected = true;
+                break;
+            }
+        }
+
+        // Nếu không có radio button nào được chọn, hiển thị thông báo lỗi
+        if (!isOptionSelected) {
+            toastr.error("Vui lòng chọn hình thức thanh toán.");
+            return false; // Ngăn chặn form được gửi đi
+        }
+        const discountValue = document.getElementById("total-discount").textContent.replace(/\D/g,'');
+
+        // Tìm form (thay thế 'myForm' bằng ID hoặc class của form bạn)
+        const form = document.getElementById("myForm");
+
+        // Tạo input ẩn
+        const hiddenField = document.createElement("input");
+        hiddenField.type = "hidden";
+        hiddenField.name = "discount";
+        hiddenField.value = discountValue;
+
+        // Thêm input ẩn vào form
+        form.appendChild(hiddenField);
+
+        // Submit form
+        form.submit();
+        // Nếu có radio button được chọn, cho phép gửi form
+        return true;
+    }
+
+    function getCity() {
+        var province = document.getElementById("province");
+        var province1 = document.getElementById("province1");
+        console.log("province", province)
+        console.log("province", province1)
+        var id = province!=null && province.value !="" ? province.value : province1.value ;
+        console.log("idProvince to fill call city= ", id)
         $.ajax(
             {
                 url: "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district",
                 headers: {
-                    token : 'bb276e96-3944-11ef-8e53-0a00184fe694'
+                    token: 'bb276e96-3944-11ef-8e53-0a00184fe694'
                 },
                 contentType: 'application/json',
                 type: 'GET',
                 data: {
-                    province_id : id,
+                    province_id: id,
                 },
                 success: function (data, textStatus, jqXHR) {
-                    data.data.forEach(function (element,index){
+                    if(document.getElementById("city")!=null){
+                        while (document.getElementById("city").options.length > 0) {
+                            document.getElementById("city").options.remove(0);
+                        }
+                    }
+                    if(document.getElementById("city1")!=null){
+                        while (document.getElementById("city1").options.length > 0) {
+                            document.getElementById("city1").options.remove(0);
+                        }
+                    }
+                    console.log("data city {0} by id province: {1}: ", data, id)
+                    data.data.forEach(function (element, index) {
                         var option = document.createElement("option");
                         option.text = element.DistrictName;
                         option.value = element.DistrictID;
                         // Add the new option to the select element
-                        document.getElementById("city").add(option);
+                        if(document.getElementById("city")!=null)
+                            document.getElementById("city").add(option);
+                        if(document.getElementById("city1")!=null)
+                            document.getElementById("city1").add(option);
                     })
                 }
             }
         )
     }
 
-    function getStreet(){
-        var i = document.getElementById("street");
-        i.options.length = 0;
-        var id = $('#city').val();
+    function getStreet() {
+        var city = document.getElementById("city");
+        var city1 = document.getElementById("city1");
+        console.log("city= ", city)
+        console.log("city= ", city1)
+        var id = city !=null && city.value !=""? city.value : city1.value
+        console.log("id= ", id)
         $.ajax(
             {
                 url: "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward",
                 headers: {
-                    token : 'bb276e96-3944-11ef-8e53-0a00184fe694'
+                    token: 'bb276e96-3944-11ef-8e53-0a00184fe694'
                 },
                 contentType: 'application/json',
                 type: 'GET',
                 data: {
-                    district_id : id,
+                    district_id: id,
                 },
                 success: function (data, textStatus, jqXHR) {
-                    data.data.forEach(function (element,index){
+                    if(document.getElementById("street")!=null){
+                        while (document.getElementById("street").options.length > 0) {
+                            document.getElementById("street").options.remove(0);
+                        }
+                    }
+                    if(document.getElementById("street1") != null ){
+                        while (document.getElementById("street1").options.length > 0) {
+                            document.getElementById("street1").options.remove(0);
+                        }
+                    }
+                    console.log("data street {0} by id city: {1}: ", data, id)
+                    data.data.forEach(function (element, index) {
                         var option = document.createElement("option");
                         option.text = element.NameExtension[0];
                         option.value = element.WardCode;
                         // Add the new option to the select element
-                        document.getElementById("street").add(option);
+                        if(document.getElementById("street")!=null)
+                            document.getElementById("street").add(option);
+
+                        if(document.getElementById("street1") != null )
+                            document.getElementById("street1").add(option);
                     })
                     shippingfee();
                 }
             }
         )
     }
-    function checkMagiamgia(){
+
+    function checkMagiamgia() {
+        const formatter = new Intl.NumberFormat('en-US');
         let code = $('#discount-code').val();
-        if(code == ''){
+        if (code == '') {
             toastr.error("Bạn quên chọn mã giảm giá rồi");
-        }
-        $.ajax(
-            {
-                url: "/client/magiamgia/check",
-                contentType: 'application/json',
-                type: 'Post',
-                data: code,
-                success: function (data, textStatus, jqXHR) {
-                    toastr.success('Mã giảm giá đã được áp dụng');
-                    $('#total-price').html(data.total);
-                },
-                error: function(xhr, status, error) {
-                    toastr.error(xhr.responseText);
+        } else
+            $.ajax(
+                {
+                    url: "/client/magiamgia/check",
+                    contentType: 'application/json',
+                    type: 'Post',
+                    data: code,
+                    success: function (data, textStatus, jqXHR) {
+                        let giamgia = data.giamgia
+                        let totalDiscounted = data.total
+                        // $('#total-price').html(formatter.format(Number(totalPrice) - Number(data.data.total)));
+                        let totalPrice = [[${total}]];
+                        let totalShippingFormatted = document.getElementById('total-shipping').textContent.replace(/\D/g,'');
+                        let totalShipping = totalShippingFormatted!='' ? parseInt(totalShippingFormatted) : 0;
+                        let total = totalDiscounted + totalShipping;
+                        $('#total-discount').html("Giảm giá: " + formatter.format(Number(giamgia)) + " VND");
+                        $('#total').html("Tổng hoá đơn: " + formatter.format(Number(total)) + " VND");
+                        toastr.success('Mã giảm giá đã được áp dụng');
+                    },
+                    error: function (xhr, status, error) {
+                        toastr.error(xhr.responseText);
+                    }
                 }
-            }
-        )
+            )
     }
 
-    function updateCart(selectElement,id){
+    function updateCart(selectElement, id) {
         const selectedValue = selectElement.value;
         $.ajax(
             {
@@ -379,19 +551,19 @@
                 type: 'Post',
                 data: JSON.stringify(
                     {
-                        idSanPhamChiTiet : id,
-                        action : 'update',
+                        idSanPhamChiTiet: id,
+                        action: 'update',
                         quantity: Number(selectedValue)
                     }
                 ),
                 success: function (data, textStatus, jqXHR) {
-                    window.location.href='/client/checkout';
+                    window.location.href = '/client/checkout';
                 }
             }
         )
     }
 
-    function changeSP(selectElement,id){
+    function changeSP(selectElement, id) {
         const selectedValue = selectElement.value;
         $.ajax(
             {
@@ -400,46 +572,47 @@
                 type: 'Post',
                 data: JSON.stringify(
                     {
-                        newID : Number(selectedValue),
-                        oldID : Number(id),
+                        newID: Number(selectedValue),
+                        oldID: Number(id),
                     }
                 ),
                 success: function (data, textStatus, jqXHR) {
-                    window.location.href='/client/checkout';
+                    window.location.href = '/client/checkout';
                 }
             }
         )
     }
 
-    function deleteSP(id){
+    function deleteSP(id) {
         $.ajax(
             {
                 url: "/client/updateCart",
                 contentType: 'application/json',
                 type: 'Post',
                 data: JSON.stringify({
-                    idSanPhamChiTiet : id,
-                    action : 'remove'
+                    idSanPhamChiTiet: id,
+                    action: 'remove'
                 }),
                 success: function (data, textStatus, jqXHR) {
-                    window.location.href='/client/checkout';
+                    window.location.href = '/client/checkout';
                 }
             }
         )
     }
 
-    function shippingfeeDiachi(ward,street){
+    function shippingfeeDiachi(ward, street) {
+        const formatter = new Intl.NumberFormat('en-US');
         let streetCode = street;
         let city = ward;
-        if(streetCode == '' || city == ''){
+        if (streetCode == '' || city == '') {
             toastr.error('Bạn quên chọn địa điểm nhận hàng rồi');
             return;
         }
         let feeRequest = {
-            to_ward_code : streetCode,
-            to_district_id : city,
-            serviceID : '53320',
-            weight : '1000'
+            to_ward_code: streetCode,
+            to_district_id: city,
+            serviceID: '53320',
+            weight: '1000'
         }
         $.ajax(
             {
@@ -448,37 +621,51 @@
                 type: 'Post',
                 data: JSON.stringify(
                     {
-                        to_ward_code : streetCode,
-                        to_district_id : city,
-                        service_type_id : '5',
-                        weight : '1000',
-                        name : 'abc',
-                        quantity : [[${gioHangs.size()}]],
+                        to_ward_code: streetCode,
+                        to_district_id: city,
+                        service_type_id: '5',
+                        weight: '1000',
+                        name: 'abc',
+                        quantity: [[${gioHangs.size()}]],
                     }
                 ),
                 success: function (data, textStatus, jqXHR) {
-                    const formatter = new Intl.NumberFormat('en-US');
                     $('#shipping').val(data.data.total);
                     let totalPrice = [[${total}]];
-                    $('#total-price').html(formatter.format(Number(totalPrice) - Number(data.data.total)));
+                    // $('#total-price').html(formatter.format(Number(totalPrice) - Number(data.data.total)));
+                    // không trừ trực tiếp
+                    let shippingFee = parseFloat($('#shipping').val());
+                    const total = totalPrice + shippingFee;
+                    $('#total-shipping').text("Phí giao hàng: " + formatter.format(Number(shippingFee)) + " VND");
+                    $('#total').text("Tổng hoá đơn: " + formatter.format(Number(total)) + " VND");
+
                     toastr.success('Phí ship hàng đã được áp dụng');
                 }
             }
         )
     }
 
-    function shippingfee(){
-        let streetCode = $('#street').val();
-        let city = $('#city').val();
-        if(streetCode == '' || city == ''){
+    function shippingfee() {
+        var street = document.getElementById("street");
+        var street1 = document.getElementById("street1");
+        console.log("street= ", street)
+        console.log("street1= ", street1)
+
+        var cityDom = document.getElementById("city");
+        var cityDom1 = document.getElementById("city1");
+        console.log("city= ", cityDom)
+        console.log("city= ", cityDom1)
+        let streetCode = street !=null && street.value !=""? street.value : street1.value;
+        let city = cityDom != null &&cityDom.value !=""? cityDom.value : cityDom1.value;
+        if (streetCode == '' || city == '') {
             toastr.error('Bạn quên chọn địa điểm nhận hàng rồi');
             return;
         }
         let feeRequest = {
-            to_ward_code : streetCode,
-            to_district_id : city,
-            serviceID : '53320',
-            weight : '1000'
+            to_ward_code: streetCode,
+            to_district_id: city,
+            serviceID: '53320',
+            weight: '1000'
         }
         $.ajax(
             {
@@ -487,26 +674,32 @@
                 type: 'Post',
                 data: JSON.stringify(
                     {
-                        to_ward_code : streetCode,
-                        to_district_id : city,
-                        service_type_id : '5',
-                        weight : '1000',
-                        name : 'abc',
-                        quantity : [[${gioHangs.size()}]],
+                        to_ward_code: streetCode,
+                        to_district_id: city,
+                        service_type_id: '5',
+                        weight: '1000',
+                        name: 'abc',
+                        quantity: [[${gioHangs.size()}]],
                     }
                 ),
                 success: function (data, textStatus, jqXHR) {
                     const formatter = new Intl.NumberFormat('en-US');
                     $('#shipping').val(data.data.total);
                     let totalPrice = [[${total}]];
-                    $('#total-price').html(formatter.format(Number(totalPrice) - Number(data.data.total)));
+                    $('#total-shipping').text("Phí giao hàng: " + formatter.format(Number(data.data.total)) + " VND");
+
+                    let totalDiscountFormatted = document.getElementById('total-discount').textContent.replace(/\D/g,'');
+                    let totalDiscount = totalDiscountFormatted!='' ? parseInt(totalDiscountFormatted) : 0;
+                    $('#total-discount').text("Giảm giá: " + formatter.format(Number(totalDiscount)) + " VND");
+                    // $('#total-price').html(formatter.format(Number(totalPrice) - Number(data.data.total)));
+                    $('#total').html("Tổng hoá đơn: " + formatter.format(Number(totalPrice) + Number(data.data.total)) + " VND");
                     toastr.success('Phí ship hàng đã được áp dụng');
                 }
             }
         )
     }
 
-    function collapse(item){
+    function collapse(item) {
         let temp = $('#collapseOne' + item);
         temp.toggleClass('show')
     }

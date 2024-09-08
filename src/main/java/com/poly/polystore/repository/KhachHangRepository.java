@@ -31,6 +31,10 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, Integer> {
 
     @Query(value = "select * from KHACH_HANG kh where kh.ID_Tai_khoan is not null and kh.ID_Tai_khoan = ?1",nativeQuery = true)
     Optional<KhachHang> findByIdTaiKhoan(Integer idTaiKhoan);
+    @Query(value = """
+        select kh from KhachHang kh where kh.idTaiKhoan.id is not null and kh.idTaiKhoan.id =:idTaiKhoan
+    """)
+    KhachHang getKhachHangByIdTaiKhoan(@Param("idTaiKhoan") Integer idTaiKhoan);
 
     Page<KhachHang> findByEmailLikeOrSoDienThoaiLike(String s1,String s2, Pageable pageAble);
 }

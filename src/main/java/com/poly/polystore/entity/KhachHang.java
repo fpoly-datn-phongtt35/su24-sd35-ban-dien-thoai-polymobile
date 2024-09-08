@@ -1,10 +1,8 @@
 package com.poly.polystore.entity;
 
 import jakarta.persistence.*;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
 
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
@@ -13,7 +11,6 @@ import org.hibernate.annotations.Nationalized;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "KHACH_HANG")
 public class KhachHang {
@@ -41,8 +38,7 @@ public class KhachHang {
           cascade =  CascadeType.ALL,
           orphanRemoval = true
   )
-  private Set<DiaChiGiaoHang> idDiaChi;
-
+  private List<DiaChiGiaoHang> idDiaChi;
 
   @Column(name = "Email", length = 10)
   private String email;
