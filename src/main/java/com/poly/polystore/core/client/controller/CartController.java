@@ -11,8 +11,10 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -25,6 +27,7 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/client")
 @RequiredArgsConstructor
+@Slf4j
 public class CartController {
     private final CookieUlti cookieUlti;
     private final  KhachHangRepository khachHangRepository;
@@ -56,7 +59,7 @@ public class CartController {
         else {
             gioHangs = cookieUlti.getDataFromCart(request);
         }
-        if(gioHangs.isEmpty()){
+        if(ObjectUtils.isEmpty(gioHangs)){
             return "redirect:/iphone";
         }
         List<PhieuGiamGia> list = phieuGiamGiaRepository.findAll().stream().filter(n -> n.getThoiGianBatDau().isBefore(Instant.now()) &&
@@ -90,7 +93,7 @@ public class CartController {
     @PostMapping("/checkout")
     public String checkout(@RequestParam(value = "name",required = false) String name, @RequestParam(value = "phone",required = false) String phone,
                            @RequestParam(value = "address",required = false) String address, @RequestParam(value = "note",required = false) String note,
-                           @RequestParam("payment") String payment, @RequestParam("discount-code") String code,
+                           @RequestParam("payment") String payment, @RequestParam("discount-code") String code, @RequestParam("discount") String discount,
                            @RequestParam(value =  "province",required = false) String province, @RequestParam(value = "city",required = false) String city,
                            @RequestParam(value = "street",required = false) String street, HttpServletRequest request,
                            @RequestParam(value = "email",required = false) String email, @RequestParam("shipping") String shipping,
@@ -120,6 +123,38 @@ public class CartController {
             }
             else {
                 khachHang = optionalKhachHang.get();
+                // case khach hang chưa có địa chỉ nào
+                if("1".equals(defaultAddress)){
+                    khachHang.getIdDiaChi().forEach(dc -> dc.setLaDiaChiMacDinh(false));
+                    DiaChiGiaoHang diaChiGiaoHang = new DiaChiGiaoHang();
+                    diaChiGiaoHang.setProvince(province);
+                    diaChiGiaoHang.setWard(city);
+                    diaChiGiaoHang.setTenNguoiNhan(khachHang.getTen());
+                    diaChiGiaoHang.setSoDienThoai(khachHang.getSoDienThoai());
+                    diaChiGiaoHang.setStreet(street);
+                    diaChiGiaoHang.setIdKhachHang(khachHang);
+                    diaChiGiaoHang.setLaDiaChiMacDinh(true);
+                    diaChiGiaoHangRepository.save(diaChiGiaoHang);
+                }else if(!"1".equals(defaultAddress) && !ObjectUtils.isEmpty(province)){
+                    DiaChiGiaoHang diaChiGiaoHang = new DiaChiGiaoHang();
+                    diaChiGiaoHang.setProvince(province);
+                    diaChiGiaoHang.setWard(city);
+                    diaChiGiaoHang.setStreet(street);
+                    diaChiGiaoHang.setTenNguoiNhan(khachHang.getTen());
+                    diaChiGiaoHang.setSoDienThoai(khachHang.getSoDienThoai());
+                    diaChiGiaoHang.setIdKhachHang(khachHang);
+                    diaChiGiaoHang.setLaDiaChiMacDinh(false);
+                    diaChiGiaoHangRepository.save(diaChiGiaoHang);
+                }
+                // case có nhiều địa chỉ và chọn lấy một cái set nó là địa chỉ mặc định
+                if(!ObjectUtils.isEmpty(iddiachi)){
+                    DiaChiGiaoHang diaChiGiaoHang = diaChiGiaoHangRepository.findById(Integer.parseInt(iddiachi)).get();
+                    diaChiGiaoHang.setLaDiaChiMacDinh(true);
+                    khachHang.getIdDiaChi()
+                            .stream()
+                            .filter(dc -> dc.getId() != Integer.parseInt(iddiachi))
+                            .forEach(dc ->dc.setLaDiaChiMacDinh(false));
+                }
             }
         }
         else {
@@ -172,7 +207,16 @@ public class CartController {
         for (GioHang gioHang : gioHangs) {
             total += gioHang.getSoLuong() * gioHang.getRealPrice().doubleValue();
         }
-        total -= Double.parseDouble(shipping);
+        Double shippingValue = shipping == "" ? 0 : Double.parseDouble(shipping);
+        Double giamVoucher = discount == "" ? 0 : Double.parseDouble(discount);
+
+        if(ObjectUtils.isEmpty(address) && !ObjectUtils.isEmpty(iddiachi)){
+            address = diaChiGiaoHangRepository.findById(Integer.parseInt(iddiachi)).get().getDiaChi();
+        }
+        if(ObjectUtils.isEmpty(email)){
+            email = khachHang.getEmail();
+        }
+        total = total + shippingValue - giamVoucher;
         HoaDon hoaDon = new HoaDon();
         hoaDon.setKhachHang(khachHang);
         hoaDon.setMaGiamGia(code);
@@ -180,12 +224,13 @@ public class CartController {
         hoaDon.setSoDienThoai(phone);
         hoaDon.setDiaChi(address);
         hoaDon.setTongSanPham(gioHangs.size());
-        hoaDon.setPhiGiaoHang(new BigDecimal(shipping));
+        hoaDon.setPhiGiaoHang(new BigDecimal(shippingValue));
         hoaDon.setTrangThai(payment.equals("offline")? TRANGTHAIDONHANG.CHO_XAC_NHAN : TRANGTHAIDONHANG.CHO_THANH_TOAN);
         hoaDon.setHinhThucGiaoHang("Giao tận nơi");
         hoaDon.setCreatedAt(Instant.now());
         hoaDon.setTongTienHoaDon(new BigDecimal(total));
         hoaDon.setHinhThucThanhToan(payment);
+        hoaDon.setGiamVoucher(new BigDecimal(giamVoucher));
         hoaDon.setTrangThaiThanhToan("Chưa thanh toán");
         hoaDon.setNote(note);
         hoaDon.setEmail(email);
@@ -212,7 +257,11 @@ public class CartController {
             }
 
         }
-        sendMailUtil.sendMailOrder(hoaDon,email);
+        try{
+            sendMailUtil.sendMailOrder(hoaDon,email);
+        }catch (Exception e){
+            log.error("send mail false: {}", e.getMessage());
+        }
         if(payment.equals("offline")){
             LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
             lichSuHoaDon.setIdHoaDon(hoaDon);

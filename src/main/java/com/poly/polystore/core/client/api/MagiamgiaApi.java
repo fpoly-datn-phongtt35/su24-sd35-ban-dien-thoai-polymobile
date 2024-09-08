@@ -40,11 +40,7 @@ public class MagiamgiaApi {
             TaiKhoan taiKhoan = cookieUlti.getTaiKhoan(request);
             List<GioHang> gioHangs = new ArrayList<>();
             if(taiKhoan != null) {
-                Optional<KhachHang> optionalKhachHang = khachHangRepository.findByIdTaiKhoan(taiKhoan.getId());
-                if(optionalKhachHang.isPresent()) {
-                    KhachHang khachHang = optionalKhachHang.get();
-                    gioHangs = gioHangRepository.findByIdTaiKhoan(khachHang.getId());
-                }
+                    gioHangs = gioHangRepository.findByIdTaiKhoan(taiKhoan.getId());
             }
             else {
                 gioHangs = cookieUlti.getDataFromCart(request);
@@ -76,7 +72,7 @@ public class MagiamgiaApi {
             }
             double giamgia = Math.min(total * magiamgia.getPhanTramGiam(),magiamgia.getGiamToiDa().doubleValue());
             total -= giamgia;
-            return ResponseEntity.ok(new MagiamgiaResp(magiamgia,total));
+            return ResponseEntity.ok(new MagiamgiaResp(magiamgia,total, giamgia));
         }
     }
 }

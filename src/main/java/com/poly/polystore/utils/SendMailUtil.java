@@ -7,6 +7,7 @@
 package com.poly.polystore.utils;
 
 import com.poly.polystore.dto.MailInfo;
+import com.poly.polystore.entity.Anh;
 import com.poly.polystore.entity.HoaDon;
 import com.poly.polystore.entity.HoaDonChiTiet;
 import com.poly.polystore.entity.SanPhamChiTiet;
@@ -16,6 +17,7 @@ import com.poly.polystore.repository.SanPhamChiTietRepository;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -31,7 +33,6 @@ public class SendMailUtil {
 
 	@Autowired
 	HoaDonChiTietRepository hoaDonChiTietRepository;
-
 	@Autowired
 	SendMailService sendMailService;
     @Autowired
@@ -43,11 +44,15 @@ public class SendMailUtil {
 		StringBuilder content = new StringBuilder();
 		content.append(HEADER);
 		for (HoaDonChiTiet oderDetail : listOrderDetails) {
-			SanPhamChiTiet sanPhamChiTiet = oderDetail.getSanPhamChiTiet();
+			SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietRepository.findByHoaDonChiTiet(oderDetail.getId());
+			String url = "";
+			if (!CollectionUtils.isEmpty(sanPhamChiTiet.getAnh())){
+				url = sanPhamChiTiet.getAnh().get(0).getUrl();
+			}
 			content.append("<tr>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;text-align: center;\">\r\n"
 					+ "                                                        <img style=\"width: 85%;\" src="
-					+ sanPhamChiTiet.getAnh().get(0).getUrl() + ">\r\n"
+					+ url + ">\r\n"
 					+ "                                                    </td>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
 					+ sanPhamChiTiet.getSanPham().getTenSanPham() + " " + sanPhamChiTiet.getRom() + " </td>\r\n"
