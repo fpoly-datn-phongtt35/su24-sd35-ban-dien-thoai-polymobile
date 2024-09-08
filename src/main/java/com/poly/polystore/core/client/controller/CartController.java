@@ -11,6 +11,7 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -26,6 +27,7 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/client")
 @RequiredArgsConstructor
+@Slf4j
 public class CartController {
     private final CookieUlti cookieUlti;
     private final  KhachHangRepository khachHangRepository;
@@ -110,14 +112,14 @@ public class CartController {
                 khachHang.setTen(name);
                 khachHang.setIdTaiKhoan(taiKhoan);
                 khachHang.setDeleted(0);
-//                khachHangRepository.save(khachHang);
+                khachHangRepository.save(khachHang);
                 DiaChiGiaoHang diaChiGiaoHang = new DiaChiGiaoHang();
                 diaChiGiaoHang.setProvince(province);
                 diaChiGiaoHang.setWard(city);
                 diaChiGiaoHang.setStreet(street);
                 diaChiGiaoHang.setIdKhachHang(khachHang);
                 diaChiGiaoHang.setLaDiaChiMacDinh("1".equals(defaultAddress));
-//                diaChiGiaoHangRepository.save(diaChiGiaoHang);
+                diaChiGiaoHangRepository.save(diaChiGiaoHang);
             }
             else {
                 khachHang = optionalKhachHang.get();
@@ -132,8 +134,8 @@ public class CartController {
                     diaChiGiaoHang.setStreet(street);
                     diaChiGiaoHang.setIdKhachHang(khachHang);
                     diaChiGiaoHang.setLaDiaChiMacDinh(true);
-//                    diaChiGiaoHangRepository.save(diaChiGiaoHang);
-                }else{
+                    diaChiGiaoHangRepository.save(diaChiGiaoHang);
+                }else if(!"1".equals(defaultAddress) && !ObjectUtils.isEmpty(province)){
                     DiaChiGiaoHang diaChiGiaoHang = new DiaChiGiaoHang();
                     diaChiGiaoHang.setProvince(province);
                     diaChiGiaoHang.setWard(city);
@@ -142,7 +144,7 @@ public class CartController {
                     diaChiGiaoHang.setSoDienThoai(khachHang.getSoDienThoai());
                     diaChiGiaoHang.setIdKhachHang(khachHang);
                     diaChiGiaoHang.setLaDiaChiMacDinh(false);
-//                    diaChiGiaoHangRepository.save(diaChiGiaoHang);
+                    diaChiGiaoHangRepository.save(diaChiGiaoHang);
                 }
                 // case có nhiều địa chỉ và chọn lấy một cái set nó là địa chỉ mặc định
                 if(!ObjectUtils.isEmpty(iddiachi)){
@@ -161,14 +163,14 @@ public class CartController {
             khachHang.setSoDienThoai(phone);
             khachHang.setTen(name);
             khachHang.setDeleted(0);
-//            khachHangRepository.save(khachHang);
+            khachHangRepository.save(khachHang);
             DiaChiGiaoHang diaChiGiaoHang = new DiaChiGiaoHang();
             diaChiGiaoHang.setProvince(province);
             diaChiGiaoHang.setWard(city);
             diaChiGiaoHang.setStreet(street);
             diaChiGiaoHang.setIdKhachHang(khachHang);
             diaChiGiaoHang.setLaDiaChiMacDinh(false);
-//            diaChiGiaoHangRepository.save(diaChiGiaoHang);
+            diaChiGiaoHangRepository.save(diaChiGiaoHang);
             gioHangs = cookieUlti.getDataFromCart(request);
         }
         for(GioHang item : gioHangs){
@@ -178,7 +180,7 @@ public class CartController {
             }
         }
         if(taiKhoan != null){
-//            gioHangRepository.deleteAll(gioHangs);
+            gioHangRepository.deleteAll(gioHangs);
         }
         else {
             cookieUlti.removeCookie(request,response);
@@ -255,13 +257,17 @@ public class CartController {
             }
 
         }
-        sendMailUtil.sendMailOrder(hoaDon,email);
+        try{
+            sendMailUtil.sendMailOrder(hoaDon,email);
+        }catch (Exception e){
+            log.error("send mail false: {}", e.getMessage());
+        }
         if(payment.equals("offline")){
             LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
             lichSuHoaDon.setIdHoaDon(hoaDon);
             lichSuHoaDon.setThoiGian(Instant.now());
             lichSuHoaDon.setTieuDe("Chờ xác nhận");
-//            lichSuHoaDonRepository.save(lichSuHoaDon);
+            lichSuHoaDonRepository.save(lichSuHoaDon);
             return "redirect:/iphone";
         }
         else {
@@ -271,7 +277,7 @@ public class CartController {
             lichSuHoaDon.setIdHoaDon(hoaDon);
             lichSuHoaDon.setThoiGian(Instant.now());
             lichSuHoaDon.setTieuDe("Chờ Thanh Toán");
-//            lichSuHoaDonRepository.save(lichSuHoaDon);
+            lichSuHoaDonRepository.save(lichSuHoaDon);
             return "redirect:" + vnpayUrl;
         }
     }

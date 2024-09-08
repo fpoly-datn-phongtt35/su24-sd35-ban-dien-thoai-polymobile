@@ -415,6 +415,11 @@
 
         // Submit form
         form.submit();
+        setTimeout(function() {
+            // Code ở đây sẽ được thực thi sau 10 giây
+            toastr.success("Đặt hàng thành công.");
+            // Bạn có thể thêm các lệnh khác vào đây
+        }, 5000);
         // Nếu có radio button được chọn, cho phép gửi form
         return true;
     }
