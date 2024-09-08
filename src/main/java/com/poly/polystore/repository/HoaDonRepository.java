@@ -7,6 +7,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
     @Query(value = """
@@ -24,4 +27,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
                                 @Param("startDate") LocalDate startDate,
                                 @Param("endDate") LocalDate endDate,
                                 @Param("maDH") String maDH);
+    @Query(value ="SELECT MONTH(o.Created_at) as month, YEAR(o.Created_at) as year, " +
+            "SUM(o.tong_Tien_hoa_Don) as totalRevenue FROM HOA_DON o GROUP BY MONTH(o.Created_at), YEAR(o.Created_at) ORDER BY MONTH(o.Created_at)", nativeQuery = true)
+    List<Object[]> calculateMonthlyRevenue();
 }

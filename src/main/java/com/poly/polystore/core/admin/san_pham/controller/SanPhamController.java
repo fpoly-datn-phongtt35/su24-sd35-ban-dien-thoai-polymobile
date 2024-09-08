@@ -1,9 +1,12 @@
 package com.poly.polystore.core.admin.san_pham.controller;
 
+import com.poly.polystore.core.admin.san_pham.mapper.SanPhamTopRevenue;
+import com.poly.polystore.core.admin.san_pham.mapper.SanPhamTopRevenueDTO;
 import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamDataTable;
 import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamEditResponse;
 import com.poly.polystore.core.admin.san_pham.model.request.AddRequest;
 import com.poly.polystore.core.admin.san_pham.model.request.SanPhamEditRequest;
+import com.poly.polystore.core.admin.san_pham.service.SanPhamService;
 import com.poly.polystore.core.common.image.service.ImageService;
 import com.poly.polystore.entity.*;
 import com.poly.polystore.repository.AnhRepository;
@@ -21,12 +24,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Controller
 public class SanPhamController {
+    private final SanPhamService sanPhamService;
     @PersistenceContext
     private EntityManager entityManager;
     private static final Logger log = LoggerFactory.getLogger(SanPhamController.class);
@@ -300,10 +306,15 @@ public class SanPhamController {
         var spdt = sanPhamRepository.findAllSanPhamDataTable();
         return spdt;
     }
-
     public Collection<SanPham> findAllByDeletedIsFalseOrderByIdDesc() {
         return null;
     }
+    @ResponseBody
+    @GetMapping("/api/v1/san-pham-top-revenue")
+    public List<SanPhamTopRevenueDTO> topRevenue() {
+        return sanPhamService.getTopRevenue();
+    }
+
 //
 //    @ResponseBody
 //    @PutMapping("/api/v1/san-pham")
