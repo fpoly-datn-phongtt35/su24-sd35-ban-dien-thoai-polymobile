@@ -226,6 +226,7 @@
                 contentType: 'application/json',
                 type: 'Get',
                 success: function (data, textStatus, jqXHR) {
+                  let orderIds = data;
                   $.ajax(
                           {
                             url: urlApi,
@@ -240,15 +241,17 @@
                               document.getElementById('line-start-to-confirm').classList.add('completed');
                               confirmIcon.innerHTML='✔'
                               updateStatus = "Xác nhận"
-                              const inputImei = document.getElementById("input-image")
-                              inputImei.disabled = true;
-                              inputImei.classList.add('disabled');
                             },
                             error: function (xhr, status, error) {
 
                             }
                           }
                   )
+                  for (let dataId of orderIds){
+                    const inputImei = document.getElementById("input-image-" + dataId)
+                    inputImei.disabled = true;
+                    inputImei.classList.add('disabled');
+                  }
                 },
                 error: function (xhr, status, error) {
                   toastr.error("Vui lòng nhập đủ Imei cho sản phẩm")

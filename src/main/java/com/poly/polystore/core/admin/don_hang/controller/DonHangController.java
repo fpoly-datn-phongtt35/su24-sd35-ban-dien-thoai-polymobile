@@ -3,6 +3,7 @@ package com.poly.polystore.core.admin.don_hang.controller;
 import com.azure.core.annotation.Post;
 import com.poly.polystore.Constant.TRANGTHAIDONHANG;
 import com.poly.polystore.core.admin.don_hang.dto.ImeiDTO;
+import com.poly.polystore.core.admin.don_hang.dto.StatusOrderDetailDTO;
 import com.poly.polystore.core.client.api.response.MagiamgiaResp;
 import com.poly.polystore.core.client.dto.HoaDonChiTietDTO;
 import com.poly.polystore.core.client.dto.HoaDonDTO;
@@ -130,8 +131,10 @@ public class DonHangController {
                 .stream()
                 .filter(hdct -> ObjectUtils.isEmpty(hdct.getImei()))
                 .collect(Collectors.toList());
-        if(CollectionUtils.isEmpty(hoaDonChiTietDTOS))
-            return ResponseEntity.ok(Boolean.TRUE);
+        if(CollectionUtils.isEmpty(hoaDonChiTietDTOS)) {
+            List<Integer> orderIds = hoaDonDTO.getHoaDonChiTiets().stream().map(hdct -> hdct.getId()).collect(Collectors.toList());
+            return ResponseEntity.ok(orderIds);
+        }
         return ResponseEntity.badRequest().body("Vui lòng nhập đủ Imei cho sản phẩm");
     }
 }

@@ -23,6 +23,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Controller
 @RequestMapping("/client")
@@ -179,12 +180,6 @@ public class CartController {
                 return checkout(request,model);
             }
         }
-        if(taiKhoan != null){
-            gioHangRepository.deleteAll(gioHangs);
-        }
-        else {
-            cookieUlti.removeCookie(request,response);
-        }
             List<PhieuGiamGia> list = phieuGiamGiaRepository.findAll().stream().filter(n -> n.getThoiGianBatDau().isBefore(Instant.now()) &&
                 n.getThoiGianKetThuc().isAfter(Instant.now()) && !n.getDeleted()).toList();
         if(!list.isEmpty()){
@@ -207,7 +202,7 @@ public class CartController {
         for (GioHang gioHang : gioHangs) {
             total += gioHang.getSoLuong() * gioHang.getRealPrice().doubleValue();
         }
-        Double shippingValue = shipping == "" ? 0 : Double.parseDouble(shipping);
+        Double shippingValue = shipping == "" ? 0 : Double.parseDouble(shipping.replaceAll("\\D",""));
         Double giamVoucher = discount == "" ? 0 : Double.parseDouble(discount);
 
         if(ObjectUtils.isEmpty(address) && !ObjectUtils.isEmpty(iddiachi)){
@@ -256,6 +251,12 @@ public class CartController {
                 hoaDonChiTietRepository.save(hoaDonChiTiet);
             }
 
+        }
+        if(taiKhoan != null){
+            gioHangRepository.deleteAll(gioHangs);
+        }
+        else {
+            cookieUlti.removeCookie(request,response);
         }
         try{
             sendMailUtil.sendMailOrder(hoaDon,email);
