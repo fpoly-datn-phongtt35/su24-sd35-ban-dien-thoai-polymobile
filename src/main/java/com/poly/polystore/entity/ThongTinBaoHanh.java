@@ -32,6 +32,8 @@ public class ThongTinBaoHanh {
 
     @Column(name = "Ngay_bat_dau")
     private Instant ngayBatDau;
+    @Column(name = "reason")
+    private String reason;
 
     @Nationalized
     @Column(name = "Trang_thai")

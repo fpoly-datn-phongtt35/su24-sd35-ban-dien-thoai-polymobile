@@ -20,4 +20,5 @@ public class WarrantyDTO {
     private String sdt;
     private String imei;
     private String diffTime;
+    private String reason;
 }

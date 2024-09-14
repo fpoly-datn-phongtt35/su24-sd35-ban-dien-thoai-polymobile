@@ -5,13 +5,14 @@
       layout:decorate="/client/layout/layout-client.html"
 >
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <!--    Custom link-->
     <th:block layout:fragment="head_link">
         <!-- Bootstrap CSS -->
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.2/flickity.min.css">
         <link href="/css/client/iphone-product.css" rel="stylesheet">
-
     </th:block>
 
 </head>
@@ -473,7 +474,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.2/flickity.pkgd.min.js"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="/js/client/iphone-product.js"></script>
     <script type="text/javascript">
         function getCookie(name) {
@@ -502,6 +504,8 @@
                     quantity : 1
                 },
                 success: function(response) {
+                    debugger;
+                    toastr.success('Đã thêm vào giỏ hàng');
                     location.reload();
                 },
             };

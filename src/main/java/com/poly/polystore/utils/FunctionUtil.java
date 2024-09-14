@@ -3,6 +3,10 @@ package com.poly.polystore.utils;
 import com.poly.polystore.core.client.models.request.WarrantyDTO;
 import org.springframework.util.ObjectUtils;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class FunctionUtil {
@@ -26,5 +30,18 @@ public class FunctionUtil {
             else return warranty.getTrangThai();
         }
         return "";
+    }
+    public static Instant getDate(Instant instant, int year){
+        Instant now = Instant.now();
+
+        // Chuyển đổi Instant thành ZonedDateTime (sử dụng múi giờ hệ thống hoặc UTC)
+        ZonedDateTime zonedDateTime = now.atZone(ZoneId.systemDefault());
+
+        // Cộng thêm 2 năm
+        ZonedDateTime twoYearsLater = zonedDateTime.plus(year, ChronoUnit.YEARS);
+
+        // Chuyển ngược lại thành Instant nếu cần
+        Instant newInstant = twoYearsLater.toInstant();
+        return newInstant;
     }
 }

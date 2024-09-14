@@ -16,7 +16,7 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
-@Table(name = "Don")
+@Table(name = "HOA_DON")
 public class HoaDon {
     @Id
     @Column(name = "ID", nullable = false)

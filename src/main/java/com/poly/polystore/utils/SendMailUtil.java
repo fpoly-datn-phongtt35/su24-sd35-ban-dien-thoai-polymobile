@@ -57,6 +57,10 @@ public class SendMailUtil {
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
 					+ sanPhamChiTiet.getSanPham().getTenSanPham() + " " + sanPhamChiTiet.getRom() + " </td>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
+					+ 1 + " </td>\r\n"
+					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
+					+ sanPhamChiTiet.getGiaBan() + " </td>\r\n"
+					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
 			);
 		}
 		content.append(BODY2);
@@ -420,9 +424,9 @@ public class SendMailUtil {
 			+ "                                <div style=\"display:inline-block; max-width:50%; min-width:100px; vertical-align:top; width:100%;\">\r\n"
 			+ "                                    <table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width:300px;\">\r\n"
 			+ "                                        <tr>\r\n"
-			+ "                                            <td align=\"left\" valign=\"top\" style=\"font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 36px; font-weight: 800; line-height: 48px;\" class=\"mobile-center\">\r\n"
-			+ "                                                <img src=\"https://res.cloudinary.com/martfury/image/upload/v1647788678/users/j53qiooahnkiq2jmz9lk.png\" width=\"220px\" />\r\n"
-			+ "                                            </td>\r\n"
+//			+ "                                            <td align=\"left\" valign=\"top\" style=\"font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 36px; font-weight: 800; line-height: 48px;\" class=\"mobile-center\">\r\n"
+//			+ "                                                <img src=\"https://res.cloudinary.com/martfury/image/upload/v1647788678/users/j53qiooahnkiq2jmz9lk.png\" width=\"220px\" />\r\n"
+//			+ "                                            </td>\r\n"
 			+ "                                        </tr>\r\n" + "                                    </table>\r\n"
 			+ "                                </div>\r\n" + "\r\n" + "                            </td>\r\n"
 			+ "                        </tr>\r\n" + "                        <tr>\r\n"

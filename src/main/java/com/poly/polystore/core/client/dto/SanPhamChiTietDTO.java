@@ -1,12 +1,11 @@
 package com.poly.polystore.core.client.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.poly.polystore.core.admin.don_hang.dto.ImeiDTO;
 import com.poly.polystore.entity.*;
 import com.poly.polystore.repository.SanPhamRepository;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Nationalized;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,9 +15,9 @@ public class SanPhamChiTietDTO {
     private Integer id;
 
     private SanPhamDTO sanpham;
-    private List<String> imei;
+    private Imei imei;
 
-    private List<KhuyenMai> khuyenMai;
+//    private List<KhuyenMai> khuyenMai;
 
     private MauSac mauSac;
 

@@ -77,10 +77,10 @@
                     </div>
                     <div class="col-md-4">
                         <h5 th:text="${item.idSanPhamChiTiet.getSanPham().tenSanPham + ' ' + item.idSanPhamChiTiet.rom}"></h5>
-                        <p th:text="${#numbers.formatDecimal(item.realPrice.doubleValue(), 0, 'COMMA', 2, 'POINT')}"></p>
-                        <p><small>Online giá rẻ quá (Xem chi tiết)</small></p>
-                        <p><small>Nhập mã VNPAYTGDD3 giảm từ 50,000₫ đến 200,000₫ (áp dụng tùy giá trị đơn hàng) khi
-                            thanh toán qua VNPAY-QR (Xem chi tiết tại đây)</small></p>
+                        <p th:text="${#numbers.formatDecimal(item.realPrice.doubleValue() * item.getSoLuong(), 0, 'COMMA', 2, 'POINT')}"></p>
+<!--                        <p><small>Online giá rẻ quá (Xem chi tiết)</small></p>-->
+<!--                        <p><small>Nhập mã VNPAYTGDD3 giảm từ 50,000₫ đến 200,000₫ (áp dụng tùy giá trị đơn hàng) khi-->
+<!--                            thanh toán qua VNPAY-QR (Xem chi tiết tại đây)</small></p>-->
                     </div>
                     <div class="col-md-2">
                         <select class="form-control" th:onchange='changeSP(this,[[${item.idSanPhamChiTiet.id}]])'>
@@ -110,40 +110,61 @@
                     <div class="form-group">
                         <label>Họ và Tên</label>
                         <input type="text" class="form-control" name="name"
-                               placeholder="Họ và Tên" required>
+                               placeholder="Họ và Tên" required
+                               oninvalid="this.setCustomValidity('Vui lòng nhập tên!')"
+                               oninput="this.setCustomValidity('')"
+                        >
+                        <div class="error-message" id="nameError"></div>
                     </div>
                     <div class="form-group">
                         <label>Số điện thoại</label>
-                        <input type="text" class="form-control" name="phone"
-                               placeholder="Số điện thoại" required>
+                        <input type="text" class="form-control" name="phone" id="phone"
+                               placeholder="Số điện thoại" required
+                               oninvalid="this.setCustomValidity('Vui lòng nhập số điện thoại')"
+                               oninput="this.setCustomValidity('')"
+                        >
+                        <div class="error-message" id="phoneError"></div>
                     </div>
                     <div class="form-group">
                         <label for="province">Tỉnh/Thành Phố</label>
-                        <select class="form-control" name="province" id="province" onchange="getCity()" required>
+                        <select class="form-control" name="province" id="province" onchange="getCity()" required
+                                oninvalid="this.setCustomValidity('Vui lòng chọn địa chỉ')"
+                                oninput="this.setCustomValidity('')"
+                        >
 
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="city">Quận/Huyện</label>
-                        <select class="form-control" name="city" id="city" onchange="getStreet()" required>
+                        <select class="form-control" name="city" id="city" onchange="getStreet()" required
+                                oninvalid="this.setCustomValidity('Vui lòng chọn địa chỉ')"
+                                oninput="this.setCustomValidity('')"
+                        >
 
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="street">Phường/Xã</label>
-                        <select class="form-control" name="street" id="street" onchange="shippingfee()" required>
+                        <select class="form-control" name="street" id="street" onchange="shippingfee()" required
+                        >
 
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Địa chỉ cụ thể</label>
                         <input type="text" class="form-control" name="address"
-                               placeholder="Địa chỉ cụ thể" required>
+                               placeholder="Địa chỉ cụ thể" required
+                               oninvalid="this.setCustomValidity('Vui lòng nhập địa chỉ cụ thể')"
+                               oninput="this.setCustomValidity('')"
+                        >
                     </div>
                     <div class="form-group">
                         <label>Địa chỉ Email</label>
                         <input type="text" class="form-control" name="email"
-                               placeholder="Email" required>
+                               placeholder="Email" required
+                               oninvalid="this.setCustomValidity('Vui lòng nhập email')"
+                               oninput="this.setCustomValidity('')"
+                        >
                     </div>
                     <div class="form-group">
                         <label for="notes">Nhập ghi chú (nếu có)</label>
@@ -163,13 +184,18 @@
                         <label>Họ và Tên</label>
                         <input type="text" class="form-control" name="name"
                                th:value="${khachHang.getTen()}"
-                               placeholder="Họ và Tên" required>
+                               placeholder="Họ và Tên" required
+                               oninvalid="this.setCustomValidity('Vui lòng nhập tên')"
+                               oninput="this.setCustomValidity('')">
                     </div>
                     <div class="form-group">
                         <label>Số điện thoại</label>
                         <input type="text" class="form-control" name="phone"
                                th:value="${khachHang.getSoDienThoai()}"
-                               placeholder="Số điện thoại" required>
+                               placeholder="Số điện thoại" required
+                               oninvalid="this.setCustomValidity('Vui lòng nhập số điện thoại')"
+                               oninput="this.setCustomValidity('')"
+                        >
                     </div>
                     <th:block th:if="${khachHang.idDiaChi.size()>0}">
                         <div th:each="item : ${khachHang.idDiaChi}" >
@@ -220,13 +246,19 @@
                         <div>Xác nhận thông tin giao hàng</div>
                         <div class="form-group">
                             <label for="province">Tỉnh/Thành Phố</label>
-                            <select class="form-control" name="province" id="province1" onchange="getCity()" required>
+                            <select class="form-control" name="province" id="province1" onchange="getCity()" required
+                                    oninvalid="this.setCustomValidity('Vui lòng chọn địa chỉ')"
+                                    oninput="this.setCustomValidity('')"
+                            >
 
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="city">Quận/Huyện</label>
-                            <select class="form-control" name="city" id="city1" onchange="getStreet()" required>
+                            <select class="form-control" name="city" id="city1" onchange="getStreet()" required
+                                    oninvalid="this.setCustomValidity('Vui lòng chọn địa chỉ')"
+                                    oninput="this.setCustomValidity('')"
+                            >
 
                             </select>
                         </div>
@@ -235,6 +267,14 @@
                             <select class="form-control" name="street" id="street1" onchange="shippingfee()" required>
 
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Địa chỉ cụ thể</label>
+                            <input type="text" class="form-control" name="address"
+                                   placeholder="Địa chỉ cụ thể" required
+                                   oninvalid="this.setCustomValidity('Vui lòng nhập địa chỉ cụ thể')"
+                                   oninput="this.setCustomValidity('')"
+                            >
                         </div>
                         <div class="form-group">
                             <label for="notes">Nhập ghi chú (nếu có)</label>
@@ -263,7 +303,7 @@
                 <div class="form-section">
                     <h5>Chọn hình thức thanh toán</h5>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="payment" id="offline" value="offline">
+                        <input class="form-check-input" type="radio" checked name="payment" id="offline" value="offline">
                         <label class="form-check-label" for="homeDelivery">
                             COD
                         </label>
@@ -280,7 +320,10 @@
                         <label for="discount-code">Phí giao hàng</label>
                         <div class="row">
                             <input type="text" class="form-control col-6" id="shipping" name="shipping" readonly
-                                   required>
+                                   required
+                                   oninvalid="this.setCustomValidity('Hệ thống chưa nhận thông tin địa chỉ')"
+                                   oninput="this.setCustomValidity('')"
+                            >
 <!--                            <th:block th:if="${khachHang != null} && ${khachHang.idDiaChi.size()}> 0 ">-->
 <!--                                <div th:each="item : ${khachHang.getIdDiaChi().stream().filter(f -> f.isLaDiaChiMacDinh().equals(true))}" >-->
 <!--                                <button onclick="viewShippingFee()"-->
@@ -399,6 +442,12 @@
             toastr.error("Vui lòng chọn hình thức thanh toán.");
             return false; // Ngăn chặn form được gửi đi
         }
+        // check valid input
+        const shippingValue = document.getElementById("shipping").value;
+        if(shippingValue==''){
+            toastr.error("Đơn hàng chưa được tính phí ship.");
+            return false;
+        }
         const discountValue = document.getElementById("total-discount").textContent.replace(/\D/g,'');
 
         // Tìm form (thay thế 'myForm' bằng ID hoặc class của form bạn)
@@ -423,7 +472,6 @@
         // Nếu có radio button được chọn, cho phép gửi form
         return true;
     }
-
     function getCity() {
         var province = document.getElementById("province");
         var province1 = document.getElementById("province1");
@@ -520,6 +568,13 @@
         const formatter = new Intl.NumberFormat('en-US');
         let code = $('#discount-code').val();
         if (code == '') {
+            debugger
+            $('#total-discount').html("");
+            let totalPrice = [[${total}]];
+            let totalShippingFormatted = document.getElementById('total-shipping').textContent.replace(/\D/g,'');
+            let totalShipping = totalShippingFormatted!='' ? parseInt(totalShippingFormatted) : 0;
+            let total = totalPrice + totalShipping;
+            $('#total').html("Tổng hoá đơn: " + formatter.format(Number(total)) + " VND");
             toastr.error("Bạn quên chọn mã giảm giá rồi");
         } else
             $.ajax(
@@ -541,6 +596,12 @@
                         toastr.success('Mã giảm giá đã được áp dụng');
                     },
                     error: function (xhr, status, error) {
+                        let totalShippingFormatted = document.getElementById('total-shipping').textContent.replace(/\D/g,'');
+                        let totalShipping = totalShippingFormatted!='' ? parseInt(totalShippingFormatted) : 0;
+                        let totalPrice = [[${total}]];
+                        let total = totalPrice + totalShipping;
+                        $('#total-discount').html("");
+                        $('#total').html("Tổng hoá đơn: " + formatter.format(Number(total)) + " VND");
                         toastr.error(xhr.responseText);
                     }
                 }
@@ -613,12 +674,6 @@
             toastr.error('Bạn quên chọn địa điểm nhận hàng rồi');
             return;
         }
-        let feeRequest = {
-            to_ward_code: streetCode,
-            to_district_id: city,
-            serviceID: '53320',
-            weight: '1000'
-        }
         $.ajax(
             {
                 url: "/client/shipping/shipping-fee",
@@ -635,13 +690,20 @@
                     }
                 ),
                 success: function (data, textStatus, jqXHR) {
-                    $('#shipping').val(data.data.total);
+                    $('#shipping').val(formatter.format(Number(data.data.total)) + " VND");
                     let totalPrice = [[${total}]];
                     // $('#total-price').html(formatter.format(Number(totalPrice) - Number(data.data.total)));
                     // không trừ trực tiếp
-                    let shippingFee = parseFloat($('#shipping').val());
-                    const total = totalPrice + shippingFee;
-                    $('#total-shipping').text("Phí giao hàng: " + formatter.format(Number(shippingFee)) + " VND");
+                    debugger
+
+                    // let shippingFee = parseFloat($('#shipping').val());
+                    let totalDiscountFormatted = document.getElementById('total-discount').textContent.replace(/\D/g,'');
+
+                    let totalDiscount = totalDiscountFormatted!='' ? parseInt(totalDiscountFormatted) : 0;
+
+                    const total = totalPrice + data.data.total - totalDiscount;
+
+                    $('#total-shipping').text("Phí giao hàng: " + formatter.format(Number(data.data.total)) + " VND");
                     $('#total').text("Tổng hoá đơn: " + formatter.format(Number(total)) + " VND");
 
                     toastr.success('Phí ship hàng đã được áp dụng');
@@ -689,7 +751,16 @@
                 ),
                 success: function (data, textStatus, jqXHR) {
                     const formatter = new Intl.NumberFormat('en-US');
-                    $('#shipping').val(data.data.total);
+                    $('#shipping').val(formatter.format(Number(data.data.total)) + " VND");
+                    // $('#total-price').html(formatter.format(Number(totalPrice) - Number(data.data.total)));
+                    // không trừ trực tiếp
+                    // let shippingFeeFormated = document.getElementById('shipping').textContent.replace(/\D/g,'');
+                    // let shippingFee = shippingFeeFormated!='' ? parseInt(shippingFeeFormated) : 0;
+
+
+
+
+                    // $('#shipping').val(data.data.total);
                     let totalPrice = [[${total}]];
                     $('#total-shipping').text("Phí giao hàng: " + formatter.format(Number(data.data.total)) + " VND");
 
@@ -697,7 +768,7 @@
                     let totalDiscount = totalDiscountFormatted!='' ? parseInt(totalDiscountFormatted) : 0;
                     $('#total-discount').text("Giảm giá: " + formatter.format(Number(totalDiscount)) + " VND");
                     // $('#total-price').html(formatter.format(Number(totalPrice) - Number(data.data.total)));
-                    $('#total').html("Tổng hoá đơn: " + formatter.format(Number(totalPrice) + Number(data.data.total)) + " VND");
+                    $('#total').html("Tổng hoá đơn: " + formatter.format(Number(totalPrice) + Number(data.data.total) - Number(totalDiscount)) + " VND");
                     toastr.success('Phí ship hàng đã được áp dụng');
                 }
             }

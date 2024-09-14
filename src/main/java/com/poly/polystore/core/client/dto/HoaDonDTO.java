@@ -1,5 +1,6 @@
 package com.poly.polystore.core.client.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.poly.polystore.Constant.TRANGTHAIDONHANG;
 import com.poly.polystore.entity.HoaDonChiTiet;
 import com.poly.polystore.entity.KhachHang;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class HoaDonDTO {
     private Integer id;
 
@@ -57,4 +59,5 @@ public class HoaDonDTO {
     private String leadingItem;
     private String imageUrl;
     private List<HoaDonChiTietDTO> hoaDonChiTiets;
+    private List<LichSuHoaDonDTO> lichSuHoaDons;
 }

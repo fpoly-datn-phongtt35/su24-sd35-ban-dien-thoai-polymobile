@@ -111,29 +111,97 @@
             <th>SDT</th>
             <th>Thời gian bảo hành</th>
             <th>Imei</th>
-            <th>Ngày bắt đầu</th>
+            <th>Lý do</th>
             <th>Ngày kết thúc</th>
+            <th>Hành động</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="warranty : ${danhSachBaoHanh}" th:fragment="tableBody">
             <td th:text="${warranty.TENSP}"></td>
             <td th:text="${#dates.format(warranty.ngayBD, 'dd/MM/yyyy')}"></td>
-            <td th:switch="${warranty.trangThai}">
+            <td th:switch="${warranty.trangThai}" id="warranty-status">
                 <span th:case="'Chưa bảo hành'" class="alert-warning">Chưa bảo hành</span>
                 <span th:case="'Hết hạn bảo hành'" class="alert-danger">Hết hạn bảo hành</span>
-                <span th:case="*" class ="alert-success">[[${warranty.trangThai}]]</span> </td>
+                <span th:case="*" class ="badge badge-success">[[${warranty.trangThai}]]</span> </td>
             <td th:text="${warranty.sdt}" style="color: rgba(15,103,158,0.76)"></td>
             <td th:text="${warranty.diffTime}" style="color: #0F9E5E"></td>
             <td th:text="${warranty.imei}" style="color: #c42484"></td>
-            <td th:text="${#dates.format(warranty.ngayBD, 'dd/MM/yyyy')}"></td>
+            <td th:text="${warranty.reason}" id="reason-text"></td>
             <td th:text="${#dates.format(warranty.thoiGianBH, 'dd/MM/yyyy')}"></td>
+            <td >
+                <button class="btn btn-primary"
+                        th:disabled="${warranty.trangThai != 'Chưa bảo hành'}"
+                        th:id="'warranty-btn-' + ${warranty.ID}" th:onclick="openWarrantyModal([[${warranty.getID()}]])">
+                    Bảo hành
+                </button>
+            </td>
         </tr>
         </tbody>
     </table>
+    <!-- Warranty Modal -->
+    <div class="modal fade" id="warrantyModal" tabindex="-1" role="dialog" aria-labelledby="warrantyModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="warrantyModalLabel">Nhập lý do bảo hành</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="warrantyItemId">
+                    <div class="form-group">
+                        <label for="reason">Lý do bảo hành</label>
+                        <input type="text" class="form-control" id="reason" placeholder="Nhập lý do bảo hành">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" onclick="saveWarranty()">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script th:inline="javascript">
+        debugger
+        function openWarrantyModal(itemId) {
+            document.getElementById('warrantyItemId').value = itemId;
+            $('#warrantyModal').modal('show');
+        }
         function updateSearchType(type) {
             document.getElementById('searchType').value = type;
+        }
+        function saveWarranty() {
+            var itemId = document.getElementById('warrantyItemId').value;
+            var reason = document.getElementById('reason').value;
+
+            $.ajax({
+                url: '/admin/warranty/update',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    itemId: itemId,
+                    reason: reason
+                }),
+                success: function(response) {
+                    debugger
+                    // Cập nhật giao diện sau khi thành công
+                    $('#warrantyModal').modal('hide');
+                    const statusElement = document.getElementById('warranty-status');
+                    const reasonElement = document.getElementById('reason-text');
+                    statusElement.innerHTML = '<span class="badge badge-success">Đã bảo hành</span>';
+                    reasonElement.innerHTML = reason;
+                    // const warrantyButton = document.getElementById('warranty-btn');
+                    const warrantyButton = document.getElementById(`warranty-btn-${itemId}`);
+                    warrantyButton.disabled = true;
+                    warrantyButton.classList.add('disabled');
+                    toastr.success("Trạng thái đã được cập nhật thành công!");
+                },
+                error: function() {
+                    alert('Có lỗi xảy ra, vui lòng thử lại.');
+                }
+            });
         }
     </script>
     <script>

@@ -24,6 +24,7 @@ public interface ThongTinBaoHanhRepository extends JpaRepository<ThongTinBaoHanh
         String getTenKH();
         String getSdt();
         String getImei();
+        String getReason();
     }
     @Query(value = """
 select

@@ -87,4 +87,17 @@ public class OrderServiceImpl implements IOrderService {
         }
         return hoaDonDTOS;
     }
+
+    @Override
+    public HoaDonDTO findOrderById(Integer orderId) {
+        HoaDon hoaDon = hoaDonRepository.getOrderById(orderId);
+        HoaDonDTO hoaDonDTO = modelMapper.map(hoaDon, HoaDonDTO.class);
+        List<HoaDonChiTietDTO> hoaDonChiTietDTOS = hoaDonDTO.getHoaDonChiTiets();
+        for (HoaDonChiTietDTO hoaDonChiTietDTO : hoaDonChiTietDTOS) {
+            hoaDonChiTietDTO.getSanPhamChiTiet().setSoLuongMua(1);
+        }
+        hoaDonDTO.setHoaDonChiTiets(hoaDonChiTietDTOS);
+        return hoaDonDTO;
+    }
+
 }

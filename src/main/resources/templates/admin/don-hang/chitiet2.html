@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Process</title>
+  <style>
+    .order-step {
+      display: inline-block;
+      text-align: center;
+      margin: 10px;
+    }
+
+    .step-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #f0f0f0;
+      line-height: 50px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .step-icon.active {
+      background-color: blue;
+      color: white;
+    }
+
+    .line {
+      width: 50px;
+      height: 2px;
+      background-color: #f0f0f0;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .line.active {
+      background-color: blue;
+    }
+  </style>
+</head>
+<body>
+
+<div class="order-container">
+  <!-- Bước Xác nhận -->
+  <div class="order-step" id="step-confirm">
+    <div class="step-icon" onclick="confirmStep('confirm', [[${orderId}]])">
+      <span id="confirm-icon">Xác nhận</span>
+    </div>
+  </div>
+
+  <!-- Đường nối giữa các bước -->
+  <div class="line" id="line-confirm-to-prepare"></div>
+
+  <!-- Bước Chuẩn bị hàng -->
+  <div class="order-step" id="step-prepare">
+    <div class="step-icon" onclick="confirmStep('prepare', [[${orderId}]])">
+      <span id="prepare-icon">Chuẩn bị hàng</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Hàm hiển thị popup xác nhận
+  function confirmStep(step, orderId) {
+    const confirmed = confirm("Bạn có chắc chắn muốn thay đổi trạng thái không?");
+    if (confirmed) {
+      handleStepClick(step, orderId);  // Nếu người dùng xác nhận, gọi API
+    }
+  }
+
+  // Hàm gọi API khi click vào các bước
+  async function handleStepClick(step, orderId) {
+    let apiUrl = '';
+
+    if (step === 'confirm') {
+      apiUrl = `admin/order/change-status/id=${orderId}/confirm`;  // URL cho API xác nhận
+    } else if (step === 'prepare') {
+      apiUrl = `admin/order/change-status/id=${orderId}/prepare`;  // URL cho API chuẩn bị hàng
+    }
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (response.ok) {
+        updateUI(step);  // Cập nhật giao diện sau khi gọi API thành công
+      } else {
+        console.error('API failed');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  // Hàm cập nhật giao diện
+  function updateUI(step) {
+    if (step === 'confirm') {
+      document.getElementById('confirm-icon').classList.add('active');
+      document.getElementById('line-confirm-to-prepare').classList.add('active');
+    } else if (step === 'prepare') {
+      document.getElementById('prepare-icon').classList.add('active');
+    }
+  }
+</script>
+
+</body>
+</html>

@@ -101,8 +101,7 @@
             <div class="order-container">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <span class="order-title" th:text="'Đơn hàng: ' + ${order.ma}">#84770619</span>
-                        <span class="order-date" th:text="'Nhận Trước ' + ${order.thoiGianNhanHang}">Nhận Trước 17:46 - Chủ Nhật (25/08)</span>
+                        <span class="order-title" th:text="'Đơn hàng: ' + ${order.id}">#84770619</span>
                     </div>
                     <div class="order-status"
                          th:switch="${order.trangThai}">
@@ -136,7 +135,7 @@
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="orderItemsModalLabel" th:text="'Chi tiết đơn hàng' + ${order.ma}">Chi tiết đơn hàng</h5>
+                            <h5 class="modal-title" id="orderItemsModalLabel" th:text="'Chi tiết đơn hàng' + ${order.id}">Chi tiết đơn hàng</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -150,7 +149,7 @@
                                             <img th:src="${item.getSanPhamChiTiet().getSanpham().getAnh().getUrl()}" alt="Product Image" style="width: 50px; height: 50px; object-fit: cover; margin-right: 15px;">
                                             <div>
                                                 <h6 th:text="${item.getSanPhamChiTiet().getSanpham().getTenSanPham()} + ${item.getSanPhamChiTiet().getSanpham().getSeries().getTen()}">Tên sản phẩm</h6>
-                                                <span th:text="'Ram: ' + ${item.getSanPhamChiTiet().getSanpham().getRam()}"></span>
+                                                <span th:text="'Rom: ' + ${item.getSanPhamChiTiet().getRom()}"></span>
                                             </div>
                                         </div>
                                         <div>

@@ -1,18 +1,16 @@
 package com.poly.polystore.core.client.dto;
 
-import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamEditResponse;
-import com.poly.polystore.entity.HoaDon;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.poly.polystore.core.admin.don_hang.dto.ImeiDTO;
 import com.poly.polystore.entity.Imei;
 import com.poly.polystore.entity.PhieuGiamGia;
-import com.poly.polystore.entity.SanPhamChiTiet;
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.math.BigDecimal;
 @Getter
 @Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class HoaDonChiTietDTO {
     private Integer id;
     private BigDecimal giaGoc;// Là giá chưa áp dụng đợt giảm giá

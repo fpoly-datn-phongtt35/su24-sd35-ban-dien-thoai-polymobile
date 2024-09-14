@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface IOrderService {
     List<HoaDonDTO> findOrderByUser(Authentication authentication, String startDate, String endDate, String status, String maDH);
+    HoaDonDTO findOrderById(Integer orderId);
 }

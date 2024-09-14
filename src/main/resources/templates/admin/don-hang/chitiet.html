@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/admin/layout-dashboard/layout.html"
+>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý đơn hàng</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <style>
+    .container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .progress-icon {
+      color: white;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .progress-icon.completed {
+      background-color: #4a73f8;
+    }
+    .progress-icon.pending {
+      background-color: #e0e0e0;
+    }
+    .status-text {
+      font-size: 14px;
+      color: #808080;
+    }
+    .status-text.completed {
+      color: #4a73f8;
+    }
+    .status-text.pending {
+      color: #808080;
+    }
+    .line {
+      margin-top:15px;
+      width: 150px;
+      height: 2px;
+      background-color: #f0f0f0;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .line.completed {
+      background-color: #419ab6;
+    }
+  </style>
+</head>
+
+<body layout:fragment="content">
+<div class="container mt-5 p-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div th:text="'ORDER:' + ${order.id}">ORDER <a href="#" class="text-primary"></a></div>
+    <div th:text ="'Khách hàng: ' + ${order.getTenNguoiNhan()}" class="text-end">
+      <span th:text="${order.note}"> Expected Arrival 01/12/19</span>
+    </div>
+  </div>
+  <div class="row text-center">
+    <div class="col d-flex flex-column align-items-center">
+      <div class="progress-icon completed">✔</div>
+      <div class="status-text completed" th:text="${order.getId()}"></div>
+    </div>
+    <div class="line" id="line-start-to-confirm"></div>
+    <div class="col d-flex flex-column align-items-center">
+      <div class="progress-icon pending" id="confirm" onclick="handleStepClick('confirm')"></div>
+      <div class="status-text">Xác nhận</div>
+    </div>
+    <div class="line" id="line-confirm-to-prepare"></div>
+    <div class="col d-flex flex-column align-items-center">
+      <div class="progress-icon pending" id="prepare" onclick="handleStepClick('prepare')"></div>
+      <div class="status-text ">Chuẩn bị hàng</div>
+    </div>
+
+    <div class="line" id="line-prepare-to-waiting"></div>
+    <div class="col d-flex flex-column align-items-center">
+      <div class="progress-icon pending" id="waiting" onclick="handleStepClick('waiting')"></div>
+      <div class="status-text ">Chờ lấy hàng</div>
+    </div>
+    <div class="line" id="line-waiting-to-transfer"></div>
+    <div class="col d-flex flex-column align-items-center">
+      <div class="progress-icon pending" id="transfer" onclick="handleStepClick('transfer')"></div>
+      <div class="status-text ">Giao DVVC</div>
+    </div>
+    <div class="line" id="line-transfer-to-success"></div>
+    <div class="col d-flex flex-column align-items-center">
+      <div class="progress-icon pending" id="success" onclick="handleStepClick('success')"></div>
+      <div class="status-text ">Thành công</div>
+    </div>
+  </div>
+</div>
+<h1 class="mt-5">Chi tiết đơn hàng: </h1>
+<div id="orderList">
+  <ul class="list-group">
+    <li th:each="item : ${order.getHoaDonChiTiets()}" class="list-group-item d-flex justify-content-between align-items-center">
+      <div class="d-flex justify-content-between" style="width: 100%;">
+        <div class="d-flex justify-content-start">
+          <img th:src="${item.getSanPhamChiTiet().getSanpham().getAnh().getUrl()}" alt="Product Image" style="width: 50px; height: 50px; object-fit: cover; margin-right: 15px;">
+          <div>
+            <h6 th:text="${item.getSanPhamChiTiet().getSanpham().getTenSanPham()} + ${item.getSanPhamChiTiet().getSanpham().getSeries().getTen()}">Tên sản phẩm</h6>
+            <span th:text="'Rom: ' + ${item.getSanPhamChiTiet().getRom()}"></span>
+          </div>
+        </div>
+        <div>
+          <h6 th:text="'Giá: ' + ${item.getSanPhamChiTiet().getGiaBan()} + ' VND'">1000000 VND</h6>
+          <span  th:id="'imei-' + ${item.id}"
+                  th:text="' Imei: ' + ${item.getImei()!=null? item.getImei():''}"></span>
+        </div>
+        <div>
+          <h6 th:text="'SL: ' + ${item.getSanPhamChiTiet().getSoLuongMua()} + ' Chiếc'">10</h6>
+        </div>
+        <button class="btn btn-primary"
+                th:id="'input-image-' + ${item.id}"
+                th:attr="data-product-id=${item.getSanPhamChiTiet().getId()},
+                data-orderDetail-id=${item.getId()},
+                data-quantity=${item.getSanPhamChiTiet().getSoLuongMua()}"
+                onclick="openImeiModal(this)">
+          Nhập IMEI
+        </button>
+      </div>
+      <!--                                <span class="badge badge-primary badge-pill" th:text="${item.get}">1</span>-->
+    </li>
+  </ul>
+</div>
+<div class="modal fade" id="imeiModal" tabindex="-1" role="dialog" aria-labelledby="imeiModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="imeiModalLabel">Nhập Imei</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="imeiForm">
+          <input type="hidden" id="productId" name="productId">
+          <input type="hidden" id="orderDetailId" name="orderDetailId">
+          <div class="form-group">
+            <label for="imeiInput">IMEI</label>
+            <input type="text" class="form-control" id="imeiInput" name="imei" placeholder="imei" oninvalid="this.setCustomValidity('Imei không được để trống')" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="button" class="btn btn-primary" onclick="submitImei()">Nhập Imei</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+  let initStatus = '[[${order.trangThai.getPriority()}]]';
+  let orderId = [[${order.id}]]
+
+  // load active
+  const statusMapping = {
+    "Xác nhận": 1,
+    "Đang chuẩn bị hàng":2,
+    "Chờ lấy hàng": 3,
+    "Đang Giao": 4,
+    "Giao Thành Công": 5,
+  };
+  // Xác định cấp độ trạng thái từ chuỗi văn bản
+  const confirm = document.getElementById('confirm');
+  const prepare = document.getElementById('prepare');
+  const waiting = document.getElementById('waiting');
+  const transfer = document.getElementById('transfer');
+  const success = document.getElementById('success');
+  let statusLevel = statusMapping[initStatus];
+
+  if (statusLevel >= 1) {
+    confirm.classList.remove('pending');
+    confirm.classList.add('completed');
+    document.getElementById('line-start-to-confirm').classList.add('completed');
+    confirm.innerHTML='✔'
+  }
+  if (statusLevel >= 2) {
+    prepare.classList.remove('pending');
+    prepare.classList.add('completed');
+    document.getElementById('line-confirm-to-prepare').classList.add('completed');
+    prepare.innerHTML='✔'
+  }
+  if (statusLevel >= 3) {
+    waiting.classList.remove('pending');
+    waiting.classList.add('completed');
+    document.getElementById('line-prepare-to-waiting').classList.add('completed');
+    waiting.innerHTML='✔'
+  }
+  if (statusLevel >= 4) {
+    transfer.classList.remove('pending');
+    transfer.classList.add('completed');
+    document.getElementById('line-waiting-to-transfer').classList.add('completed');
+    transfer.innerHTML='✔'
+  }
+  if (statusLevel >= 5) {
+    success.classList.remove('pending');
+    success.classList.add('completed');
+    document.getElementById('line-transfer-to-success').classList.add('completed');
+    success.innerHTML='✔'
+  }
+  let updateStatus = initStatus
+  function handleStepClick(step) {
+    alert("Bạn có chắc muốn cập nhật đơn hàng?")
+    let status = updateStatus;
+    debugger
+    if(status=='Chờ xác nhận' && step == 'confirm') {
+      const urlApi = `/admin/order/change-status?orderId=${orderId}&status=${status}`;
+      // check tất cả imei đã được gán cho sản phẩm
+      const checkValidChangeStatus = `/admin/order/check-status?orderId=${orderId}`;
+      $.ajax(
+              {
+                url: checkValidChangeStatus,
+                contentType: 'application/json',
+                type: 'Get',
+                success: function (data, textStatus, jqXHR) {
+                  $.ajax(
+                          {
+                            url: urlApi,
+                            contentType: 'application/json',
+                            type: 'Get',
+                            success: function (data, textStatus, jqXHR) {
+                              debugger
+                              console.log("update success")
+                              const confirmIcon = document.getElementById('confirm');
+                              confirmIcon.classList.remove('pending');
+                              confirmIcon.classList.add('completed');
+                              document.getElementById('line-start-to-confirm').classList.add('completed');
+                              confirmIcon.innerHTML='✔'
+                              updateStatus = "Xác nhận"
+                              const inputImei = document.getElementById("input-image")
+                              inputImei.disabled = true;
+                              inputImei.classList.add('disabled');
+                            },
+                            error: function (xhr, status, error) {
+
+                            }
+                          }
+                  )
+                },
+                error: function (xhr, status, error) {
+                  toastr.error("Vui lòng nhập đủ Imei cho sản phẩm")
+                  return
+                }
+              }
+      )
+    }
+    if(status=='Xác nhận' && step == 'prepare') {
+      const urlApi = `/admin/order/change-status?orderId=${orderId}&status=${status}`;
+      $.ajax(
+              {
+                url: urlApi,
+                contentType: 'application/json',
+                type: 'Get',
+                success: function (data, textStatus, jqXHR) {
+                  console.log("update success")
+                  const prepareIcon = document.getElementById('prepare');
+                  prepareIcon.classList.remove('pending');
+                  prepareIcon.classList.add('completed');
+                  document.getElementById('line-confirm-to-prepare').classList.add('completed');
+                  prepareIcon.innerHTML='✔'
+                  updateStatus = "Đang chuẩn bị hàng"
+                },
+                error: function (xhr, status, error) {
+
+                }
+              }
+      )
+    }
+    if(status=='Đang chuẩn bị hàng' && step == 'waiting') {
+      const urlApi = `/admin/order/change-status?orderId=${orderId}&status=${status}`;
+      $.ajax(
+              {
+                url: urlApi,
+                contentType: 'application/json',
+                type: 'Get',
+                success: function (data, textStatus, jqXHR) {
+                  console.log("update success")
+                  const waitingIcon = document.getElementById('waiting');
+                  waitingIcon.classList.remove('pending');
+                  waitingIcon.classList.add('completed');
+                  document.getElementById('line-prepare-to-waiting').classList.add('completed');
+                  waitingIcon.innerHTML='✔'
+                  updateStatus = "Chờ lấy hàng"
+                },
+                error: function (xhr, status, error) {
+
+                }
+              }
+      )
+    }
+    if(status=='Chờ lấy hàng' && step == 'transfer') {
+      const urlApi = `/admin/order/change-status?orderId=${orderId}&status=${status}`;
+      $.ajax(
+              {
+                url: urlApi,
+                contentType: 'application/json',
+                type: 'Get',
+                success: function (data, textStatus, jqXHR) {
+                  console.log("update success")
+                  const transferIcon = document.getElementById('transfer');
+                  transferIcon.classList.remove('pending');
+                  transferIcon.classList.add('completed');
+                  document.getElementById('line-waiting-to-transfer').classList.add('completed');
+                  transferIcon.innerHTML='✔'
+                  updateStatus = "Đang Giao"
+                },
+                error: function (xhr, status, error) {
+
+                }
+              }
+      )
+    }
+    if(status=='Đang Giao' && step == 'success') {
+      const urlApi = `/admin/order/change-status?orderId=${orderId}&status=${status}`;
+      $.ajax(
+              {
+                url: urlApi,
+                contentType: 'application/json',
+                type: 'Get',
+                success: function (data, textStatus, jqXHR) {
+                  console.log("update success")
+                  const successIcon = document.getElementById('success');
+                  successIcon.classList.remove('pending');
+                  successIcon.classList.add('completed');
+                  document.getElementById('line-transfer-to-success').classList.add('completed');
+                  successIcon.innerHTML='✔'
+                },
+                error: function (xhr, status, error) {
+
+                }
+              }
+      )
+    }
+    // updateUI(step);
+  }
+  function openImeiModal(button) {
+    const quantity = button.getAttribute('data-quantity');
+    const productId = button.getAttribute('data-product-id');
+    const orderDetailId = button.getAttribute('data-orderDetail-id');
+
+    // Lấy form và xóa các input cũ (nếu có)
+    const form = document.getElementById('imeiForm');
+    form.innerHTML = '';
+
+    // Tạo các input tương ứng với số lượng sản phẩm
+    for (let i = 1; i <= quantity; i++) {
+      const div = document.createElement('div');
+      div.classList.add('form-group');
+      const label = document.createElement('label');
+      label.setAttribute('for', `imei-${i}`);
+      label.textContent = `IMEI ${i}:`;
+      debugger
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.classList.add('form-control');
+      input.id = `imei-${i}`;
+      input.name = `imei-${i}`;
+      input.placeholder = `Nhập IMEI ${i}`;
+      input.required = true;
+      input.setCustomValidity("IMEI không được để trống");
+      div.appendChild(label);
+      div.appendChild(input);
+      form.appendChild(div);
+    }
+
+    // Lưu lại productId và orderDetailId nếu cần dùng khi submit
+    form.setAttribute('data-product-id', productId);
+    form.setAttribute('data-orderDetail-id', orderDetailId);
+
+    // Hiển thị modal
+    $('#imeiModal').modal('show');
+  }
+
+  // Gửi yêu cầu kiểm tra IMEI xuống backend qua AJAX
+  function submitImei() {
+    const form = document.getElementById('imeiForm');
+    const productId = form.getAttribute('data-product-id');
+    const orderDetailId = form.getAttribute('data-orderDetail-id');
+
+    // Lấy tất cả các giá trị IMEI
+    const imeis = [];
+    for (let i = 0; i < form.elements.length; i++) {
+      if (form.elements[i].tagName === 'INPUT') {
+        imeis.push(form.elements[i].value);
+      }
+    }
+
+    // Gửi dữ liệu IMEI qua API (hoặc xử lý theo yêu cầu)
+    console.log('Product ID:', productId);
+    console.log('Order Detail ID:', orderDetailId);
+    console.log('IMEIs:', imeis);
+
+    $.ajax({
+      url: `/admin/order/check-imei`,  // Đường dẫn tới API kiểm tra IMEI
+      type: 'POST',
+      data: JSON.stringify({
+        productId: productId,
+        imei: imeis,
+        orderDetailId: orderDetailId
+      }),
+      contentType: 'application/json',
+      success: function(response) {
+        // Xử lý khi yêu cầu thành công (API trả về mã 200)
+        toastr.success("Imei hợp lệ")
+        const inputImei = document.getElementById("imei-" + orderDetailId)
+        inputImei.textContent = imeis[0];
+        $('#imeiModal').modal('hide');  // Đóng modal sau khi kiểm tra thành công
+      },
+      error: function(response) {
+        // Xử lý khi có lỗi
+        toastr.error(response.responseText);
+      }
+    });
+  }
+
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+<th:block layout:fragment="bottom_link">
+  <!-- Page level plugins -->
+  <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
+  <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+  <script src="/vendor/select2/select2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/js/ion.rangeSlider.min.js"></script>
+  <!-- Page level custom scripts -->
+</th:block>
+</html>
