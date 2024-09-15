@@ -1,5 +1,6 @@
 package com.poly.polystore.core.client.service.impl;
 
+import com.poly.polystore.Constant.TRANGTHAIDONHANG;
 import com.poly.polystore.core.client.dto.HoaDonChiTietDTO;
 import com.poly.polystore.core.client.dto.HoaDonDTO;
 import com.poly.polystore.core.client.dto.SanPhamChiTietDTO;
@@ -12,6 +13,9 @@ import com.poly.polystore.repository.KhachHangRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -99,5 +103,23 @@ public class OrderServiceImpl implements IOrderService {
         hoaDonDTO.setHoaDonChiTiets(hoaDonChiTietDTOS);
         return hoaDonDTO;
     }
+    @Override
+    public Page<HoaDon> findOrderByUserPage(Authentication authentication, String startDate, String endDate, String status, String maDH, int page, int size ) {
+        TaiKhoan taiKhoan = (TaiKhoan) authentication.getPrincipal();
+        Integer idKhachHang = khachHangRepository.findByIdTaiKhoan(taiKhoan.getId()).get().getId();
+
+        // convert date
+        LocalDate fromDate = null, toDate = null;
+        if (!ObjectUtils.isEmpty(startDate))
+            fromDate = LocalDate.parse(startDate);
+        if (!ObjectUtils.isEmpty(endDate))
+            toDate = LocalDate.parse(endDate);
+        TRANGTHAIDONHANG enumStatus = TRANGTHAIDONHANG.fromString(status);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<HoaDon> hoaDons = hoaDonRepository.findByUserAndFilters(null, enumStatus, fromDate, toDate, maDH, pageable);
+        return  hoaDons;
+    }
+
+
 
 }

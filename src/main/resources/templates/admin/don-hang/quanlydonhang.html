@@ -69,6 +69,22 @@
     .order-image-container {
       flex-shrink: 0;
     }
+
+  /*  phan trang*/
+    .pagination .active .page-link {
+      background-color: #007bff;
+      border-color: #007bff;
+      color: white;
+    }
+
+    .pagination .disabled .page-link {
+      color: #6c757d;
+      pointer-events: none;
+    }
+
+    .pagination .page-link {
+      color: #007bff;
+    }
   </style>
 </head>
 
@@ -176,8 +192,24 @@
   </div>
 </div>
 </div>
-<div class="text-center">
-  <a href="#">Xem thêm 7 đơn hàng</a>
+<div class="d-flex justify-content-center mt-4">
+  <ul class="pagination">
+    <!-- Nút Previous -->
+    <li th:classappend="${currentPage == 0} ? 'disabled'" class="page-item">
+      <a th:href="@{/orders(page=${currentPage - 1}, size=${size}, status=${status}, startDate=${startDate}, endDate=${endDate}, maDH=${maDH})}" class="page-link">Previous</a>
+    </li>
+
+    <!-- Số trang -->
+    <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+        th:classappend="${i == currentPage} ? 'active'" class="page-item">
+      <a th:href="@{/orders(page=${i}, size=${size}, status=${status}, startDate=${startDate}, endDate=${endDate}, maDH=${maDH})}" class="page-link" th:text="${i + 1}">1</a>
+    </li>
+
+    <!-- Nút Next -->
+    <li th:classappend="${currentPage == totalPages - 1} ? 'disabled'" class="page-item">
+      <a th:href="@{/orders(page=${currentPage + 1}, size=${size}, status=${status}, startDate=${startDate}, endDate=${endDate}, maDH=${maDH})}" class="page-link">Next</a>
+    </li>
+  </ul>
 </div>
 </div>
 <script>
@@ -185,12 +217,14 @@
   let startDate;
   let endDate;
   let MaDH;
-  function loadOrders(status) {
-    const url = `/client/don-muav2?status=${selectedStatus}&startDate=${startDate}&endDate=${endDate}&maDH=${MaDH}`;
-    $.get(url, function(data) {
-      $('#orderList').html(data);
-    });
-  }
+  let size = 10;
+  let page = [[${currentPage}]]
+  // function loadOrders(status) {
+  //   const url = `/client/don-muav2?status=${selectedStatus}&startDate=${startDate}&endDate=${endDate}&maDH=${MaDH}`;
+  //   $.get(url, function(data) {
+  //     $('#orderList').html(data);
+  //   });
+  // }
 
   function filterOrders(status) {
     selectedStatus = status;
@@ -198,12 +232,27 @@
     endDate = $('#endDate').val();
     MaDH = $('#searchOrder').val();
     search();
-    loadOrders(status);
+    loadOrders(status, page);
   }
   function search(){
     startDate = $('#startDate').val();
     endDate = $('#endDate').val();
   }
+  function loadOrders(status, page) {
+    search();
+    MaDH = $('#searchOrder').val();
+    const url = `/admin/ordersv2?page=${page}&size=${size}&status=${status}&startDate=${startDate}&endDate=${endDate}&maDH=${MaDH}`;
+    $.get(url, function(data) {
+      $('#orderList').html(data);
+    });
+  }
+
+  $('.pagination a').on('click', function(event) {
+    event.preventDefault();
+    let page = $(this).attr('href').split('page=')[1].split('&')[0];
+    loadOrders(selectedStatus,page);
+  });
+
 </script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>

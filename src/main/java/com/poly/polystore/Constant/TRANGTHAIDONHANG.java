@@ -37,4 +37,14 @@ public enum TRANGTHAIDONHANG {
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
+    public static TRANGTHAIDONHANG fromString(String status) {
+        if (status == null || status.equals("ALL")) {
+            return null;  // Giá trị "ALL" tương đương với không có bộ lọc
+        }
+        try {
+            return TRANGTHAIDONHANG.valueOf(status);
+        } catch (IllegalArgumentException e) {
+            return null;  // Nếu giá trị không hợp lệ
+        }
+    }
 }

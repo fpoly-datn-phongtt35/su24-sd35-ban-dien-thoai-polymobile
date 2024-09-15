@@ -164,7 +164,6 @@
         </div>
     </div>
     <script th:inline="javascript">
-        debugger
         function openWarrantyModal(itemId) {
             document.getElementById('warrantyItemId').value = itemId;
             $('#warrantyModal').modal('show');
@@ -185,7 +184,6 @@
                     reason: reason
                 }),
                 success: function(response) {
-                    debugger
                     // Cập nhật giao diện sau khi thành công
                     $('#warrantyModal').modal('hide');
                     const statusElement = document.getElementById('warranty-status');

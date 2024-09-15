@@ -2,6 +2,8 @@ package com.poly.polystore.repository;
 
 import com.poly.polystore.Constant.TRANGTHAIDONHANG;
 import com.poly.polystore.entity.HoaDon;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -38,6 +40,23 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
 """, nativeQuery = true)
     HoaDon getOrderById(@Param("orderId") Integer orderId);
 
-
     List<HoaDon> findHoaDonByTrangThai(TRANGTHAIDONHANG trangthai);
+
+    @Query(value = """
+    select hd from HoaDon hd
+    join KhachHang kh
+    on hd.khachHang.id = kh.id
+    where (:IDKH IS NULL OR kh.id =:IDKH) 
+    AND (:enumStatus IS NULL OR hd.trangThai =:enumStatus)
+    AND (:startDate IS NULL OR hd.createdAt >=:startDate)
+    AND (:endDate IS NULL OR hd.createdAt <=:endDate)
+    AND (:maDH IS NULL OR hd.id =:maDH)
+""")
+    Page<HoaDon> findByUserAndFilters(
+            @Param("IDKH") Integer IDKH,
+            @Param("enumStatus") TRANGTHAIDONHANG enumStatus,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("maDH") String maDH
+            , Pageable pageable);
 }
