@@ -3,6 +3,8 @@ package com.poly.polystore.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 
@@ -25,4 +27,9 @@ public class BackCamera {
             uniqueConstraints = @UniqueConstraint(columnNames = {"SAN_PHAM_ID","TINH_NANG_CAMERA_ID"})
     )
     private Set<TinhNangCamera> tinhNangCameras;
+    @Transient
+    @ElementCollection
+    @CollectionTable(name = "CAMERA_SAU_TINH_NANG_CAMERA", joinColumns = @JoinColumn(name = "SAN_PHAM_ID"))
+    @Column(name = "TINH_NANG_CAMERA_ID")
+    private List<Integer> tinhNangCameraIds = new ArrayList<>();
 }

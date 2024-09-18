@@ -1,71 +1,193 @@
-.container-content{
-        font: 14px/18px Helvetica Neue,Helvetica,Arial,SF Pro Display,sans-serif;
-        background-color: #3e3e3f;
-        outline: none;
-}
-.carousel-inner img {
+/*accordion*/
+.filter {
+    .filter-content{
+        max-height: 80vh;
+        overflow-y: auto;
+        scrollbar-width: none;
+    }
+    .accordion {
+        background-color: #323232;
+        color: #fff;
+        cursor: pointer;
         width: 100%;
-        height: 100%;
-        border-radius: 15px;
-}
-.product-container{
-        .product {
-                float: left;
-                background: #323232;
-                border-radius: 24px;
-                padding: 30px;
-                margin: 0;
-                box-sizing: border-box;
-                cursor: pointer;
-                position: relative;
-        }
-        .product div{
-                display: grid;
-                justify-content: center;
-                padding: 20px 0px 20px 0px;
-        }
-        .product button{
-                color: #fff;
-                background-color: #323232;
-        }
-        .product button.selected{
-                background-color: #6c757d;
-        }
-        .product img{
-                margin: auto;
-                border-radius: 20px;
-                width: 60%;
-        }
-        .product label{
-                font-size: 10px;
-                color: orange;
-                padding: 5px;
-                border-radius: 20px;
-                border: solid 2px orange;
-                margin: 0px;
-                margin-left: -20px;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 15px;
+        transition: 0.4s;
+        border-top: 1px solid grey;
+        padding: 18px 18px 25px;
+    }
 
+    .accordion:after {
+        font-family: 'FontAwesome';
+        content: "\f067";
+        float: right;
+    }
+
+    .active, .accordion:hover {
+        content: "\f068";
+    }
+
+    .active:after {
+        font-family: 'FontAwesome';
+        content: "\f068";
+        float: right;
+    }
+    .panel {
+        padding: 0 18px;
+        display: none;
+    }
+    .active + .panel {
+            padding: 0 18px;
+            display: block;
         }
+
+
+
+
 }
 
-a:hover{
-        text-decoration: none;
+
+/*//////////////////////////*/
+
+.container-content {
+    font: 14px/18px Helvetica Neue, Helvetica, Arial, SF Pro Display, sans-serif;
+    background-color: #3e3e3f;
+    outline: none;
+
+    .container {
+        max-width: 1280px;
+    }
+
+    .filter:hover {
+        box-shadow: 9px 9px 16px rgba(0, 0, 0, .44), -9px -9px 16px rgba(83, 83, 86, .8);
+    }
+
+    .filter {
+        float: left;
+        background: #323232;
+        border-radius: 24px;
+        padding: 30px;
+        margin: 0;
+        box-sizing: border-box;
+        cursor: pointer;
+        position: sticky;
+        top: 0px;
+    }
 }
+
+.carousel-inner img {
+    width: 100%;
+    height: 100%;
+    border-radius: 15px;
+}
+
+.product-container {
+    .product {
+        float: left;
+        background: #323232;
+        border-radius: 24px;
+        padding: 30px;
+        margin: 0% 3% 0% 0%;
+        box-sizing: border-box;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .product div {
+        display: grid;
+        justify-content: center;
+        padding: 20px 0px 20px 0px;
+    }
+
+    .product button {
+        color: #fff;
+        background-color: #323232;
+    }
+
+    .product button.selected {
+        background-color: #6c757d;
+    }
+
+    .product img {
+        margin: auto;
+        border-radius: 20px;
+        width: 60%;
+    }
+
+    .product label {
+        font-size: 10px;
+        color: orange;
+        padding: 5px;
+        border-radius: 20px;
+        border: solid 2px orange;
+        margin: 0px;
+        margin-left: -20px;
+
+    }
+}
+
+a:hover {
+    text-decoration: none;
+}
+
 .product:hover {
-        box-shadow: 9px 9px 16px rgba(0,0,0,.44),-9px -9px 16px rgba(83,83,86,.8)
+    box-shadow: 9px 9px 16px rgba(0, 0, 0, .44), -9px -9px 16px rgba(83, 83, 86, .8)
 }
 
-.fillter{
-        span{
-                margin: 10px;
-                padding-bottom: 5px;
-                background: none;
-                border: none;
-                border-bottom: solid 2px #3E3E3F;
-                color: #AFB7BD;
-        }
-        span:hover,span.selected{
-                color: #F0F0F2;
-                border-bottom: solid 2px #F0F0F2;
-        }
+.series {
+    span {
+        margin: 10px;
+        padding-bottom: 5px;
+        background: none;
+        border: none;
+        border-bottom: solid 2px #3E3E3F;
+        color: #AFB7BD;
+    }
+
+    span:hover, span.selected {
+        color: #F0F0F2;
+        border-bottom: solid 2px #F0F0F2;
+    }
+}
+
+@keyframes color-change {
+    0% {
+        background-color: #323232;
+    }
+    25% {
+        background-color: #353535;
+    }
+    50% {
+        background-color: #404040;
+    }
+    75% {
+        background-color: #353535;
+    }
+    100% {
+        background-color: #323232;
+
+    }
+}
+.skeleton {
+    &::after {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        content: '';
+        animation: color-change 1s ease infinite;
+        background: #323232;
+        border-radius: 24px;
+        padding: 30px;
+        margin: 0;
+        box-sizing: border-box;
+        cursor: pointer;
+
+    }
+
+
+
 }

@@ -3,6 +3,7 @@ package com.poly.polystore.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -26,4 +27,9 @@ public class ThongTinChung {
             inverseJoinColumns = @JoinColumn(name="TINH_NANG_DAC_BIET_ID")
     )
     private Set<TinhNangDacBiet> tinhNangDacBiet;
+    @Transient
+    @ElementCollection
+    @CollectionTable(name = "SAN_PHAM_TINH_NANG_DAC_BIET", joinColumns = @JoinColumn(name = "SAN_PHAM_ID"))
+    @Column(name = "TINH_NANG_DAC_BIET_ID")
+    private List<Integer> tinhNangDacBietIds = new ArrayList<>();
 }

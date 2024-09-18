@@ -349,7 +349,6 @@ $(document).ready(function () {
     });
 
     allNextBtn.click(function () {
-        alert('ok')
         var curStep = $(this).closest(".setup-content"),
             curStepBtn = curStep.attr("id"),
             nextStepWizard = $('div.setup-panel div a[href="#' + curStepBtn + '"]').parent().next().children("a"),
@@ -1665,7 +1664,6 @@ $(document).ready(() => {
                                             <th><input type="checkbox" class="checkAll"></th>
                                             <th>Số thứ tự</th>
                                             <th>Màu sắc</th>
-                                            <th>Giá bán</th>
                                             <th>Trạng thái</th>
                                             <th>Thao tác</th>
 
@@ -1716,7 +1714,7 @@ $(document).ready(() => {
 
 
 
-            fieldsetContainer=`<div id="danhSachSanPhamChiTiet">${fieldsetContainer}</div>>`
+            fieldsetContainer=`<div id="danhSachSanPhamChiTiet">${fieldsetContainer}</div>`
 
             let imageContainer = `
             <div class="card shadow m-2 w-100 ">
@@ -2190,19 +2188,25 @@ $(document).ready(function () {
             console.log(sp)
 
             // Nếu form hợp lệ, gửi dữ liệu form lên server
+            $("#overlay").show();
             $.ajax({
                 url: "/api/v1/san-pham",
                 method: 'PUT', // Phương thức HTTP
                 data: JSON.stringify(sp),
                 contentType: 'application/json',
                 success: function (response) {
+                    $("#overlay").hide();
                     Toast.fire({
                         icon: "success",
                         title: "Thêm mới thành công"
                     })
+                    setTimeout(function () {
+                        window.location.href("/admin/san-pham");
+                    },2000);
                     console.log(response);
                 },
                 error: function (xhr, status, error) {
+                    $("#overlay").hide();
                     Toast.fire({
                         icon: "error",
                         title: "Thêm mới thất bại"

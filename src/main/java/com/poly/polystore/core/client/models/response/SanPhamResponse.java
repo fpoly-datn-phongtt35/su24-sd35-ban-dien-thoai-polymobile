@@ -27,8 +27,6 @@ public class SanPhamResponse implements Serializable {
     String anhUrl;
     String anhName;
     String tenSanPham;
-    Integer seriesId;
-    String seriesTen;
     Set<SanPhamChiTiet> sanPhamChiTiet;
     String thoiGianBaoHanh;
     SanPhamRepository.TrangThai trangThai;
@@ -47,7 +45,8 @@ public class SanPhamResponse implements Serializable {
         String rom;
         BigDecimal giaBan;
         SanPhamRepository.TrangThai trangThai;
-
+        private PhieuGiamGia dotGiamGia;
+        private MauSac mauSac;
 
 
         /**
@@ -59,15 +58,27 @@ public class SanPhamResponse implements Serializable {
         @NoArgsConstructor
         @Builder
         public static class PhieuGiamGia implements Serializable {
-            String code;
             BigDecimal giaTriGiam;
             String donvi;
             Instant thoiGianKetThuc;
             Instant thoiGianBatDau;
             Boolean deleted;
         }
+        /**
+         * DTO for {@link com.poly.polystore.entity.MauSac}
+         */
+        @AllArgsConstructor
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @Builder
+        public static class MauSac implements Serializable {
+            Integer id;
+            String ten;
+            String ma;
+        }
 
-        private PhieuGiamGia dotGiamGia;
+
 
     }
 

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 @AllArgsConstructor
 @Getter
@@ -19,6 +20,6 @@ public class DataSourcesSelect2 implements Serializable {
     public static class Pagination{
         private Boolean more=false;
     }
-    private List<DataList> results;
+    private Collection<DataList> results;
     private Pagination pagination;
 }

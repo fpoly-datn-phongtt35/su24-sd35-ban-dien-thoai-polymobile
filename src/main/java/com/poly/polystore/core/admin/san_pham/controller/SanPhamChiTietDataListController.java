@@ -278,7 +278,14 @@ public class SanPhamChiTietDataListController {
                 .map(element -> new DataList(element.getId(), element.getTen()))
                 .collect(Collectors.toList());
         return new DataSourcesSelect2(dataList, new DataSourcesSelect2.Pagination(false));
-
+    }
+    @GetMapping("ho-tro-sac-toi-da")
+    public DataSourcesSelect2 getHoTroSacToiDa() {
+        var dataList = sanPhamRepository.findDistinctByPinVaSac_HoTroSacToiDa()
+                .stream()
+                .map(element -> new DataList(null, element))
+                .collect(Collectors.toList());
+        return new DataSourcesSelect2(dataList, new DataSourcesSelect2.Pagination(false));
     }
 
     @GetMapping("he-dieu-hanh")

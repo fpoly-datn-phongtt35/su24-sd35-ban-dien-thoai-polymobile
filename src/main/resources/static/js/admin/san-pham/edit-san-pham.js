@@ -392,7 +392,6 @@ $(document).ready(function () {
     });
 
     allNextBtn.click(function () {
-        alert('ok')
         var curStep = $(this).closest(".setup-content"),
             curStepBtn = curStep.attr("id"),
             nextStepWizard = $('div.setup-panel div a[href="#' + curStepBtn + '"]').parent().next().children("a"),
@@ -2452,7 +2451,7 @@ $(document).ready(function () {
 
 
             console.log(sp)
-
+            $("#overlay").show();
             // Nếu form hợp lệ, gửi dữ liệu form lên server
             $.ajax({
                 url: "/api/v1/san-pham/"+id,
@@ -2460,13 +2459,18 @@ $(document).ready(function () {
                 data: JSON.stringify(sp),
                 contentType: 'application/json',
                 success: function (response) {
+                    $("#overlay").hide();
                     Toast.fire({
                         icon: "success",
                         title: "Chỉnh sửa thành công"
                     })
+                    setTimeout(function () {
+                        window.location.href("/admin/san-pham");
+                    },2000);
                     console.log(response);
                 },
                 error: function (xhr, status, error) {
+                    $("#overlay").hide();
                     Toast.fire({
                         icon: "error",
                         title: "Chỉnh sửa thất bại thất bại"

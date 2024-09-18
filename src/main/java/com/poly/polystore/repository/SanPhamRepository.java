@@ -1,5 +1,6 @@
 package com.poly.polystore.repository;
 
+import com.poly.polystore.core.admin.san_pham.model.reponse.DataList;
 import com.poly.polystore.core.admin.san_pham.model.reponse.SanPhamDataTable;
 import com.poly.polystore.dto.Select2Response;
 import com.poly.polystore.entity.SanPham;
@@ -13,6 +14,8 @@ import java.util.*;
 
 public interface SanPhamRepository extends JpaRepository<SanPham, Integer>, JpaSpecificationExecutor<SanPham> {
     List<SanPham> findAllByOrderByIdDesc();
+    @Query(value = "SELECT DISTINCT HO_TRO_SAC_TOI_DA FROM SAN_PHAM",nativeQuery = true)
+    List<String> findDistinctByPinVaSac_HoTroSacToiDa();
 
     public enum TrangThai {
         IN_STOCK("Có sẵn"),

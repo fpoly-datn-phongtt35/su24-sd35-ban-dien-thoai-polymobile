@@ -26,4 +26,7 @@ public class ManHinh {
     @ManyToOne
     @JoinColumn(name = "MAT_KINH_CAM_UNG_ID")
     private MatKinhCamUng matKinhCamUng;
+
+
+
 }

@@ -1,8 +1,10 @@
 package com.poly.polystore.core.client.controller;
 
+import com.poly.polystore.core.admin.ban_hang.repository.impl.SanPhamRepositoryImpl;
 import com.poly.polystore.core.client.models.response.SanPhamProductResponse;
 import com.poly.polystore.core.client.models.response.SanPhamResponse;
 import com.poly.polystore.entity.SanPham;
+import com.poly.polystore.entity.SanPhamChiTiet;
 import com.poly.polystore.repository.SanPhamRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -10,6 +12,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -18,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
@@ -28,27 +32,27 @@ public class SanPhamClientRestController {
     private final ModelMapper modelMapper;
 
     private final Integer pageSize=9;
+    private final SanPhamRepositoryImpl sanPhamRepositoryImpl;
 
     @GetMapping("")
-    public ResponseEntity<?> getSanPham(@RequestParam(name="page",defaultValue = "0",required = false) Integer pageNo) {
-        Sort sort=Sort.by(Sort.Direction.DESC,"id");
-        Pageable page= PageRequest.of(pageNo, pageSize,sort);
-        var spfc=SanPhamSpecifications.sanPhamStatusIn(
-                SanPhamRepository.TrangThai.COMING_SOON,
-                SanPhamRepository.TrangThai.IN_STOCK,
-                SanPhamRepository.TrangThai.TEMPORARILY_OUT_OF_STOCK
-        );
-        var sp= sanPhamRepository.findAll(spfc,
-                page).getContent().stream().map((spRepo) -> {
-            var spResponse=modelMapper.map(spRepo, SanPhamResponse.class);
-            spResponse.setSanPhamChiTiet(spRepo.getSanPhamChiTiet().stream().map((spctRepo) -> {
-                var spctResp=modelMapper.map(spctRepo, SanPhamResponse.SanPhamChiTiet.class);
-                modelMapper.map(spctResp, SanPhamResponse.SanPhamChiTiet.PhieuGiamGia.class);
-                return spctResp;
-            }).collect(Collectors.toSet()));
-            return spResponse;
-        }).collect(Collectors.toList());
-        return ResponseEntity.ok(sp);
+    public ResponseEntity<?> getSanPham(
+            @RequestParam(defaultValue = "0",required = false) Integer pageNo,//Số trang
+            @RequestParam(defaultValue = "",name="price", required = false) String khoangGia,//Khoảng giá 20,300
+            @RequestParam(defaultValue = "",name="cns", required = false) List<String> hoTroSacToiDa,//20w,30w
+            @RequestParam(defaultValue = "",name="tndb", required = false) List<Integer> tinhNangDacBiets,//id=3,4,5
+            @RequestParam(defaultValue = "",name="tncmr", required = false) List<Integer> tinhNangCameras,//id=3,4,5
+            @RequestParam(defaultValue = "",name="manHinh", required = false) List<String> kichThuocManHinh,//id=3,4,5
+            @RequestParam(defaultValue = "",name="series", required = false) List<Integer> series,//id=3,4,5
+            @RequestParam(defaultValue = "",name="rom", required = false) List<String> rom,//rom=64gb,256gb
+            @RequestParam(defaultValue = "id:desc",name="orderBy", required = false) String orderBy,// id || bestSale || promotion || priceAsc || priceDESC
+            @RequestParam(defaultValue = "",name="searchKey", required = false) String searchKey,
+            @RequestParam(defaultValue = "15",name="pageSize", required = false) Integer pageSize
+
+            ) {
+
+        Page<SanPhamResponse> resp= sanPhamRepositoryImpl.search(pageNo,khoangGia,hoTroSacToiDa,tinhNangDacBiets,tinhNangCameras,kichThuocManHinh,series,rom,orderBy,searchKey,pageSize);
+
+        return ResponseEntity.ok(resp);
     }
     @GetMapping("/{id}")
     public ResponseEntity<?> getSanPhamById(

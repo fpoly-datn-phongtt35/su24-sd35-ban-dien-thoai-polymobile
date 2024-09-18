@@ -4,6 +4,7 @@ import com.poly.polystore.core.admin.ban_hang.model.request.HoaDonTaiQuayAddRequ
 import com.poly.polystore.core.admin.ban_hang.model.response.*;
 import com.poly.polystore.core.admin.ban_hang.repository.impl.SanPhamRepositoryImpl;
 import com.poly.polystore.core.admin.ban_hang.service.IBanHangService;
+import com.poly.polystore.core.admin.kho.repository.LichSuKhoRepositoryImpl;
 import com.poly.polystore.core.admin.san_pham.controller.SanPhamController;
 import com.poly.polystore.core.common.image.service.ImageService;
 import com.poly.polystore.entity.*;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,6 +42,8 @@ public class BanHangController {
     private final SanPhamRepository sanPhamRepository;
     private final ImageService imageService;
     private final AnhRepository anhRepository;
+    private final LichSuKhoRepositoryImpl lichSuKhoRepositoryImpl;
+    private final LichSuKhoRepository lichSuKhoRepository;
 
     @GetMapping("/admin/sale")
     public String sale(Model model) {
@@ -176,7 +180,7 @@ public class BanHangController {
         }
         return ResponseEntity.status(201).body("IMEI Không trùng khớp với sản phẩm nào");
     }
-
+    @Transactional
     @ResponseBody
     @GetMapping("/api/v1/sale/new-imei")
     public ResponseEntity<?> checkImei(
@@ -192,6 +196,27 @@ public class BanHangController {
             SanPhamChiTiet spct = sanPhamChiTietRepository.save(oldSPCT);
             imei.setSanPhamChiTiet(spct);
             var nImei = imeiRepository.save(imei);
+            LichSuKho lsk=new LichSuKho();
+            lsk.setTaiKhoan((TaiKhoan) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+            lsk.setThoiGian(Instant.now());
+
+            imei.setSanPhamChiTiet(spct);
+            imei.setTrangThai(Imei.TrangThai.TRONG_KHO);
+
+            ChiTietLichSuKho chiTietLichSuKho=new ChiTietLichSuKho();
+            chiTietLichSuKho.setSanPhamChiTiet(spct);
+            List<Imei> lst=new ArrayList<>();
+            lst.add(nImei);
+            chiTietLichSuKho.setImeis(
+                   lst
+            );
+            chiTietLichSuKho.setLichSuKho(lsk);
+            chiTietLichSuKho.setSoLuong(1);
+
+            List<ChiTietLichSuKho> chiTietLichSuKhos=new ArrayList<>();
+            chiTietLichSuKhos.add(chiTietLichSuKho);
+            lsk.setChiTietLichSuKhos(chiTietLichSuKhos);
+            lichSuKhoRepository.save(lsk);
             return ResponseEntity.ok(nImei);
         }
         return ResponseEntity.badRequest().build();

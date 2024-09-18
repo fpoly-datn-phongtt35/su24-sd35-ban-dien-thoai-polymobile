@@ -8,9 +8,14 @@
     <!--    Custom link-->
     <th:block layout:fragment="head_link">
         <!-- Bootstrap CSS -->
-        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+              integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+              crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/css/ion.rangeSlider.min.css" rel="stylesheet">
+
         <link href="/css/client/iphone.css" rel="stylesheet">
         </style>
+
     </th:block>
 
 </head>
@@ -59,26 +64,203 @@
         </div>
         <!--            Nội dung-->
         <div class="content">
-            <div class="fillter"></div>
-            <div class="order ">
+            <div class="w-75" id="filter-bar">
+
+            </div>
+
+
                 <div class="form-group row justify-content-end">
-                    <label for="select-order-by" class="col-sm-2 col-form-label text-white text-right pr-0">Xếp theo</label>
+                    <label for="select-order-by" class="col-sm-2 col-form-label text-white text-right pr-0">Xếp
+                        theo</label>
                     <div class="col-sm-2 mr-2">
                         <select id="select-order-by" class="form-control form-control-sm">
-                            <option>Mới ra mắt</option>
-                            <option>Bán chạy</option>
-                            <option>Giá thấp tới cao</option>
-                            <option>Giá cao tới thấp</option>
+                            <option value="id:asc">Mới ra mắt</option>
+                            <option value="giaBan:asc">Giá thấp tới cao</option>
+                            <option value="giaBan:desc">Giá cao tới thấp</option>
                         </select>
+                    </div>
+                </div>
+            <div class="row">
+                <div class="col-4">
+                    <div class="filter text-light" style="width: 90%;">
+                        <h2 class="text-light">Bộ lọc sản phẩm</h2>
+
+                        <div class="filter-content">
+
+                            <button class="accordion active" id="filter-series">Series</button>
+                            <div class="panel">
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input" id="series-All" check-all checked>
+                                    <label class="form-check-label" for="series-All" style="margin-top: 2px;">Tất cả</label>
+                                </div>
+                            </div>
+
+                            <button class="accordion" id="filter-gia">Mức giá</button>
+                            <div class="panel">
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input" id="price-All" check-all checked>
+                                    <label class="form-check-label" for="price-All" style="margin-top: 2px;">Tất
+                                        cả</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input" data="7-13" id="price-7-13" checked>
+                                    <label class="form-check-label" for="price-7-13" style="margin-top: 2px;">Từ 7 - 13
+                                        triệu</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input" data="13-20" id="price-13-20" checked>
+                                    <label class="form-check-label" for="price-13-20" style="margin-top: 2px;">Từ 13 - 20
+                                        triệu</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input" data="20-50" id="price-20-50" checked>
+                                    <label class="form-check-label" for="price-20-50" style="margin-top: 2px;">Từ 20 - 50
+                                        triệu</label>
+                                </div>
+                                <span>Hoặc nhập khoảng giá phù hợp với bạn:</span>
+                                <div class="form-group">
+                                    <label for="rangeSlider" class="form-label">Giá</label>
+                                    <input id="rangeSlider" type="text" name="range">
+                                </div>
+                            </div>
+                            <button class="accordion" id="filter-rom">Bộ nhớ</button>
+                            <div class="panel">
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input" id="rom-All" check-all checked>
+                                    <label class="form-check-label" for="rom-All" style="margin-top: 2px;">Tất cả</label>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-check mb-2">
+                                            <input type="checkbox" class="form-check-input" data="32GB" id="rom-32GB" checked>
+                                            <label class="form-check-label" for="rom-32GB"
+                                                   style="margin-top: 2px;">32GB</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input type="checkbox" class="form-check-input" data="64GB" id="rom-64GB" checked>
+                                            <label class="form-check-label" for="rom-64GB"
+                                                   style="margin-top: 2px;">64GB</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input type="checkbox" class="form-check-input" data="128GB" id="rom-128GB" checked>
+                                            <label class="form-check-label" for="rom-128GB"
+                                                   style="margin-top: 2px;">128GB</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input type="checkbox" class="form-check-input" data="256GB" id="rom-256GB" checked>
+                                            <label class="form-check-label" for="rom-256GB"
+                                                   style="margin-top: 2px;">256GB</label>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-6">
+                                        <div class="form-check mb-2">
+                                            <input type="checkbox" class="form-check-input" data="512GB" id="rom-512GB" checked>
+                                            <label class="form-check-label" for="rom-512GB"
+                                                   style="margin-top: 2px;">512GB</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input type="checkbox" class="form-check-input" data="1024GB" id="rom-1024GB" checked>
+                                            <label class="form-check-label" for="rom-1024GB"
+                                                   style="margin-top: 2px;">1TB</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input type="checkbox" class="form-check-input" data="2048GB" id="rom-2048GB" checked>
+                                            <label class="form-check-label" for="rom-2048GB"
+                                                   style="margin-top: 2px;">2TB</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input type="checkbox" class="form-check-input" data="3072GB" id="rom-3072GB" checked>
+                                            <label class="form-check-label" for="rom-3072GB"
+                                                   style="margin-top: 2px;">3TB</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+
+                            <button class="accordion" id="filter-tinhNangDacBiet">Tính năng đặc biệt</button>
+                            <div class="panel">
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input" id="tndb-All" check-all>
+                                    <label class="form-check-label" for="tndb-All" style="margin-top: 2px;">Tất cả</label>
+                                </div>
+                            </div>
+
+                            <button class="accordion" id="filter-camera">Tính Năng Camera</button>
+                            <div class="panel">
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input" id="tncmr-All" check-all>
+                                    <label class="form-check-label" for="tncmr-All" style="margin-top: 2px;">Tất cả</label>
+                                </div>
+                            </div>
+                            <button class="accordion" id="filter-manHinh">Màn hình</button>
+                            <div class="panel">
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input" id="manHinh-All" check-all checked>
+                                    <label class="form-check-label" for="price-All" style="margin-top: 2px;">Tất
+                                        cả</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input" data="0-5" id="manHinh-0-5" checked>
+                                    <label class="form-check-label" for="manHinh-0-5" style="margin-top: 2px;">Từ Đến 5 inch</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input" data="5-6" id="manHinh-5-6" checked>
+                                    <label class="form-check-label" for="manHinh-5-6" style="margin-top: 2px;">Từ 5 đến 6 inch</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input" data="6-999" id="manHinh-6-999" checked>
+                                    <label class="form-check-label" for="manHinh-6-999" style="margin-top: 2px;">Từ 6 inch</label>
+                                </div>
+                            </div>
+
+                            <button class="accordion" id="filter-congNgheSac">Hỗ trợ sạc tối đa</button>
+                            <div class="panel">
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input" id="cns-All" check-all checked>
+                                    <label class="form-check-label" for="cns-All" style="margin-top: 2px;">Tất cả</label>
+                                </div>
+                            </div>
+
+
+
+                            <script>
+                                var acc = document.getElementsByClassName("accordion");
+                                var i;
+
+                                for (i = 0; i < acc.length; i++) {
+                                    acc[i].addEventListener("click", function () {
+                                        this.classList.toggle("active");
+                                        var panel = this.nextElementSibling;
+                                        if (panel.style.display === "block") {
+                                            panel.style.display = "none";
+                                        } else {
+                                            panel.style.display = "block";
+                                        }
+                                    });
+                                }
+                            </script>
+                        </div>
+                        <button class="btn btn-sm btn-primary pull-right" id="filter-apply">Áp dụng</button>
+
+                    </div>
+                </div>
+                <div class="col-8">
+
+
+                    <div class="product-container row">
+                    </div>
+                    <div class="load-more text-center py-5">
+                        <button>Xem thêm</button>
                     </div>
                 </div>
             </div>
 
-            <div class="product-container row justify-content-between">
-            </div>
-            <div class="load-more text-center py-5" >
-                <button>Xem thêm</button>
-            </div>
 
         </div>
 
@@ -93,8 +275,11 @@
 <th:block layout:fragment="bottom_link">
     <!-- jQuery and Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/js/ion.rangeSlider.min.js"></script>
+
     <script src="/js/client/iphone.js"></script>
 
 </th:block>
