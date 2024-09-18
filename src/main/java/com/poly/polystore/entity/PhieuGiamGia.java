@@ -52,4 +52,8 @@ public class PhieuGiamGia {
 
     @Column(name = "Deleted")
     private Boolean deleted;
+    @Column(name = "status")
+    private Boolean status;
+    @Column(name = "soluong")
+    private Integer soluong;
 }

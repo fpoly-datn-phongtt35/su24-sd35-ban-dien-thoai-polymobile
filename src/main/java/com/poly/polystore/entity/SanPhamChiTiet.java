@@ -77,7 +77,7 @@ public class SanPhamChiTiet implements Serializable {
     private BigDecimal giaNhap;
 
 
-//    IN_STOCK("Có sẵn"),
+    //    IN_STOCK("Có sẵn"),
 //    OUT_OF_STOCK("Hết hàng"),
 //    TEMPORARILY_OUT_OF_STOCK("Hết hàng tạm thời"),
 //    COMING_SOON("Sắp ra mắt"),

@@ -29,6 +29,7 @@ public class ShippingService {
         detail.setWeight(1000);
         items.add(detail);
         feeRequest.setItems(items);
+        feeRequest.setService_type_id(5);
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Token", ghnApiToken);
         headers.set("ShopId", "192777");

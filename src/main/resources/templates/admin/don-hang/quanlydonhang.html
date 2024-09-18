@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/admin/layout-dashboard/layout.html"
+>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý đơn hàng</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <style>
+    .order-container {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .order-status {
+      font-weight: bold;
+      color: green;
+    }
+
+    .order-status.cancelled {
+      color: red;
+    }
+
+    .order-status.pending {
+      color: orange;
+    }
+
+    .order-total {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .order-details {
+      margin-top: 10px;
+    }
+
+    .order-image {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      margin-right: 15px;
+    }
+
+    .order-title {
+      font-weight: bold;
+    }
+
+    .order-date {
+      color: #777;
+    }
+
+    .btn-view {
+      margin-top: 10px;
+    }
+
+    .order-item {
+      display: flex;
+      align-items: center;
+    }
+
+    .order-image-container {
+      flex-shrink: 0;
+    }
+
+  /*  phan trang*/
+    .pagination .active .page-link {
+      background-color: #007bff;
+      border-color: #007bff;
+      color: white;
+    }
+
+    .pagination .disabled .page-link {
+      color: #6c757d;
+      pointer-events: none;
+    }
+
+    .pagination .page-link {
+      color: #007bff;
+    }
+  </style>
+</head>
+
+<body layout:fragment="content">
+<h1 class="mt-5">Đơn hàng đã mua</h1>
+<div class="d-flex justify-content-between align-items-center my-3">
+  <div>
+    Từ
+    <input type="date" id="startDate" class="form-control d-inline-block w-auto" />
+    -
+    <input type="date" id="endDate" class="form-control d-inline-block w-auto" />
+  </div>
+  <div>
+    Mã đơn hàng: <input type="text" id="searchOrder" class="form-control d-inline-block w-auto" />
+  </div>
+  <div>
+    <button id="applyDateFilter" class="btn btn-primary" onclick="search()">Thay đổi</button>
+  </div>
+</div>
+<div class="btn-group mb-4" role="group">
+  <button type="button" class="btn btn-secondary" onclick="filterOrders('ALL') ">Tất cả</button>
+  <button type="button" class="btn btn-secondary" onclick="filterOrders('CHO_THANH_TOAN')">Chờ thanh toán</button>
+  <button type="button" class="btn btn-secondary" onclick="filterOrders('CHO_XAC_NHAN')">Chờ xác nhận</button>
+  <button type="button" class="btn btn-secondary" onclick="filterOrders('DANG_GIAO')">Đang giao hàng</button>
+  <button type="button" class="btn btn-secondary" onclick="filterOrders('CHO_LAY_HANG')">Chờ lấy hàng</button>
+  <button type="button" class="btn btn-secondary" onclick="filterOrders('THAT_LAC')">Thất </button>
+  <button type="button" class="btn btn-secondary" onclick="filterOrders('DA_HUY')">Đã hủy</button>
+  <button type="button" class="btn btn-secondary" onclick="filterOrders('THANH_CONG')">Thành công</button>
+</div>
+<div id="orderList">
+  <div th:each="order : ${orders}">
+    <div class="order-container">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <span class="order-title" th:text="'Đơn hàng: ' + ${order.id}">#84770619</span>
+<!--          <span class="order-date" th:text="'Nhận Trước ' + ${order.thoiGianNhanHang}">Nhận Trước 17:46 - Chủ Nhật (25/08)</span>-->
+        </div>
+        <div class="order-status"
+             th:switch="${order.trangThai}">
+          <span th:case="'CHO_THANH_TOAN'" th:text="${order.trangThai.getPriority()}" class="text-warning"></span>
+          <span th:case="'CHO_XAC_NHAN'" th:text="${order.trangThai.getPriority()}" class="text-primary"></span>
+          <span th:case="'DANG_GIAO'" th:text="${order.trangThai.getPriority()}" class="text-info"></span>
+          <span th:case="'DA_HUY'" th:text="${order.trangThai.getPriority()}" class="text-danger"></span>
+          <span th:case="* " th:text="${order.trangThai.getPriority()}" class="text-success"></span> <!-- Mặc định nếu không khớp trạng thái nào -->
+        </div>
+
+      </div>
+      <div class="order-details mt-3">
+        <div class="order-item">
+          <div class="order-image-container">
+            <img class="order-image" th:src="${order.imageUrl}" alt="Product Image">
+          </div>
+          <div>
+            <div th:text="${order.leadingItem}">Asus X1504ZA i3</div>
+            <div class="order-total" th:text="'Tổng tiền: ' + ${order.getTongTienHoaDon()} + ' VND' ">Tổng tiền: 7.750.000đ</div>
+          </div>
+        </div>
+        <a class="btn btn-primary btn-sm btn-view"
+           th:href="@{'order/detail/' + ${order.id}}">
+          Xem chi tiết
+        </a>
+
+      </div>
+    </div>
+    <!--        model     -->
+    <div class="modal fade" th:id="'orderItemsModal' + ${order.id}" tabindex="-1" role="dialog" aria-labelledby="orderItemsModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="orderItemsModalLabel" th:text="'Chi tiết đơn hàng' + ${order.id}">Chi tiết đơn hàng</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- Nội dung chi tiết đơn hàng -->
+            <ul class="list-group">
+              <li th:each="item : ${order.getHoaDonChiTiets()}" class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between" style="width: 100%;">
+                  <div class="d-flex justify-content-start">
+                    <img th:src="${item.getSanPhamChiTiet().getSanpham().getAnh().getUrl()}" alt="Product Image" style="width: 50px; height: 50px; object-fit: cover; margin-right: 15px;">
+                    <div>
+                      <h6 th:text="${item.getSanPhamChiTiet().getSanpham().getTenSanPham()} + ${item.getSanPhamChiTiet().getSanpham().getSeries().getTen()}">Tên sản phẩm</h6>
+                      <span th:text="'Ram: ' + ${item.getSanPhamChiTiet().getSanpham().getRam()}"></span>
+                    </div>
+                  </div>
+                  <div>
+                    <h6 th:text="'Giá: ' + ${item.getSanPhamChiTiet().getGiaBan()} + ' VND'">1000000 VND</h6>
+                    <span th:text="' Màu: ' + ${item.getSanPhamChiTiet().getMauSac().getTen()}"></span>
+                  </div>
+                  <div>
+                    <h6 th:text="'SL: ' + ${item.getSanPhamChiTiet().getSoLuongMua()} + ' Chiếc'">10</h6>
+                  </div>
+                </div>
+                <!--                                <span class="badge badge-primary badge-pill" th:text="${item.get}">1</span>-->
+              </li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<div class="d-flex justify-content-center mt-4">
+  <ul class="pagination">
+    <!-- Nút Previous -->
+    <li th:classappend="${currentPage == 0} ? 'disabled'" class="page-item">
+      <a th:href="@{/orders(page=${currentPage - 1}, size=${size}, status=${status}, startDate=${startDate}, endDate=${endDate}, maDH=${maDH})}" class="page-link">Previous</a>
+    </li>
+
+    <!-- Số trang -->
+    <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+        th:classappend="${i == currentPage} ? 'active'" class="page-item">
+      <a th:href="@{/orders(page=${i}, size=${size}, status=${status}, startDate=${startDate}, endDate=${endDate}, maDH=${maDH})}" class="page-link" th:text="${i + 1}">1</a>
+    </li>
+
+    <!-- Nút Next -->
+    <li th:classappend="${currentPage == totalPages - 1} ? 'disabled'" class="page-item">
+      <a th:href="@{/orders(page=${currentPage + 1}, size=${size}, status=${status}, startDate=${startDate}, endDate=${endDate}, maDH=${maDH})}" class="page-link">Next</a>
+    </li>
+  </ul>
+</div>
+</div>
+<script>
+  let selectedStatus = 'ALL';
+  let startDate;
+  let endDate;
+  let MaDH;
+  let size = 10;
+  let page = [[${currentPage}]]
+  // function loadOrders(status) {
+  //   const url = `/client/don-muav2?status=${selectedStatus}&startDate=${startDate}&endDate=${endDate}&maDH=${MaDH}`;
+  //   $.get(url, function(data) {
+  //     $('#orderList').html(data);
+  //   });
+  // }
+
+  function filterOrders(status) {
+    selectedStatus = status;
+    startDate = $('#startDate').val();
+    endDate = $('#endDate').val();
+    MaDH = $('#searchOrder').val();
+    search();
+    loadOrders(status, page);
+  }
+  function search(){
+    startDate = $('#startDate').val();
+    endDate = $('#endDate').val();
+  }
+  function loadOrders(status, page) {
+    search();
+    MaDH = $('#searchOrder').val();
+    const url = `/admin/ordersv2?page=${page}&size=${size}&status=${status}&startDate=${startDate}&endDate=${endDate}&maDH=${MaDH}`;
+    $.get(url, function(data) {
+      $('#orderList').html(data);
+    });
+  }
+
+  $('.pagination a').on('click', function(event) {
+    event.preventDefault();
+    let page = $(this).attr('href').split('page=')[1].split('&')[0];
+    loadOrders(selectedStatus,page);
+  });
+
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+<th:block layout:fragment="bottom_link">
+  <!-- Page level plugins -->
+  <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
+  <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+  <script src="/vendor/select2/select2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/js/ion.rangeSlider.min.js"></script>
+  <!-- Page level custom scripts -->
+</th:block>
+</html>

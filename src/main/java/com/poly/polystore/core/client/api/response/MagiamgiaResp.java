@@ -9,4 +9,5 @@ import lombok.Data;
 public class MagiamgiaResp {
     private MaGiamGia maGiamGia;
     private double total;
+    private double giamgia;
 }

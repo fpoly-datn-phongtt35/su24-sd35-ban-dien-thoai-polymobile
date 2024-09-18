@@ -34,7 +34,9 @@ public class PhieuGiamGiaRepositoryImpl {
                 "      ,[Create_at]\n" +
                 "      ,[Update_at]\n" +
                 "      ,[Last_modified_by]\n" +
+                "      ,[soluong]\n" +
                 "      ,[Deleted]\n" +
+                "      ,[status]\n" +
                 "  FROM [dbo].[PHIEU_GIAM_GIA] where [Deleted] = 0");
         if(!Strings.isNullOrEmpty(code)){
             sql.append(" and code = :code");

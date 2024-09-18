@@ -46,5 +46,8 @@ public class HoaDonChiTiet {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SAN_PHAM_CHI_TIET_ID")
     private SanPhamChiTiet sanPhamChiTiet;
-
+    @Override
+    public String toString() {
+        return "id=" + id + ", imei=" + imei;
+    }
 }

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="/admin/layout-dashboard/layout.html"
+>
+<head>
+  <th:block layout:fragment="head_link">
+    <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <script src="/vendor/sweetalert2/sweetalert2.min.js"></script>
+    <link href="/vendor/select2/select2.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/css/ion.rangeSlider.min.css" rel="stylesheet">
+  </th:block>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Thống kê doanh thu</title>
+
+  <!-- Custom fonts for this template-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"/>
+  <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link
+          href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+          rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.17.0/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body layout:fragment="content">
+<div>
+  <label for="yearSelect">Chọn năm:</label>
+  <select id="yearSelect" onchange="updateChart()">
+    <!-- Các năm sẽ được điền vào đây bằng JavaScript -->
+  </select>
+</div>
+
+<canvas id="revenueChart" width="400" height="200"></canvas>
+
+<script th:inline="javascript">
+  var ctx = document.getElementById('revenueChart').getContext('2d');
+  var revenueData = /*[[${revenueData}]]*/ {};
+  var yearSelect = document.getElementById('yearSelect');
+
+  // Điền các năm vào select box
+  for (var year in revenueData) {
+    if (revenueData.hasOwnProperty(year)) {
+      var option = document.createElement("option");
+      option.value = year;
+      option.text = year;
+      yearSelect.appendChild(option);
+    }
+  }
+
+  // Tự động chọn năm đầu tiên và load dữ liệu
+  if (yearSelect.options.length > 0) {
+    yearSelect.selectedIndex = yearSelect.options.length -1;
+    updateChart();
+  }
+  // Khởi tạo đối tượng biểu đồ trống
+  var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: [],  // Khởi tạo nhãn trống
+      datasets: [{
+        label: 'Revenue',
+        data: [],  // Khởi tạo dữ liệu trống
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  function updateChart() {
+    var selectedYear = yearSelect.value;
+
+    var labels = [];
+    var data = [];
+
+    // Duyệt qua các tháng của năm được chọn và cập nhật dữ liệu cho biểu đồ
+    var monthlyData = revenueData[selectedYear];
+    if (!monthlyData) {
+      console.error("No data available for the selected year: " + selectedYear);
+      return;
+    }
+
+    for (var month in monthlyData) {
+      if (monthlyData.hasOwnProperty(month)) {
+        labels.push(month); // Chỉ lấy tên tháng cho biểu đồ
+        data.push(monthlyData[month]);  // Giá trị của doanh thu
+      }
+    }
+    // Kiểm tra xem myChart có hợp lệ không trước khi cập nhật
+    console.log("mychart: ", myChart)
+    if (myChart && myChart.data) {
+      myChart.data.labels = labels;
+      myChart.data.datasets[0].data = data;
+      myChart.update();  // Cập nhật biểu đồ với dữ liệu mới
+    } else {
+      myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,  // Khởi tạo nhãn trống
+          datasets: [{
+            label: 'Revenue',
+            data: data,  // Khởi tạo dữ liệu trống
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+  }
+</script>
+<div class="row">
+  <!--    Table-->
+
+  <div class="card shadow m-2 w-100 ">
+    <div class="card-header py-3">
+      <!--            <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>-->
+
+      <div class="row">
+        <h1 class="h3 text-gray-800 col-4">Top sản phẩm bán chạy</h1>
+        <!-- Additional controls -->
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered" id="dataTable">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Hình ảnh</th>
+            <th>Tên</th>
+            <th>Số lượng</th>
+            <th>Trạng thái</th>
+            <th>Doanh thu</th>
+
+          </tr>
+          </thead>
+          <tfoot>
+          </tfoot>
+          <tbody>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<!--modal edit-->
+
+</body>
+
+<th:block layout:fragment="bottom_link">
+  <!-- Page level plugins -->
+  <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
+  <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+  <script src="/vendor/select2/select2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/js/ion.rangeSlider.min.js"></script>
+  <script src="/js/admin/thong-ke/statistic.js"></script>
+  <!--    <script src="/js/admin/thong-ke/statistic.js"></script>-->
+</th:block>
+</html>

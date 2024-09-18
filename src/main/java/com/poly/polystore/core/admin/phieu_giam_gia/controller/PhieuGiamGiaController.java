@@ -19,12 +19,13 @@ import java.time.Instant;
 public class PhieuGiamGiaController {
     private final PhieuGiamGiaRepository phieuGiamGiaRepository;
     private final PhieuGiamGiaRepositoryImpl giamGiaRepository;
+
     @GetMapping("/admin/phieugiamgia/list")
-    public String promotions(Model model, @RequestParam(name = "page",defaultValue = "1") int page,
-                             @RequestParam(name = "size",defaultValue = "5") int size,
-                             @RequestParam(name = "code",required = false) String code,
-                             @RequestParam(name = "beginDate",required = false) String beginDate,
-                             @RequestParam(name = "endDate",required = false) String endDate) {
+    public String promotions(Model model, @RequestParam(name = "page", defaultValue = "1") int page,
+                             @RequestParam(name = "size", defaultValue = "5") int size,
+                             @RequestParam(name = "code", required = false) String code,
+                             @RequestParam(name = "beginDate", required = false) String beginDate,
+                             @RequestParam(name = "endDate", required = false) String endDate) {
         Page<PhieuGiamGia> promotionPage = giamGiaRepository.getMagiamgia(page, size, code, beginDate, endDate);
         model.addAttribute("promotionPage", promotionPage);
         return "admin/phieu-giam-gia/list";
@@ -37,7 +38,7 @@ public class PhieuGiamGiaController {
 
     @PostMapping("/admin/phieugiamgia/create")
     public ResponseEntity<Object> create(@Valid @RequestBody CreatePhieuGiamGiaRequest createPhieuGiamGiaRequest) {
-        if(phieuGiamGiaRepository.findByCode(createPhieuGiamGiaRequest.getCode()) != null){
+        if (phieuGiamGiaRepository.findByCode(createPhieuGiamGiaRequest.getCode()) != null) {
             throw new RuntimeException("Code đã tồn tại");
         }
         PhieuGiamGia phieuGiamGia = new PhieuGiamGia();
@@ -46,6 +47,8 @@ public class PhieuGiamGiaController {
         phieuGiamGia.setGiaTriGiam(new BigDecimal(createPhieuGiamGiaRequest.getDiscountValue()));
         phieuGiamGia.setDonvi(createPhieuGiamGiaRequest.getType());
         phieuGiamGia.setDeleted(false);
+        phieuGiamGia.setSoluong(createPhieuGiamGiaRequest.getApplyValue());
+        phieuGiamGia.setStatus(false);
         phieuGiamGia.setThoiGianBatDau(createPhieuGiamGiaRequest.getBeginDate().toInstant());
         phieuGiamGia.setThoiGianKetThuc(createPhieuGiamGiaRequest.getExpiredDate().toInstant());
         phieuGiamGiaRepository.save(phieuGiamGia);
@@ -54,18 +57,20 @@ public class PhieuGiamGiaController {
 
     @GetMapping("/admin/phieugiamgia/update/{id}")
     public String updatePromotionPage(Model model, @PathVariable long id) {
-        PhieuGiamGia phieuGiamGia = phieuGiamGiaRepository.findById((int)id).get();
+        PhieuGiamGia phieuGiamGia = phieuGiamGiaRepository.findById((int) id).get();
         model.addAttribute("phieuGiamGia", phieuGiamGia);
         return "admin/phieu-giam-gia/edit";
     }
 
     @PutMapping("/admin/phieugiamgia/{id}")
     public ResponseEntity<Object> updatePromotion(@Valid @RequestBody CreatePhieuGiamGiaRequest createPhieuGiamGiaRequest, @PathVariable long id) {
-        PhieuGiamGia phieuGiamGia = phieuGiamGiaRepository.findById((int)id).get();
+        PhieuGiamGia phieuGiamGia = phieuGiamGiaRepository.findById((int) id).get();
         phieuGiamGia.setUpdateAt(Instant.now());
         phieuGiamGia.setCode(createPhieuGiamGiaRequest.getCode());
         phieuGiamGia.setGiaTriGiam(new BigDecimal(createPhieuGiamGiaRequest.getDiscountValue()));
         phieuGiamGia.setDonvi(createPhieuGiamGiaRequest.getType());
+        phieuGiamGia.setSoluong(createPhieuGiamGiaRequest.getApplyValue());
+        phieuGiamGia.setStatus(false);
         phieuGiamGia.setDeleted(false);
         phieuGiamGia.setThoiGianBatDau(createPhieuGiamGiaRequest.getBeginDate().toInstant());
         phieuGiamGia.setThoiGianKetThuc(createPhieuGiamGiaRequest.getExpiredDate().toInstant());
@@ -75,9 +80,18 @@ public class PhieuGiamGiaController {
 
     @DeleteMapping("/admin/phieugiamgia/{id}")
     public ResponseEntity<Object> deletePromotion(@PathVariable long id) {
-        PhieuGiamGia phieuGiamGia = phieuGiamGiaRepository.findById((int)id).get();
+        PhieuGiamGia phieuGiamGia = phieuGiamGiaRepository.findById((int) id).get();
         phieuGiamGia.setDeleted(true);
         phieuGiamGiaRepository.save(phieuGiamGia);
         return ResponseEntity.ok("Xóa khuyến mại thành công");
+    }
+
+    @GetMapping("/admin/phieugiamgia/catalog/{id}")
+    public ResponseEntity<Object> catalogPromotion(@PathVariable long id) {
+        PhieuGiamGia phieuGiamGia = phieuGiamGiaRepository.findById((int) id).get();
+        phieuGiamGia.setUpdateAt(Instant.now());
+        phieuGiamGia.setStatus(!phieuGiamGia.getStatus());
+        phieuGiamGiaRepository.save(phieuGiamGia);
+        return ResponseEntity.ok(phieuGiamGia.getId());
     }
 }
