@@ -8,3 +8,4 @@ public enum ROLE {
     ROLE_GUEST
 
 }
+
