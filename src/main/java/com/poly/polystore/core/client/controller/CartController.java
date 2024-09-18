@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,18 +70,25 @@ public class CartController {
                 n.getThoiGianKetThuc().isAfter(Instant.now()) && !n.getDeleted()).toList();
 
         if (!CollectionUtils.isEmpty(list)) {
-            for (PhieuGiamGia p : list) {
-                for (GioHang gioHang : gioHangs) {
+            LOOP:
+            for (GioHang gioHang : gioHangs) {
+                for (PhieuGiamGia p : list) {
                     if (gioHang.getIdSanPhamChiTiet().getDotGiamGia() != null
                             && gioHang.getIdSanPhamChiTiet().getDotGiamGia().getId().equals(p.getId())
+                            && p.getSoluong()!=null && p.getSoluong()>0
+                            && Boolean.TRUE.equals(p.getStatus())
                     ) {
                         if (p.getDonvi().equals("%")) {
-                            gioHang.setRealPrice(BigDecimal.valueOf(gioHang.getIdSanPhamChiTiet().getGiaBan().doubleValue() * (100 - p.getGiaTriGiam().doubleValue()) / 100));
+                            gioHang.setRealPrice(BigDecimal.valueOf(gioHang.getIdSanPhamChiTiet().getGiaBan().doubleValue() * (100 - p.getGiaTriGiam().doubleValue()) / 100).setScale(0, RoundingMode.FLOOR));
+                            continue LOOP;
                         } else {
                             gioHang.setRealPrice(BigDecimal.valueOf(gioHang.getIdSanPhamChiTiet().getGiaBan().doubleValue() - p.getGiaTriGiam().doubleValue()));
+                            continue LOOP;
                         }
                     } else
+                    {
                         gioHang.setRealPrice(BigDecimal.valueOf(gioHang.getIdSanPhamChiTiet().getGiaBan().doubleValue()));
+                    }
                 }
             }
         } else {
@@ -187,19 +195,29 @@ public class CartController {
         }
         List<PhieuGiamGia> list = phieuGiamGiaRepository.findAll().stream().filter(n -> n.getThoiGianBatDau().isBefore(Instant.now()) &&
                 n.getThoiGianKetThuc().isAfter(Instant.now()) && !n.getDeleted()).toList();
+
         if (!CollectionUtils.isEmpty(list)) {
-            for (PhieuGiamGia p : list) {
-                for (GioHang gioHang : gioHangs) {
+            LOOP:
+            for (GioHang gioHang : gioHangs) {
+                for (PhieuGiamGia p : list) {
                     if (gioHang.getIdSanPhamChiTiet().getDotGiamGia() != null
                             && gioHang.getIdSanPhamChiTiet().getDotGiamGia().getId().equals(p.getId())
+                            && p.getSoluong()!=null && p.getSoluong()>0
+                            && Boolean.TRUE.equals(p.getStatus())
                     ) {
+                        p.setSoluong(p.getSoluong()-1);
+                        phieuGiamGiaRepository.save(p);
                         if (p.getDonvi().equals("%")) {
-                            gioHang.setRealPrice(BigDecimal.valueOf(gioHang.getIdSanPhamChiTiet().getGiaBan().doubleValue() * (100 - p.getGiaTriGiam().doubleValue()) / 100));
+                            gioHang.setRealPrice(BigDecimal.valueOf(gioHang.getIdSanPhamChiTiet().getGiaBan().doubleValue() * (100 - p.getGiaTriGiam().doubleValue()) / 100).setScale(0, RoundingMode.FLOOR));
+                            continue LOOP;
                         } else {
                             gioHang.setRealPrice(BigDecimal.valueOf(gioHang.getIdSanPhamChiTiet().getGiaBan().doubleValue() - p.getGiaTriGiam().doubleValue()));
+                            continue LOOP;
                         }
                     } else
+                    {
                         gioHang.setRealPrice(BigDecimal.valueOf(gioHang.getIdSanPhamChiTiet().getGiaBan().doubleValue()));
+                    }
                 }
             }
         } else {

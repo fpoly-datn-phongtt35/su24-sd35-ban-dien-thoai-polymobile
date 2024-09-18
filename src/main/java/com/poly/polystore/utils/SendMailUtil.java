@@ -115,17 +115,24 @@ public class SendMailUtil {
 		StringBuilder content = new StringBuilder();
 		content.append(HEADERSUCCESS);
 		for (HoaDonChiTiet oderDetail : listOrderDetails) {
-			SanPhamChiTiet sanPhamChiTiet = oderDetail.getSanPhamChiTiet();
-
+			SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietRepository.findByHoaDonChiTiet(oderDetail.getId());
+			String url = "";
+			if (!CollectionUtils.isEmpty(sanPhamChiTiet.getAnh())){
+				url = sanPhamChiTiet.getAnh().get(0).getUrl();
+			}
 			content.append("<tr>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;text-align: center;\">\r\n"
 					+ "                                                        <img style=\"width: 85%;\" src="
-					+ sanPhamChiTiet.getAnh().get(0).getUrl() + ">\r\n"
+					+ url + ">\r\n"
 					+ "                                                    </td>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
 					+ sanPhamChiTiet.getSanPham().getTenSanPham() + " " + sanPhamChiTiet.getRom() + " </td>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
-					);
+					+ 1 + " </td>\r\n"
+					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
+					+ sanPhamChiTiet.getGiaBan() + " </td>\r\n"
+					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
+			);
 		}
 		content.append(BODY2);
 		content.append(
@@ -179,16 +186,24 @@ public class SendMailUtil {
 		StringBuilder content = new StringBuilder();
 		content.append(HEADERDELIVER);
 		for (HoaDonChiTiet oderDetail : listOrderDetails) {
-			SanPhamChiTiet sanPhamChiTiet = oderDetail.getSanPhamChiTiet();
+			SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietRepository.findByHoaDonChiTiet(oderDetail.getId());
+			String url = "";
+			if (!CollectionUtils.isEmpty(sanPhamChiTiet.getAnh())){
+				url = sanPhamChiTiet.getAnh().get(0).getUrl();
+			}
 			content.append("<tr>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;text-align: center;\">\r\n"
 					+ "                                                        <img style=\"width: 85%;\" src="
-					+ sanPhamChiTiet.getSanPham().getAnh().getUrl() + ">\r\n"
+					+ url + ">\r\n"
 					+ "                                                    </td>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
 					+ sanPhamChiTiet.getSanPham().getTenSanPham() + " " + sanPhamChiTiet.getRom() + " </td>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
-					);
+					+ 1 + " </td>\r\n"
+					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
+					+ sanPhamChiTiet.getGiaBan() + " </td>\r\n"
+					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
+			);
 		}
 		content.append(BODY2);
 		content.append(
@@ -242,16 +257,24 @@ public class SendMailUtil {
 		StringBuilder content = new StringBuilder();
 		content.append(HEADERCANCEL);
 		for (HoaDonChiTiet oderDetail : listOrderDetails) {
-			SanPhamChiTiet sanPhamChiTiet = oderDetail.getSanPhamChiTiet();
+			SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietRepository.findByHoaDonChiTiet(oderDetail.getId());
+			String url = "";
+			if (!CollectionUtils.isEmpty(sanPhamChiTiet.getAnh())){
+				url = sanPhamChiTiet.getAnh().get(0).getUrl();
+			}
 			content.append("<tr>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;text-align: center;\">\r\n"
 					+ "                                                        <img style=\"width: 85%;\" src="
-					+ sanPhamChiTiet.getAnh().get(0).getUrl() + ">\r\n"
+					+ url + ">\r\n"
 					+ "                                                    </td>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
 					+ sanPhamChiTiet.getSanPham().getTenSanPham() + " " + sanPhamChiTiet.getRom() + " </td>\r\n"
 					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
-					);
+					+ 1 + " </td>\r\n"
+					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
+					+ sanPhamChiTiet.getGiaBan() + " </td>\r\n"
+					+ "                                                    <td width=\"25%\" align=\"left\" style=\"font-family: Open sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;\"> "
+			);
 		}
 		content.append(BODY2);
 		content.append(
@@ -327,7 +350,7 @@ public class SendMailUtil {
 			+ "                                <tr>\r\n"
 			+ "                                    <td align=\"center\" style=\"font-family: Open sans-serif; font-size: 16px; font-weight: 400; line-height: 24px; padding-top: 25px;\">\r\n"
 			+ "                                        <img src=\"https://res.cloudinary.com/veggie-shop/image/upload/v1634045009/assets/checked_pudgic.png?fbclid=IwAR2aTBpMU1Gbj8pVwuU6sH1lUAUEeK2U8df1mrI4zCyMT97OnjkEIbgBSQw\" width=\"115\" height=\"110\" style=\"display: block; border: 0px;\" /><br>\r\n"
-			+ "                                        <h2 style=\"font-size: 30px; font-weight: 800; line-height: 36px; color: #333333; margin: 0;\"> Giao hàng thành công! </h2>\r\n"
+			+ "                                        <h2 style=\"font-size: 30px; font-weight: 800; line-height: 36px; color: #333333; margin: 0;\"> Giao đơn vị vần chuyển thành công! </h2>\r\n"
 			+ "                                        <p style=\"font-family: Open sans-serif; font-size: 18px;\"><em>Cảm ơn bạn đã tin tưởng! Chúc bạn một ngày vui vẻ!</em></p>\r\n"
 			+ "                                        <p style=\"font-family: Open sans-serif; font-size: 18px;\"><em>Hẹn gặp lại quý khách!</em></p>\r\n"
 			+ "                                    </td>\r\n" + "                                </tr>\r\n"

@@ -22,6 +22,8 @@ public class CreatePhieuGiamGiaRequest {
 
     @JsonProperty("discount_value")
     private long discountValue;
+    @JsonProperty("apply_value")
+    private Integer applyValue;
 
     @JsonProperty("type")
     private String type;

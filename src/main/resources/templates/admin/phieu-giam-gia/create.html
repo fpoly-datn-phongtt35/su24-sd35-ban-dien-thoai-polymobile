@@ -101,6 +101,13 @@
                                 </div>
                                 <input type="number" min="1" class="form-control" id="discount-value">
                             </div>
+                            <div class="form-group">
+                                <div>
+                                    <label class="required-label" for="discount-value">Số lượng áp dụng</label>
+                                    <span class="invalid-feedback" id="invalid-feedback-apply-value"></span>
+                                </div>
+                                <input type="number" min="1" class="form-control" id="apply-value">
+                            </div>
                             <div class="form-group discount-exactly">
                                 <div>
                                     <label class="required-label" for="type">Loại giảm giá</label>
@@ -221,6 +228,7 @@
         $('.btn-create-promotion').click(function () {
             let code = $('#code').val();
             let discountValue = parseInt($('#discount-value').val());
+            let applyValue = parseInt($('#apply-value').val());
             let type = $('#type').val();
             let expiredDate = $('#expired-date').val();
             let beginDate = $('#begin-date').val();
@@ -245,6 +253,7 @@
                 req = {
                     code: code,
                     discount_value: discountValue,
+                    apply_value: applyValue,
                     type: type,
                     begin_Date: beginDate,
                     expired_date: expiredDate

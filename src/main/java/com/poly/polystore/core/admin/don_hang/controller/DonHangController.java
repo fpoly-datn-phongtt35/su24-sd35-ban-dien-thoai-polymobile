@@ -10,14 +10,10 @@ import com.poly.polystore.core.client.dto.HoaDonDTO;
 import com.poly.polystore.core.client.dto.SanPhamChiTietDTO;
 import com.poly.polystore.core.client.dto.SanPhamDTO;
 import com.poly.polystore.core.client.service.IOrderService;
-import com.poly.polystore.entity.HoaDon;
-import com.poly.polystore.entity.HoaDonChiTiet;
-import com.poly.polystore.entity.Imei;
-import com.poly.polystore.entity.SanPhamChiTiet;
-import com.poly.polystore.repository.HoaDonChiTietRepository;
-import com.poly.polystore.repository.HoaDonRepository;
-import com.poly.polystore.repository.ImeiRepository;
-import com.poly.polystore.repository.SanPhamChiTietRepository;
+import com.poly.polystore.entity.*;
+import com.poly.polystore.repository.*;
+import com.poly.polystore.utils.FunctionUtil;
+import com.poly.polystore.utils.SendMailUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +28,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -53,6 +47,17 @@ public class DonHangController {
     private HoaDonChiTietRepository hoaDonChiTietRepository;
     @Autowired
     private SanPhamChiTietRepository sanPhamChiTietRepository;
+
+    @Autowired
+    private PhieuGiamGiaRepository phieuGiamGiaRepository;
+    @Autowired
+    private KhachHangRepository khachHangRepository;
+
+    @Autowired
+    private ThongTinBaoHanhRepository thongTinBaoHanhRepository;
+
+    @Autowired
+    private SendMailUtil sendMailUtil;
 
     @GetMapping("/don-hang")
     public String donHang(Model model, @RequestParam(name = "page", defaultValue = "1") int page,
@@ -230,7 +235,11 @@ public class DonHangController {
     @GetMapping("/order/change-status")
     public ResponseEntity<?> showOrderDetail(@RequestParam String status, @RequestParam("orderId") String id) {
         // Lấy thông tin chi tiết đơn hàng bằng id
+        KhachHang khachHang;
         HoaDon hoaDon = hoaDonRepository.findById(Integer.parseInt(id)).get();
+        Optional<KhachHang> khachHangOptional = khachHangRepository.findById(hoaDon.getKhachHang().getId());
+        if(!khachHangOptional.isPresent()) return ResponseEntity.badRequest().body("Khách hàng không tồn tại");
+        else khachHang = khachHangOptional.get();
         TRANGTHAIDONHANG trangthaidonhang = null;
         switch (status) {
             case "Chờ xác nhận":
@@ -256,9 +265,48 @@ public class DonHangController {
                 break;
             case "Chờ lấy hàng":
                 trangthaidonhang = TRANGTHAIDONHANG.DANG_GIAO;
+                try{
+                    sendMailUtil.sendMailOrderDeliver(hoaDon, khachHang.getEmail());
+                }catch (Exception e){
+                    System.out.println("Faile send mail");
+                }
                 break;
             case "Đang Giao":
                 trangthaidonhang = TRANGTHAIDONHANG.THANH_CONG;
+
+                // thêm bảo hành
+                HoaDon hoaDons = hoaDonRepository.findById(Integer.parseInt(id)).get();
+                try{
+                    List<HoaDonDTO> hoaDonDTOS = hoaDons.getHoaDonChiTiets()
+                            .stream()
+                            .map(f -> {
+                                HoaDonDTO hoaDonDTO = modelMapper.map(f, HoaDonDTO.class);
+                                hoaDonDTO.setIdKhachHang(String.valueOf(f.getHoaDon().getKhachHang().getId()));
+                                return hoaDonDTO;
+                            })
+                            .collect(Collectors.toList());
+
+                    // luu tung thong tin bao hanh
+                    List<ThongTinBaoHanh> thongTinBaoHanhs = new ArrayList<>();
+                    for(HoaDonDTO hoaDonDTO : hoaDonDTOS){
+                        List<HoaDonChiTietDTO> hoaDonChiTietDTOS = hoaDonDTO.getHoaDonChiTiets();
+                        for (HoaDonChiTietDTO hoaDonChiTietDTO : hoaDonChiTietDTOS){
+                            ThongTinBaoHanh thongTinBaoHanh = new ThongTinBaoHanh();
+                            if(hoaDonChiTietDTO.getImei()!=null){
+                                thongTinBaoHanh.setImei(hoaDonChiTietDTO.getImei());
+                            }
+                            thongTinBaoHanh.setIdKhachHang(khachHang);
+                            thongTinBaoHanh.setNgayBatDau(Instant.now());
+                            thongTinBaoHanh.setThoiGianBaoHanh(FunctionUtil.getDate(Instant.now(), 2));
+                            thongTinBaoHanh.setTrangThai("Chưa bảo hành");
+                            thongTinBaoHanhs.add(thongTinBaoHanh);
+                        }
+                        thongTinBaoHanhRepository.saveAll(thongTinBaoHanhs);
+                        sendMailUtil.sendMailOrderSuccess(hoaDon, khachHang.getEmail());
+                    }
+                }catch (Exception e){
+
+                }
                 break;
             default:
                 break;
@@ -305,8 +353,12 @@ public class DonHangController {
 
     @GetMapping("/order/cancel")
     public ResponseEntity<?> cancelOrder(@RequestParam("orderId") Integer orderId) {
-        // Lấy thông tin chi tiết đơn hàng bằng id
         HoaDon hoaDon = hoaDonRepository.findById(orderId).get();
+        KhachHang khachHang;
+        Optional<KhachHang> khachHangOptional = khachHangRepository.findById(hoaDon.getKhachHang().getId());
+        if(!khachHangOptional.isPresent()) return ResponseEntity.badRequest().body("Khách hàng không tồn tại");
+        else khachHang = khachHangOptional.get();
+        // Lấy thông tin chi tiết đơn hàng bằng id
         String curentStatus = hoaDon.getTrangThai().getPriority();
         if("Giao Thành Công".equalsIgnoreCase(curentStatus)){
             return ResponseEntity.badRequest().body("Đơn hàng đã giao thành công!");
@@ -326,8 +378,26 @@ public class DonHangController {
             // cap nhat imei trong kho
             List<HoaDonChiTiet> hoaDonChiTiets = hoaDon.getHoaDonChiTiets();
             List<Imei> imeis = hoaDonChiTiets.stream().map(hdct -> hdct.getImei()).collect(Collectors.toList());
-            imeis.forEach(i -> i.setTrangThai(Imei.TrangThai.TRONG_KHO));
-            imeiRepository.saveAll(imeis);
+            if(!ObjectUtils.isEmpty(imeis)){
+                imeis.forEach(i -> i.setTrangThai(Imei.TrangThai.TRONG_KHO));
+                imeiRepository.saveAll(imeis);
+            }
+            // tăng số lượng mã giảm giá
+            List<Integer> sanPhamChiTietId = hoaDonChiTiets.stream()
+                    .map(hdct -> hdct.getSanPhamChiTiet())
+                    .map(spct -> spct.getDotGiamGia().getId())
+                    .distinct()
+                    .collect(Collectors.toList());
+            List<PhieuGiamGia> phieuGiamGias = phieuGiamGiaRepository.findAllBySPCTID(sanPhamChiTietId);
+            phieuGiamGias.forEach(p ->{
+                        p.setSoluong(p.getSoluong() + 1);
+                        phieuGiamGiaRepository.save(p);
+                    });
+            try{
+                sendMailUtil.sendMailOrderCancel(hoaDon, khachHang.getEmail());
+            }catch (Exception e){
+                System.out.println("Faile send mail");
+            }
         }
         return ResponseEntity.ok("Huỷ đơn hàng thành công");
     }

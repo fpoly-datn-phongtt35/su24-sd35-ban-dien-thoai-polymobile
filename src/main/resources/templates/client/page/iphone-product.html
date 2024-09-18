@@ -91,7 +91,7 @@
 
 
                 <a class="bg-primary d-block rounded-lg w-100 py-3 text-center" >
-                    <span class="text-decoration-none text-light h3 ">Mua ngay</span>
+                    <span class="text-decoration-none text-light h3 " th:onclick="addToCartAndCheckout()">Mua ngay</span>
                 </a>
                 <a class="bg-primary d-block rounded-lg w-100 py-3 text-center my-4" th:onclick="handleClick()">
                     <span class="text-decoration-none text-light h3 ">Thêm vào giỏ hàng</span>
@@ -507,6 +507,27 @@
                     debugger;
                     toastr.success('Đã thêm vào giỏ hàng');
                     location.reload();
+                },
+            };
+            if (token) {
+                ajaxSettings.headers = {
+                    'Authorization': 'Bearer ' + token
+                };
+            };
+            $.ajax(ajaxSettings);
+        }
+
+        function addToCartAndCheckout() {
+            let token = getCookie("Authorization");
+            let ajaxSettings = {
+                type : 'POST',
+                url: '/client/addToCart',
+                data : {
+                    idSanPhamChiTiet : selectedId,
+                    quantity : 1
+                },
+                success: function(response) {
+                    location.href = "/client/checkout";
                 },
             };
             if (token) {
