@@ -100,18 +100,8 @@
                     <nav class="header__menu mobile-menu">
                         <ul>
                             <li class="active"><a href="/iphone">Trang chủ</a></li>
-                            <li><a href="#">Pages</a>
-                                <ul class="dropdown">
-                                    <li><a href="./about.html">About Us</a></li>
-                                    <li><a href="./shop-details.html">Shop Details</a></li>
-                                    <li><a href="./shopping-cart.html">Shopping Cart</a></li>
-                                    <li><a href="./checkout.html">Check Out</a></li>
-                                    <li><a href="./blog-details.html">Blog Details</a></li>
 
-                                    
-                                </ul>
-                            </li>
-                            <li><a href="/tra-cuu-don-hang">Tra cứu đơn hàng</a></li>
+                            <li><a href="/client/don-mua">Tra cứu đơn hàng</a></li>
 
                         </ul>
                     </nav>
@@ -132,7 +122,6 @@
                                 <ul class="dropdown" th:class="${#authentication.getDetails().equals('anonymousUser')?'d-none':'dropdown'}">
                                     <li><a href="/ho-so">Tài khoản</a></li>
                                     <li><a href="/client/don-mua">Đơn mua</a></li>
-                                    <li><a href="/don-mua">Đơn mua</a></li>
                                     <li><a href="/client/bao-hanh">Bảo hành</a></li>
                                     <li><a href="/logout">Đăng xuất</a></li>
                                 </ul>

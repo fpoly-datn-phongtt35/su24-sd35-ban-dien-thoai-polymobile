@@ -68,13 +68,9 @@ public class SecurityConfig {
             "/unauth-home",
             "/verify-account",
             "/reset-otp"
-
     };
     String[] adminURL = {
-
-
             "/admin/**"
-
     };
 
     @Bean

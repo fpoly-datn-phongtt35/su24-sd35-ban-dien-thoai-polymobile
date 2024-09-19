@@ -290,11 +290,12 @@ public class SanPhamRepositoryImpl {
             });
             Predicate predicateTinhNangDacBietPredicate=cb.and(tinhNangCameraPredicates.toArray(new Predicate[0]));
             predicates.add(predicateTinhNangDacBietPredicate);
-            Predicate preTrangThai=cb.equal(sanPham.get("trangThai"),SanPhamRepository.TrangThai.IN_STOCK);
-            Predicate preTrangThaiSPCT=cb.equal(sanPhamChiTiet.get("trangThai"),SanPhamRepository.TrangThai.IN_STOCK);
-            predicates.add(preTrangThai);
-            predicates.add(preTrangThaiSPCT);
+
         }
+        Predicate preTrangThai=cb.equal(sanPham.get("trangThai"),SanPhamRepository.TrangThai.IN_STOCK);
+        Predicate preTrangThaiSPCT=cb.equal(sanPhamChiTiet.get("trangThai"),SanPhamRepository.TrangThai.IN_STOCK);
+        predicates.add(preTrangThai);
+        predicates.add(preTrangThaiSPCT);
 //
 
 //

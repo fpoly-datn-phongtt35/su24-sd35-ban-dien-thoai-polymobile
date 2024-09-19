@@ -160,7 +160,7 @@ public class VerifyController {
             TaiKhoan taiKhoan = (TaiKhoan) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
             return switch (taiKhoan.getRole()) {
-                case ROLE_ADMIN -> "redirect:/admin/dashboard";
+                case ROLE_ADMIN -> "redirect:/admin/statistic";
                 case ROLE_EMPLOYEE -> "redirect:/admin/sale";
                 default -> "redirect:/iphone";
             };
